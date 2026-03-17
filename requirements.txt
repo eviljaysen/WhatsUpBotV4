@@ -1,0 +1,25 @@
+# WhatsUpBot v4.1 — Python dependencies
+# Install: pip install -r requirements.txt
+
+# Core automation
+pyautogui>=0.9.54
+keyboard>=0.13.5
+
+# Image processing
+Pillow>=10.0.0
+numpy>=1.24.0
+opencv-python>=4.8.0
+
+# OCR
+pytesseract>=0.3.10
+
+# Timezone support
+pytz>=2023.3
+
+# ── Optional dependencies ─────────────────────────────────────────────────────
+
+# Better OCR (EasyOCR fallback — runs when Tesseract fails)
+easyocr>=1.7.0
+
+# System tray (minimize to tray + notifications)
+pystray>=0.19.0

@@ -1,0 +1,85 @@
+{
+    "game_window_title": "BlueStacks",
+    "content_offset_x": 0,
+    "content_offset_y": 0,
+    "tesseract_path": "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+    "players": {
+        "AIRBORNES4": "GMT-7",
+        "ASABIITOSBAA": "GMT+3",
+        "BEEVEN": "GMT-5",
+        "CAP": "GMT+1",
+        "DARDAR": "GMT+8",
+        "DEINE MUTTER": "GMT+2",
+        "DREADZ": "GMT+11",
+        "EVILJAYSEN": "GMT-7",
+        "JAYSEN": "GMT-7",
+        "JC85": "GMT-5",
+        "JOEBOOMBANG": "GMT+1",
+        "KOIVU": "GMT+2",
+        "LIPTON": "GMT+9",
+        "MUSCHI": "GMT+1",
+        "MUSHROOM": "GMT+9",
+        "NOT HEY": "GMT-5",
+        "ONKELRENE666": "GMT+1",
+        "PATRICK": "GMT+1",
+        "PIYO": "GMT+9",
+        "ROBINHOOD": "GMT+8",
+        "SAKETOBA": "GMT+9",
+        "SLOMO": "GMT+2",
+        "STEFAN": "GMT+2",
+        "TACN": "GMT+9",
+        "TIGY": "GMT+2"
+    },
+    "ocr_corrections": {
+        "鮭とば": "SAKETOBA",
+        "ぴよきち": "PIYO",
+        "りぷとん": "LIPTON",
+        "毒舞茸": "MUSHROOM",
+        "PATRICKSPATZ": "PATRICK",
+        "BUILOMASTERDREADZ": "DREADZ",
+        "LD stxig": "SAKETOBA",
+        "LD": "SAKETOBA"
+    },
+    "enemy_buildings": {
+        "1": [
+            1473,
+            507
+        ],
+        "2": [
+            1498,
+            778
+        ],
+        "3": [
+            1174,
+            930
+        ],
+        "4": [
+            739,
+            912
+        ],
+        "5": [
+            349,
+            772
+        ],
+        "6": [
+            438,
+            534
+        ]
+    },
+    "enemy_select_next": [
+        211,
+        842
+    ],
+    "name_match_cutoff": 0.8,
+    "bot_slots_total": 75,
+    "sleep_start": 21,
+    "sleep_end": 8,
+    "cjk_names": true,
+    "tmpl_threshold": 0.4,
+    "tmpl_confidence": 0.75,
+    "cjk_match_cutoff": 0.65,
+    "max_enemy_slots": 14,
+    "discord_webhook_url": "https://discord.com/api/webhooks/1482401167022493842/Ige3aGDJ4Ki2OkT8tQBCg_iXJtBGwRgER4HmhItFXwbHtd7VG7-K9FetvFxdUYncJyTd",
+    "scan_interval_minutes": 0,
+    "hud_overrides": {}
+}

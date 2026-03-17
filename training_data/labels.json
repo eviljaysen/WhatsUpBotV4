@@ -1,0 +1,121 @@
+[
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\timer_20260314_213812_debug_timer_raw.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_timer_raw.PNG",
+    "text": "19h 50m",
+    "type": "timer",
+    "timestamp": "20260314_213812"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\timer_20260314_213819_debug_timer_conv.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_timer_conv.PNG",
+    "text": "19h 50m",
+    "type": "timer",
+    "timestamp": "20260314_213819"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\timer_20260314_213827_live_timer_20260314_213730_100040.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\live_timer_20260314_213730_100040.PNG",
+    "text": "19h 46m",
+    "type": "timer",
+    "timestamp": "20260314_213827"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\timer_20260314_213839_live_timer_20260314_213735_610366.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\live_timer_20260314_213735_610366.PNG",
+    "text": "19h 46m",
+    "type": "timer",
+    "timestamp": "20260314_213839"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\timer_20260314_213855_live_timer_20260314_213738_617260.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\live_timer_20260314_213738_617260.PNG",
+    "text": "19h 46m",
+    "type": "timer",
+    "timestamp": "20260314_213855"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\timer_20260314_213858_live_timer_20260314_213740_434505.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\live_timer_20260314_213740_434505.PNG",
+    "text": "19h 46m",
+    "type": "timer",
+    "timestamp": "20260314_213858"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\timer_20260314_213901_live_timer_20260314_213744_702001.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\live_timer_20260314_213744_702001.PNG",
+    "text": "19h 46m",
+    "type": "timer",
+    "timestamp": "20260314_213901"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\badge_20260314_214009_debug_team_bonus_raw.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_team_bonus_raw.PNG",
+    "text": "+106",
+    "type": "badge",
+    "timestamp": "20260314_214009"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\badge_20260314_214013_debug_team_bonus_conv.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_team_bonus_conv.PNG",
+    "text": "+106",
+    "type": "badge",
+    "timestamp": "20260314_214013"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\badge_20260314_214017_debug_opp_bonus_raw.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_opp_bonus_raw.PNG",
+    "text": "+40",
+    "type": "badge",
+    "timestamp": "20260314_214017"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\badge_20260314_214021_debug_opp_bonus_conv.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_opp_bonus_conv.PNG",
+    "text": "+40",
+    "type": "badge",
+    "timestamp": "20260314_214021"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\score_20260314_214047_debug_team_points_raw.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_team_points_raw.PNG",
+    "text": "18924",
+    "type": "score",
+    "timestamp": "20260314_214047"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\score_20260314_214053_debug_team_points_conv.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_team_points_conv.PNG",
+    "text": "18924",
+    "type": "score",
+    "timestamp": "20260314_214053"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\score_20260314_214058_debug_opp_points_raw.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_opp_points_raw.PNG",
+    "text": "6057",
+    "type": "score",
+    "timestamp": "20260314_214058"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\score_20260314_214102_debug_opp_points_conv.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_opp_points_conv.PNG",
+    "text": "6057",
+    "type": "score",
+    "timestamp": "20260314_214102"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\score_20260314_214108_debug_max_points_raw.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_max_points_raw.PNG",
+    "text": "145000",
+    "type": "score",
+    "timestamp": "20260314_214108"
+  },
+  {
+    "image": "D:\\OneDrive\\WhatsUpBotV4\\training_data\\samples\\score_20260314_214112_debug_max_points_conv.PNG",
+    "source": "D:\\OneDrive\\WhatsUpBotV4\\images\\debug_max_points_conv.PNG",
+    "text": "145000",
+    "type": "score",
+    "timestamp": "20260314_214112"
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import cv2, pytesseract, pyautogui; print\\(''all good''\\)\")",
+      "Bash(py -3 -c \"import cv2, pytesseract; print\\(''ok'', cv2.__version__\\)\")",
+      "Bash(py -c \"import cv2; print\\(cv2.__version__\\)\")"
+    ]
+  }
+}
