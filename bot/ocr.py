@@ -344,16 +344,61 @@ def ocr_player_name(card, ctx) -> str:
     """OCR the player name using the card's detected name region.
 
     Pipeline (stops at first confident match):
-    1. Template match (IoU) — fastest, no Tesseract
-    2. Multi-pass ASCII: PSM 7, then PSM 8
+    1. ML model prediction (fastest, most accurate when trained)
+    2. Template match (IoU) — fast, no Tesseract
+    3. Multi-pass ASCII: PSM 7, then PSM 8
        - Each pass also tries stripping 1 leading char (logo-edge bleed)
-    3. CJK fallback (if cjk_names enabled): Otsu binarize → CJK Tesseract
-    4. Correction dialog (if correction_cb provided)
+    4. CJK fallback (if cjk_names enabled or ASCII too short): Otsu binarize
+    5. EasyOCR fallback
+    6. Low-cutoff fuzzy match (0.60)
+    7. Correction dialog (if correction_cb provided)
+
+    If all passes fail, re-captures the name region after 200ms and retries
+    once — the first capture may have hit a transition frame.
 
     Args:
         card: CardInfo with name_region and paw_end
         ctx: ScanContext (uses name_matcher, last_name_shot, correction_* fields)
     """
+    import time as _time
+    result = _ocr_player_name_once(card, ctx)
+
+    # Check if result is a known player (matched against config)
+    known = bool(result) and result in _KNOWN_NAMES
+    if known:
+        return result
+
+    # Retry once — re-capture after a brief settle in case of transition frame
+    print(f"[name] First attempt returned {result!r} (unmatched) — "
+          f"retrying after 200ms settle")
+    _time.sleep(0.2)
+    result2 = _ocr_player_name_once(card, ctx)
+    known2 = bool(result2) and result2 in _KNOWN_NAMES
+    if known2:
+        print(f"[name] Retry succeeded: {result2!r}")
+        return result2
+
+    # Use whichever raw text is longer (more likely to be real)
+    raw = result2 if len(result2.strip()) > len(result.strip()) else result
+
+    # Last resort: correction dialog (blocks scan thread up to 30s)
+    if len(raw.strip()) >= 2 and ctx.correction_cb is not None:
+        ctx.correction_event.clear()
+        ctx.correction_result[0] = raw
+        ctx.correction_cb(raw)
+        ctx.correction_event.wait(timeout=30)
+        player = ctx.correction_result[0] or raw
+        matches = _name_match(player)
+        if matches:
+            player = _NAME_UPPER_MAP[matches[0]]
+        print(f"[name] correction dialog → {player!r}")
+        return player
+
+    return raw
+
+
+def _ocr_player_name_once(card, ctx) -> str:
+    """Single attempt at OCR'ing the player name. See ocr_player_name."""
     shot = pyautogui.screenshot(region=card.name_region)
 
     # Blank paw icon pixels — use 160 (mid-gray), NOT 255.
@@ -486,20 +531,12 @@ def ocr_player_name(card, ctx) -> str:
 
     if matches:
         player = _NAME_UPPER_MAP[matches[0]]
-    elif len(raw.strip()) >= 2 and ctx.correction_cb is not None:
-        ctx.correction_event.clear()
-        ctx.correction_result[0] = raw
-        ctx.correction_cb(raw)
-        ctx.correction_event.wait(timeout=30)
-        player = ctx.correction_result[0] or raw
-        matches2 = _name_match(player)
-        if matches2:
-            player = _NAME_UPPER_MAP[matches2[0]]
-    else:
-        player = raw
+        print(f"[name] raw={raw!r}  matched={player!r}")
+        return player
 
-    print(f"[name] raw={raw!r}  matched={player!r}")
-    return player
+    # No match found — return raw text (caller may retry or show dialog)
+    print(f"[name] raw={raw!r}  no match found")
+    return raw
 
 
 def ocr_build_stats(image_path: str) -> tuple:

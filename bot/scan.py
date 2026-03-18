@@ -238,6 +238,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             continue
 
         ctx.logo_cache[0] = None   # reset per-building card-position cache
+        _bldg_counts = {}  # per-building slot count (reset each building)
 
         def _on_slot(slot, _bnum=bnum):
             """Process one slot. Returns player name for wrap detection.
@@ -261,11 +262,16 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                           f"capturing slot as UNKNOWN")
                     player = f"UNKNOWN_{_bnum}_{slot}"
 
-            count = ctx.players_dict.get(player, 0)
-            if known and count >= 3:
+            # Per-BUILDING count — a player can have max 3 cars per building.
+            # players_dict tracks total across all buildings (for the report);
+            # _bldg_counts tracks per-building (for the 3-car limit).
+            bldg_count = _bldg_counts.get(player, 0)
+            if known and bldg_count >= 3:
                 return player
 
-            count += 1
+            bldg_count += 1
+            _bldg_counts[player] = bldg_count
+            count = ctx.players_dict.get(player, 0) + 1
             ctx.players_dict[player] = count
             ctx.status(f"  B{_bnum} — {player} ({count}/3)"
                        + ("" if known else " [?]"))

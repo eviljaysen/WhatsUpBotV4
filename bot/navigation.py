@@ -33,6 +33,7 @@ NEXT_BTN_MAX_ATTEMPTS   = 60     # poll attempts to find Next button
 ADVANCE_MAX_POLLS       = 60     # poll attempts for frame change after click
 ADVANCE_POLL_INTERVAL   = 0.04   # seconds between frame-change polls
 PIXEL_DIFF_THRESHOLD    = 12     # mean pixel diff below which = same frame (wrap)
+PIXEL_WRAP_MIN_SLOT     = 4      # don't use pixel-diff-only wrap before this slot
 SLOT_SETTLE_TIME        = 0.15   # seconds to wait for new slot to render
 SCREEN_TRANSITION_TIMEOUT = 8.0  # seconds max for lobby transitions
 LOGO_CACHE_MARGIN_PX    = 20     # pixels around cached logo position for fast search
@@ -226,8 +227,9 @@ def _cycle_slots(win, ctx, on_slot, advance_fn, build_region,
         # Capture reference frame AFTER on_slot(1) processes — this ensures
         # the reference is the actual rendered slot 1, not a transition frame.
         # on_slot may move the mouse/take screenshots, so re-capture cleanly.
+        # Use full SLOT_SETTLE_TIME (not 50ms) to let any animation finish.
         if slot == 1:
-            time.sleep(0.05)
+            time.sleep(SLOT_SETTLE_TIME)
             first_frame = np.asarray(pyautogui.screenshot(region=build_region))
 
         # Track first slot's identifier for semantic wrap detection.
@@ -271,7 +273,10 @@ def _cycle_slots(win, ctx, on_slot, advance_fn, build_region,
 
         # Pixel-diff fallback: frame nearly identical to slot 1 = wrap.
         # Skip if first_frame wasn't captured (shouldn't happen but be safe).
-        if first_frame is None:
+        # Skip for early slots — building entry animation can produce false
+        # low diffs between slot 1 and 2/3. Semantic wrap (name + pixel)
+        # still catches real wraps at any slot.
+        if first_frame is None or slot < PIXEL_WRAP_MIN_SLOT:
             slot += 1
             continue
 
