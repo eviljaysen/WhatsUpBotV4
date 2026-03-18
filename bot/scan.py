@@ -203,8 +203,8 @@ def capture_slot_stats(win, ctx, build_path: str = '') -> tuple:
     try:
         px = pyautogui.screenshot(region=win.hud("slot_status_px")).getpixel((0, 0))
         defending = px[1] >= px[0]   # green channel ≥ red → DEFENDING
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[stats] Status pixel check failed: {e}")
     return hp, atk, defending
 
 
@@ -298,8 +298,8 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                 px = pyautogui.screenshot(
                     region=win.hud("slot_status_px")).getpixel((0, 0))
                 defending = px[1] >= px[0]
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[B{_bnum}] Status pixel check failed: {e}")
             ctx.slot_results.append(SlotData(
                 player=player, building=_bnum,
                 hp=0, atk=0, defending=defending,
@@ -433,8 +433,8 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             if easy_opp and easy_conf > 0.3:
                 opponent = easy_opp
                 print(f"[opponent] EasyOCR fallback: '{opponent}' (conf={easy_conf:.2f})")
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[opponent] EasyOCR fallback failed: {e}")
 
     # Pre-load OCR CNN model on the main scan thread before spawning workers.
     # Without this, 5 threads all try `import torch` concurrently on first use,
@@ -443,8 +443,8 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         from bot.ocr_model import is_model_ready, _load_model
         if is_model_ready():
             _load_model()
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[scan] OCR model pre-load failed: {e}")
 
     with ThreadPoolExecutor(max_workers=5) as ex:
         f_max = ex.submit(locate_number,
@@ -519,7 +519,8 @@ def _classes_unchanged(classes_path: str, current_set: set) -> bool:
         import json
         with open(classes_path, "r", encoding="utf-8") as f:
             return set(json.load(f)) == current_set
-    except Exception:
+    except Exception as e:
+        print(f"[train] Failed to read classes file: {e}")
         return False
 
 
@@ -643,8 +644,8 @@ def _evaluate_alerts(ctx, meta: dict):
             if opponent:
                 war_id = get_or_create_war(opponent)
                 trajectory = get_score_trajectory(war_id)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[alerts] Failed to load trajectory: {e}")
 
         # Get previous slot count for CARS_LOST detection
         prev_count = 0
@@ -655,8 +656,8 @@ def _evaluate_alerts(ctx, meta: dict):
                 prev_meta, prev_slots = get_last_scan(opponent)
                 if prev_slots:
                     prev_count = len(prev_slots)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[alerts] Failed to load previous slot count: {e}")
 
         alerts = evaluator.evaluate(meta, analysis, trajectory, prev_count)
         if alerts:
@@ -715,8 +716,8 @@ def run_enemy_scan(building_num: int, status_cb=None) -> str:
             if easy_opp and easy_conf > 0.3:
                 print(f"[opponent] EasyOCR: '{easy_opp}' (conf={easy_conf:.2f})")
                 opponent_raw = easy_opp
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[opponent] EasyOCR fallback failed: {e}")
     opponent = re.sub(r'[^A-Za-z0-9_\- ]', '', opponent_raw).strip() or "enemy"
     ctx.status(f"  Opponent: {opponent}")
 

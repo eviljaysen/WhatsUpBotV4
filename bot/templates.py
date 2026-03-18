@@ -24,7 +24,7 @@ _HUD_DEFAULTS = {
     "enemy_name":      (180,  345, 260,  65),  # enemy car player-name text
     # Per-slot stat regions — verify with debug_slot_hp_raw.PNG / debug_slot_atk_raw.PNG
     "slot_hp":         (178,  685, 205,  50),  # ♥ HP value (after heart, fits 7 digits)
-    "slot_atk":        (407,  685, 190,  50),  # ⚔ Attack value (after sword, fits 7 digits)
+    "slot_atk":        (392,  685, 210,  50),  # ⚔ Attack value (after sword, fits 7 digits)
     "slot_status_px":  (228,  306,   1,   1),  # 1-px sample: green=DEF, red=ATK
 }
 
@@ -108,7 +108,8 @@ class Templates:
             return None
         try:
             return pyautogui.locateOnScreen(tpl, region=region, confidence=confidence)
-        except Exception:
+        except Exception as e:
+            print(f"[templates] locateOnScreen failed for {filename}: {e}")
             return None
 
     def find_center(self, filename: str, region=None, confidence: float = 0.8):

@@ -329,7 +329,8 @@ def format_top_players(slot_results: list, limit: int = 10) -> str:
     # Load previous stats for delta column
     try:
         history = _get_history_stats()
-    except Exception:
+    except Exception as e:
+        print(f"[analysis] History stats load failed: {e}")
         history = {}
 
     name_w = max(12, max(len(r[0]) for r in ranked) + 1)

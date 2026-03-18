@@ -37,6 +37,10 @@ SLOT_SETTLE_TIME        = 0.15   # seconds to wait for new slot to render
 SCREEN_TRANSITION_TIMEOUT = 8.0  # seconds max for lobby transitions
 LOGO_CACHE_MARGIN_PX    = 20     # pixels around cached logo position for fast search
 
+# Building icon pixel colours (team map screen)
+_BLDG_EMPTY_COLOURS   = {(255, 101, 100), (94, 106, 131)}   # empty — skip
+_BLDG_LOADING_COLOURS = {(144, 179, 235), (0, 0, 0)}        # loading — keep clicking
+
 
 # ── Primitive checks ───────────────────────────────────────────────────────────
 def _esc() -> bool:
@@ -124,9 +128,9 @@ def _enter_building(win, ctx, pos, btn_bl=_DEFEND_BTN_BL) -> bool:
     while not _esc():
         r, g, b = pyautogui.screenshot(region=(x, y, 1, 1)).getpixel((0, 0))
         pyautogui.moveTo(x, y)
-        if (r, g, b) in {(255, 101, 100), (94, 106, 131)}:
+        if (r, g, b) in _BLDG_EMPTY_COLOURS:
             return False
-        while (r, g, b) in {(144, 179, 235), (0, 0, 0)} and not _esc():
+        while (r, g, b) in _BLDG_LOADING_COLOURS and not _esc():
             pyautogui.click(x, y)
             time.sleep(0.05)
             r, g, b = pyautogui.screenshot(region=(x, y, 1, 1)).getpixel((0, 0))

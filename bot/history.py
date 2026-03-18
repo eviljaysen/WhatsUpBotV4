@@ -109,6 +109,7 @@ CREATE INDEX IF NOT EXISTS idx_oppplayers_name   ON opponent_players(player_name
 def _conn():
     """Context manager: open DB, yield connection, auto-commit + close."""
     con = sqlite3.connect(DB_PATH, check_same_thread=False)
+    con.execute("PRAGMA journal_mode=WAL")
     con.row_factory = sqlite3.Row
     try:
         yield con
@@ -284,6 +285,23 @@ def get_or_create_war(opponent: str) -> int:
             (opponent,)).fetchone()
         if row is not None:
             return row["id"]
+
+        # Close all ongoing wars — new opponent means previous wars ended
+        stale = con.execute(
+            "SELECT id FROM wars WHERE result = 'ongoing'"
+        ).fetchall()
+        for s in stale:
+            snap = con.execute(
+                "SELECT team_pts, opp_pts FROM score_snapshots "
+                "WHERE war_id = ? ORDER BY timestamp DESC LIMIT 1",
+                (s["id"],)).fetchone()
+            our = snap["team_pts"] if snap else 0
+            opp = snap["opp_pts"] if snap else 0
+            outcome = ("win" if our > opp
+                       else "loss" if opp > our
+                       else "draw")
+            _close_war_row(con, s["id"], outcome, our, opp)
+
         cur = con.execute(
             "INSERT INTO wars (opponent, start_ts) VALUES (?, ?)",
             (opponent, int(time.time())))
@@ -328,6 +346,16 @@ def get_score_trajectory(war_id: int) -> list:
         return [dict(r) for r in rows]
 
 
+def _close_war_row(con, war_id: int, outcome: str,
+                   our_final: int = 0, opp_final: int = 0):
+    """Close a war within an existing connection (internal helper)."""
+    con.execute(
+        "UPDATE wars SET end_ts = ?, result = ?, "
+        "our_final = ?, opp_final = ? WHERE id = ?",
+        (int(time.time()), outcome, our_final, opp_final, war_id))
+    print(f"[history] War #{war_id} closed: {outcome} ({our_final}-{opp_final})")
+
+
 def close_war(war_id: int, result: str,
               our_final: int = 0, opp_final: int = 0):
     """Mark a war as complete.
@@ -339,11 +367,7 @@ def close_war(war_id: int, result: str,
         opp_final: opponent final score
     """
     with _conn() as con:
-        con.execute(
-            "UPDATE wars SET end_ts = ?, result = ?, "
-            "our_final = ?, opp_final = ? WHERE id = ?",
-            (int(time.time()), result, our_final, opp_final, war_id))
-    print(f"[history] War #{war_id} closed: {result} ({our_final}-{opp_final})")
+        _close_war_row(con, war_id, result, our_final, opp_final)
 
 
 def save_enemy_slot(war_id: int, opponent: str, player_name: str,

@@ -54,8 +54,8 @@ def _crash_handler(exc_type, exc_value, exc_tb):
         import tkinter.messagebox as mb
         mb.showerror("WhatsUpBot — Error",
                      f"{exc_value}\n\nFull details saved to:\n{log_path}")
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[crash] Could not show error dialog: {e}")
 
 sys.excepthook = _crash_handler
 
@@ -475,8 +475,10 @@ class App:
             parts = []
             for bnum in sorted(analysis["buildings"].keys()):
                 b = analysis["buildings"][bnum]
+                n = max(b["slot_count"], 1)
+                avg_str = b["total_str"] // n
                 flag = " ⚠" if bnum == analysis["weakest"] else ""
-                parts.append(f"B{bnum}{flag}: {_fmt_stat(b['total_str'])} "
+                parts.append(f"B{bnum}{flag}: avg {_fmt_stat(avg_str)} "
                              f"({b['slot_count']})")
             self._bldg_text.config(text="  ".join(parts))
         except Exception as e:
@@ -929,8 +931,8 @@ class App:
         if self._tray_icon is not None:
             try:
                 self._tray_icon.notify(message, title)
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[tray] Notification failed: {e}")
 
     def _quit(self):
         if self._interval_job:
@@ -938,8 +940,8 @@ class App:
         if self._tray_icon is not None:
             try:
                 self._tray_icon.stop()
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[tray] Stop error: {e}")
         self.root.destroy()
 
 

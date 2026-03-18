@@ -37,11 +37,21 @@ class Window:
                 self.y + round(by * self.sy))
 
     def sr(self, bx: float, by: float, bw: float, bh: float):
-        """Scale a 1920×1080 region to a live (x, y, w, h) tuple."""
-        return (self.x + round(bx * self.sx),
-                self.y + round(by * self.sy),
-                round(bw * self.sx),
-                round(bh * self.sy))
+        """Scale a 1920×1080 region to a live (x, y, w, h) tuple.
+
+        Clamps to the window bounds so screenshot regions never extend
+        outside the game canvas (e.g. if window was resized mid-scan).
+        """
+        x = self.x + round(bx * self.sx)
+        y = self.y + round(by * self.sy)
+        w = round(bw * self.sx)
+        h = round(bh * self.sy)
+        # Clamp to window bounds
+        x = max(self.x, min(x, self.x + self.w))
+        y = max(self.y, min(y, self.y + self.h))
+        w = max(1, min(w, self.x + self.w - x))
+        h = max(1, min(h, self.y + self.h - y))
+        return (x, y, w, h)
 
     def hud(self, key: str):
         """Scale a named HUD region."""

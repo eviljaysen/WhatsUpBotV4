@@ -207,19 +207,16 @@ def build_report(ctx, scores: dict, h: int, m: int, avail_only: bool = False) ->
 
     # ── Building strength analysis (v5.0) ──────────────────────────────────
     from bot.analysis import (
-        analyze_buildings, recommend_placements,
-        format_building_summary, format_recommendations,
-        get_momentum, format_momentum,
+        analyze_buildings, format_building_summary,
+        format_top_players, get_momentum, format_momentum,
     )
+    from bot.config import CFG as _cfg
     analysis = analyze_buildings(ctx.slot_results)
-    bldg_summary = format_building_summary(analysis)
+    alert_thresholds = _cfg.get("alert_thresholds", {})
+    bldg_summary = format_building_summary(analysis, alert_thresholds)
 
-    # Placement recommendations for unplaced players
-    recs = recommend_placements(
-        ctx.slot_results, ctx.players_dict,
-        player_stats=None,  # could pass DB stats here in future
-    )
-    recs_text = format_recommendations(recs)
+    # Top players by average strength
+    top_players_text = format_top_players(ctx.slot_results, limit=10)
 
     # Score momentum (requires war trajectory from DB)
     momentum_text = ""
@@ -231,16 +228,16 @@ def build_report(ctx, scores: dict, h: int, m: int, avail_only: bool = False) ->
             if len(trajectory) >= 2:
                 momentum = get_momentum(trajectory)
                 momentum_text = format_momentum(momentum)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[report] Momentum analysis failed: {e}")
 
     # Append analysis sections
     if momentum_text:
         infos += f"\n📈 **Momentum:** {momentum_text}\n"
     if bldg_summary:
-        infos += f"\n```\nBUILDING STRENGTH\n{bldg_summary}\n```\n"
-    if recs_text:
-        infos += f"\n```\n{recs_text}\n```\n"
+        infos += f"\n```\nBUILDING STRENGTH (averages)\n{bldg_summary}\n```\n"
+    if top_players_text:
+        infos += f"\n```\nTOP PLAYERS\n{top_players_text}\n```\n"
 
     meta = dict(
         instant=instant, opponent=opponent,
@@ -259,8 +256,8 @@ def _load_stats_cache(cache_path: str) -> dict:
         try:
             with open(cache_path, encoding="utf-8") as f:
                 return json.load(f)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[report] Stats cache load failed: {e}")
     return {}
 
 
@@ -417,8 +414,8 @@ def build_image_grid(screenshot_paths: list, cols: int = 3):
         if os.path.isfile(p):
             try:
                 images.append(Img.open(p).convert("RGB"))
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[report] Failed to load image {p}: {e}")
 
     if not images:
         return None

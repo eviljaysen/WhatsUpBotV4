@@ -372,7 +372,8 @@ def ocr_player_name(card, ctx) -> str:
         try:
             from bot.name_model import is_model_ready
             ctx.ml_model_ready = is_model_ready()
-        except Exception:
+        except Exception as e:
+            print(f"[name] ML model check failed: {e}")
             ctx.ml_model_ready = False
     if ctx.ml_model_ready:
         from bot.name_model import predict_name
@@ -608,8 +609,8 @@ def _ocr_stat_region(region: np.ndarray) -> int:
             easy_val, easy_conf = read_number(final)
             if easy_val > 0 and easy_conf > 0.3:
                 result = easy_val
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[ocr] EasyOCR stat fallback failed: {e}")
 
     return result
 

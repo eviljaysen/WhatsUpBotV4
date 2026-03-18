@@ -5,7 +5,7 @@ to Discord when conditions are met. No screen capture, no pyautogui.
 """
 
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -29,6 +29,10 @@ _DEFAULTS = {
     "building_strength_min": 5_000_000,
     "score_gap_warning": 10_000,
 }
+
+# Rate-limiting: minimum seconds between alerts of the same type
+ALERT_COOLDOWN_SEC = 300  # 5 minutes
+_last_fired: dict = {}    # alert_type → timestamp of last fire
 
 
 class AlertEvaluator:
@@ -120,7 +124,11 @@ class AlertEvaluator:
         return alerts
 
     def fire(self, alerts: list):
-        """Post alerts to Discord webhook."""
+        """Post alerts to Discord webhook with per-type rate limiting.
+
+        Each alert type is throttled to at most once per ALERT_COOLDOWN_SEC
+        seconds to avoid spamming Discord on repeated scans.
+        """
         if not alerts or not self.webhook_url:
             return
 
@@ -130,9 +138,16 @@ class AlertEvaluator:
             print("[alerts] discord_post not available")
             return
 
+        now = time.time()
         for alert in alerts:
+            last = _last_fired.get(alert.alert_type, 0)
+            if now - last < ALERT_COOLDOWN_SEC:
+                print(f"[alert] {alert.alert_type} rate-limited "
+                      f"({int(ALERT_COOLDOWN_SEC - (now - last))}s remaining)")
+                continue
             print(f"[alert] {alert.severity}: {alert.message}")
             try:
-                post_alert(self.webhook_url, alert.message)
+                post_alert(alert.message, webhook_url=self.webhook_url)
+                _last_fired[alert.alert_type] = now
             except Exception as e:
                 print(f"[alert] Failed to post: {e}")
