@@ -68,7 +68,7 @@ class TestNamedConstants:
             LOBBY_HIGH_CONFIDENCE, NEXT_BTN_SEARCH_MARGIN,
             NEXT_BTN_WHITE_THRESH, NEXT_BTN_MAX_ATTEMPTS,
             ADVANCE_MAX_POLLS, ADVANCE_POLL_INTERVAL,
-            PIXEL_DIFF_THRESHOLD, SLOT_SETTLE_TIME,
+            WRAP_FP_THRESHOLD, SLOT_SETTLE_TIME,
             SCREEN_TRANSITION_TIMEOUT, LOGO_CACHE_MARGIN_PX,
         )
         assert 0 < LOBBY_CENTRE_MARGIN < 0.5
@@ -79,7 +79,7 @@ class TestNamedConstants:
         assert NEXT_BTN_MAX_ATTEMPTS > 10
         assert ADVANCE_MAX_POLLS > 10
         assert ADVANCE_POLL_INTERVAL > 0
-        assert 1 <= PIXEL_DIFF_THRESHOLD <= 20
+        assert 1 <= WRAP_FP_THRESHOLD <= 50
         assert SLOT_SETTLE_TIME > 0
         assert SCREEN_TRANSITION_TIMEOUT >= 5
         assert LOGO_CACHE_MARGIN_PX >= 10

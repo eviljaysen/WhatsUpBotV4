@@ -241,14 +241,44 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         _bldg_counts = {}  # per-building slot count (reset each building)
 
         def _on_slot(slot, _bnum=bnum):
-            """Process one slot. Returns player name for wrap detection.
+            """Process one slot. Returns dict for wrap detection.
+
+            Returns:
+                dict with keys {name, hp, atk} on success — used by
+                _cycle_slots for wrap detection (same name + same HP/ATK
+                + same car fingerprint = wrapped back to slot 1).
+                None on crash (slot skipped).
 
             ALWAYS captures the slot (screenshot + DEF/ATK status) even
             when name OCR fails. Unknown names are recorded as the raw
             OCR result so they still appear in the report.
             """
-            card   = find_player_card(win, ctx)
-            player = ocr_player_name(card, ctx)
+            card = find_player_card(win, ctx)
+
+            # Validate card geometry — bad card means OCR will fail
+            nr = card.name_region
+            if nr[2] < 10 or nr[3] < 4:
+                print(f"[B{_bnum}] Bad card geometry {nr} — using fallback")
+                ctx.logo_cache[0] = None
+                card = find_player_card(win, ctx)
+
+            try:
+                player = ocr_player_name(card, ctx)
+            except Exception as e:
+                print(f"[B{_bnum}] Name OCR crashed: {e}")
+                player = ""
+
+            # Read HP/ATK from the info card NOW (needed for wrap detection)
+            hp = atk = 0
+            try:
+                hp  = locate_number(win.hud("slot_hp"),
+                                    converter=convert_dark_text,
+                                    debug_name=None)
+                atk = locate_number(win.hud("slot_atk"),
+                                    converter=convert_dark_text,
+                                    debug_name=None)
+            except Exception as e:
+                print(f"[B{_bnum}] HP/ATK OCR failed: {e}")
 
             # Determine if this is a known player
             known = bool(player) and player in player_timezones
@@ -263,12 +293,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                     player = f"UNKNOWN_{_bnum}_{slot}"
 
             # Per-BUILDING count — a player can have max 3 cars per building.
-            # players_dict tracks total across all buildings (for the report);
-            # _bldg_counts tracks per-building (for the 3-car limit).
             bldg_count = _bldg_counts.get(player, 0)
-            if known and bldg_count >= 3:
-                return player
-
             bldg_count += 1
             _bldg_counts[player] = bldg_count
             count = ctx.players_dict.get(player, 0) + 1
@@ -297,8 +322,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             scr_path = os.path.join(pdir, f"{safe}_{count}.PNG")
             pyautogui.screenshot(region=card.build_region).save(scr_path)
 
-            # Only capture defending status from live screen pixel here.
-            # HP/ATK OCR deferred to parallel batch after all buildings.
+            # Defending/attacking status from live screen pixel
             defending = True
             try:
                 px = pyautogui.screenshot(
@@ -306,12 +330,15 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                 defending = px[1] >= px[0]
             except Exception as e:
                 print(f"[B{_bnum}] Status pixel check failed: {e}")
+
             ctx.slot_results.append(SlotData(
                 player=player, building=_bnum,
-                hp=0, atk=0, defending=defending,
+                hp=hp, atk=atk, defending=defending,
                 screenshot=scr_path,
             ))
-            return player
+
+            # Return slot info dict for wrap detection
+            return {'name': player, 'hp': hp, 'atk': atk}
 
         slots_before = len(ctx.slot_results)
         visited = _cycle_slots(win, ctx, _on_slot, _advance_slot,
@@ -325,9 +352,13 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         _move_lobby(win, ctx)
 
     # ── Parallel build OCR (HP/ATK from saved screenshots) ───────────────────
-    slots_to_ocr = [s for s in ctx.slot_results if s.screenshot]
+    # Only OCR slots where live HUD reading failed (hp==0 and atk==0).
+    # Most slots already have HP/ATK from the live info card read.
+    slots_to_ocr = [s for s in ctx.slot_results
+                    if s.screenshot and s.hp == 0 and s.atk == 0]
     if slots_to_ocr:
-        ctx.status(f"OCR'ing {len(slots_to_ocr)} build screenshots…")
+        ctx.status(f"OCR'ing {len(slots_to_ocr)} build screenshots "
+                   f"(live OCR missed)…")
         from bot.ocr import ocr_build_stats
 
         def _ocr_slot(slot):
@@ -741,7 +772,7 @@ def run_enemy_scan(building_num: int, status_cb=None) -> str:
         print(f"[history] War tracking init error: {e}")
 
     def _capture(slot):
-        """Capture one enemy slot. Returns player name for wrap detection."""
+        """Capture one enemy slot. Returns dict for wrap detection."""
         nonlocal captured
         player_raw = _ocr_enemy_name(win)
         player     = re.sub(r'[^A-Za-z0-9_\- ]', '', player_raw).strip() or "unknown"
@@ -760,7 +791,8 @@ def run_enemy_scan(building_num: int, status_cb=None) -> str:
                                 building_num, screenshot=path)
             except Exception as e:
                 print(f"[history] Enemy slot save error: {e}")
-        return player
+        # Return dict for wrap detection (no HP/ATK for enemy — use 0)
+        return {'name': player, 'hp': 0, 'atk': 0}
 
     _cycle_slots(win, ctx, _capture, _advance_slot,
                  build_r, check_lobby=True, max_slots=max_slots)
