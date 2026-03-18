@@ -1,4 +1,4 @@
-# WhatsUpBot v4.1 — Python dependencies
+# WhatsUpBot v5.0 — Python dependencies
 # Install: pip install -r requirements.txt
 
 # Core automation
@@ -17,6 +17,10 @@ pytesseract>=0.3.10
 pytz>=2023.3
 
 # ── Optional dependencies ─────────────────────────────────────────────────────
+
+# ML models — CNN name classifier + OCR character model (lazy-loaded)
+torch>=2.0.0
+torchvision>=0.15.0
 
 # Better OCR (EasyOCR fallback — runs when Tesseract fails)
 easyocr>=1.7.0

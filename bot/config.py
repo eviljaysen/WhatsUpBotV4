@@ -18,13 +18,14 @@ if getattr(sys, 'frozen', False):
 else:
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-IMAGES_DIR    = os.path.join(BASE_DIR, "images")
-BUILDS_DIR    = os.path.join(BASE_DIR, "builds")
-SCANS_DIR     = os.path.join(BASE_DIR, "scans")
-NAME_TMPL_DIR = os.path.join(BASE_DIR, "name_templates")
-DB_PATH       = os.path.join(BASE_DIR, "history.db")
+IMAGES_DIR        = os.path.join(BASE_DIR, "images")
+BUILDS_DIR        = os.path.join(BASE_DIR, "builds")
+BUILD_HISTORY_DIR = os.path.join(BASE_DIR, "build_history")
+SCANS_DIR         = os.path.join(BASE_DIR, "scans")
+NAME_TMPL_DIR     = os.path.join(BASE_DIR, "name_templates")
+DB_PATH           = os.path.join(BASE_DIR, "history.db")
 
-for _d in (IMAGES_DIR, BUILDS_DIR, SCANS_DIR, NAME_TMPL_DIR):
+for _d in (IMAGES_DIR, BUILDS_DIR, BUILD_HISTORY_DIR, SCANS_DIR, NAME_TMPL_DIR):
     os.makedirs(_d, exist_ok=True)
 
 _CFG_PATH = os.path.join(BASE_DIR, "config.json")

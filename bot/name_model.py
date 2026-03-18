@@ -18,6 +18,7 @@ Exports:
 import os
 import json
 import time
+import threading
 import numpy as np
 from PIL import Image as Img
 from collections import Counter
@@ -36,6 +37,8 @@ IMG_W, IMG_H = 160, 40  # same as template thumbnails
 _model = None
 _classes = None
 _device = None
+_model_lock = threading.Lock()  # protects _model/_classes between scan + train threads
+_last_train_count = 0   # total RAW samples at last training — skip if unchanged
 
 
 def _ensure_dirs():
@@ -86,6 +89,18 @@ def get_training_stats() -> dict:
             if count > 0:
                 stats[d] = count
     return stats
+
+
+def needs_training() -> bool:
+    """Check if new samples have been collected since last training.
+
+    Returns True only when the total sample count has changed,
+    preventing expensive retraining after every scan when no new
+    data was collected.
+    """
+    stats = get_training_stats()
+    total = sum(stats.values())
+    return total != _last_train_count and total > 0
 
 
 # ── CNN Model Definition ─────────────────────────────────────────────────────
@@ -296,9 +311,14 @@ def train_model(epochs: int = 0, lr: float = 0.001,
     model = _build_model(num_classes).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode="min", factor=0.5, patience=5)
 
     epoch_losses = []
     best_acc = 0.0
+    best_loss = float("inf")
+    patience_counter = 0
+    EARLY_STOP_PATIENCE = 10
 
     for epoch in range(epochs):
         model.train()
@@ -314,6 +334,7 @@ def train_model(epochs: int = 0, lr: float = 0.001,
 
         avg_loss = total_loss / len(train_loader)
         epoch_losses.append(avg_loss)
+        scheduler.step(avg_loss)
 
         # Validation accuracy
         if val_ds and len(val_idx) > 0:
@@ -330,6 +351,16 @@ def train_model(epochs: int = 0, lr: float = 0.001,
         if (epoch + 1) % 10 == 0 or epoch == 0:
             print(f"  Epoch {epoch + 1}/{epochs}: loss={avg_loss:.4f} val_acc={val_acc:.3f}")
 
+        # Early stopping: stop when loss stops improving
+        if avg_loss < best_loss - 0.001:
+            best_loss = avg_loss
+            patience_counter = 0
+        else:
+            patience_counter += 1
+            if patience_counter >= EARLY_STOP_PATIENCE:
+                print(f"  Early stop at epoch {epoch + 1} (loss plateau)")
+                break
+
     # Save model + class names
     os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
     torch.save({
@@ -342,9 +373,13 @@ def train_model(epochs: int = 0, lr: float = 0.001,
         json.dump(class_names, f, ensure_ascii=False)
 
     # Invalidate cached model so next predict_name() loads the fresh one
-    global _model, _classes
-    _model = None
-    _classes = None
+    # Record RAW sample count (pre-augmentation) so needs_training() compares apples-to-apples
+    global _model, _classes, _last_train_count
+    with _model_lock:
+        _model = None
+        _classes = None
+        stats = get_training_stats()
+        _last_train_count = sum(stats.values())
 
     # Final training accuracy
     model.eval()
@@ -368,28 +403,29 @@ def train_model(epochs: int = 0, lr: float = 0.001,
 
 # ── Prediction ────────────────────────────────────────────────────────────────
 def _load_model():
-    """Load the trained model (lazy, cached)."""
+    """Load the trained model (lazy, cached). Thread-safe."""
     global _model, _classes, _device
 
-    if _model is not None:
-        return _model, _classes
+    with _model_lock:
+        if _model is not None:
+            return _model, _classes
 
-    if not os.path.isfile(MODEL_PATH):
-        return None, None
+        if not os.path.isfile(MODEL_PATH):
+            return None, None
 
-    try:
-        import torch
-        _device = torch.device("cpu")
-        checkpoint = torch.load(MODEL_PATH, map_location=_device, weights_only=False)
-        _classes = checkpoint["class_names"]
-        _model = _build_model(checkpoint["num_classes"]).to(_device)
-        _model.load_state_dict(checkpoint["state_dict"])
-        _model.eval()
-        print(f"[name_model] Loaded model: {len(_classes)} classes")
-        return _model, _classes
-    except Exception as e:
-        print(f"[name_model] Failed to load model: {e}")
-        return None, None
+        try:
+            import torch
+            _device = torch.device("cpu")
+            checkpoint = torch.load(MODEL_PATH, map_location=_device, weights_only=False)
+            _classes = checkpoint["class_names"]
+            _model = _build_model(checkpoint["num_classes"]).to(_device)
+            _model.load_state_dict(checkpoint["state_dict"])
+            _model.eval()
+            print(f"[name_model] Loaded model: {len(_classes)} classes")
+            return _model, _classes
+        except Exception as e:
+            print(f"[name_model] Failed to load model: {e}")
+            return None, None
 
 
 def predict_name(shot) -> tuple:

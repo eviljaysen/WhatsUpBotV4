@@ -12,7 +12,7 @@ from bot.analysis import (
     recommend_placements,
     get_momentum,
     format_building_summary,
-    format_recommendations,
+    format_top_players,
     format_momentum,
 )
 
@@ -188,31 +188,76 @@ class TestGetMomentum:
 # ═══════════════════════════════════════════════════════════════════════════
 
 class TestFormatBuildingSummary:
-    def test_basic_format(self):
+    def test_basic_format_shows_averages(self):
         slots = [
             _slot("A", 1, hp=1_200_000, atk=800_000),
-            _slot("B", 2, hp=500_000, atk=300_000),
+            _slot("B", 1, hp=800_000, atk=200_000),
+            _slot("C", 2, hp=500_000, atk=300_000),
         ]
         analysis = analyze_buildings(slots)
         text = format_building_summary(analysis)
         assert "B1" in text
         assert "B2" in text
-        assert "⚠" in text  # weakest marker on B2
+        assert "AVG" in text
+        # B1: 2 slots, avg_hp = 1M, avg_atk = 500K
+        assert "1.0M" in text   # avg HP for B1
+        assert "⚠ WEAK" in text  # weakest marker on B2
 
     def test_empty_returns_empty(self):
         analysis = analyze_buildings([])
         assert format_building_summary(analysis) == ""
 
+    def test_alert_column_with_thresholds(self):
+        slots = [_slot("A", 1, hp=100, atk=50)]
+        analysis = analyze_buildings(slots)
+        text = format_building_summary(analysis,
+                                       alert_thresholds={"building_strength_min": 1000})
+        assert "🔴 LOW" in text
 
-class TestFormatRecommendations:
-    def test_basic(self):
-        recs = [("BOB", 3, "empty building")]
-        text = format_recommendations(recs)
-        assert "BOB → B3" in text
-        assert "RECOMMENDATIONS" in text
+    def test_empty_buildings_show_empty_alert(self):
+        slots = [_slot("A", 1)]
+        analysis = analyze_buildings(slots)
+        text = format_building_summary(analysis)
+        assert "🔴 EMPTY" in text
 
-    def test_empty(self):
-        assert format_recommendations([]) == ""
+
+class TestFormatTopPlayers:
+    def test_basic_ranking(self):
+        slots = [
+            _slot("ALICE", 1, hp=3_000_000, atk=1_000_000),
+            _slot("ALICE", 2, hp=2_000_000, atk=500_000),
+            _slot("BOB", 1, hp=1_000_000, atk=200_000),
+        ]
+        text = format_top_players(slots)
+        assert "ALICE" in text
+        assert "BOB" in text
+        # ALICE avg_str = 6.5M/2 = 3.2M → ranked first
+        lines = text.strip().split("\n")
+        # Find first data line (after header + divider)
+        data_lines = [l for l in lines if l.strip() and not l.startswith("-")
+                      and not l.startswith("#")]
+        assert "ALICE" in data_lines[0]
+
+    def test_empty_slots(self):
+        assert format_top_players([]) == ""
+
+    def test_limit(self):
+        slots = [_slot(f"P{i}", 1, hp=1000 * i, atk=500) for i in range(1, 15)]
+        text = format_top_players(slots, limit=5)
+        # Should only show 5 players
+        data_lines = [l for l in text.split("\n")
+                      if l.strip() and not l.startswith("-")
+                      and not l.startswith("#") and "PLAYER" not in l]
+        assert len(data_lines) == 5
+
+    def test_zero_stats_excluded(self):
+        slots = [
+            _slot("A", 1, hp=1000, atk=500),
+            _slot("B", 2, hp=0, atk=0),
+        ]
+        text = format_top_players(slots)
+        assert "A" in text
+        assert "B" not in text
 
 
 class TestFormatMomentum:
