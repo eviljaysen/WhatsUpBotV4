@@ -194,56 +194,169 @@ def get_momentum(snapshots: list) -> dict:
 
 
 # ── Formatting ───────────────────────────────────────────────────────────────
-def format_building_summary(analysis: dict) -> str:
-    """Format building analysis as a compact table.
+def format_building_summary(analysis: dict, alert_thresholds: dict = None) -> str:
+    """Format building analysis as a compact table with averages and alerts.
 
     Args:
         analysis: dict from analyze_buildings()
+        alert_thresholds: optional dict with building_strength_min key
 
     Returns:
-        Formatted string table.
+        Formatted string table with per-slot averages and alert column.
     """
     buildings = analysis["buildings"]
     if not buildings:
         return ""
 
+    strength_min = 0
+    if alert_thresholds:
+        strength_min = alert_thresholds.get("building_strength_min", 0)
+
     lines = []
-    lines.append(f"{'BLDG':<6} {'HP':>8} {'ATK':>8} {'STR':>8} {'SLOTS':>5}")
-    lines.append("-" * 39)
+    lines.append(f"{'BLDG':<5} {'AVG STR':>8} {'AVG HP':>8} {'AVG ATK':>8} {'SLOTS':>5}  ALERT")
+    lines.append("-" * 50)
 
     for bnum in sorted(buildings.keys()):
         b = buildings[bnum]
-        weak_flag = " ⚠" if bnum == analysis["weakest"] else ""
+        n = max(b["slot_count"], 1)
+        avg_hp  = b["total_hp"] // n
+        avg_atk = b["total_atk"] // n
+        avg_str = b["total_str"] // n
+        alert = ""
+        if bnum == analysis["weakest"]:
+            alert = "⚠ WEAK"
+        if strength_min and b["total_str"] < strength_min:
+            alert = "🔴 LOW"
         lines.append(
-            f"B{bnum}{weak_flag:<5} "
-            f"{_fmt_stat(b['total_hp']):>8} "
-            f"{_fmt_stat(b['total_atk']):>8} "
-            f"{_fmt_stat(b['total_str']):>8} "
-            f"{b['slot_count']:>5}"
+            f"B{bnum:<4} "
+            f"{_fmt_stat(avg_str):>8} "
+            f"{_fmt_stat(avg_hp):>8} "
+            f"{_fmt_stat(avg_atk):>8} "
+            f"{b['slot_count']:>5}  {alert}"
         )
 
     if analysis["empty"]:
         for bnum in analysis["empty"]:
-            lines.append(f"B{bnum}    {'—':>8} {'—':>8} {'—':>8}     0")
+            lines.append(f"B{bnum:<4} {'—':>8} {'—':>8} {'—':>8}     0  🔴 EMPTY")
 
     return "\n".join(lines)
 
 
-def format_recommendations(recommendations: list) -> str:
-    """Format placement recommendations.
-
-    Args:
-        recommendations: list of (player, building, reason) tuples
+def _get_history_stats() -> dict:
+    """Load previous player stats from build_history/ for delta comparison.
 
     Returns:
-        Formatted string.
+        {player_name: total_str, ...} from build_history/ screenshots.
     """
-    if not recommendations:
+    from bot.config import BUILD_HISTORY_DIR
+    from bot.ocr import ocr_build_stats
+    import os
+
+    if not os.path.isdir(BUILD_HISTORY_DIR):
+        return {}
+
+    # Use the same cache pattern as get_player_stats_from_builds
+    cache_path = os.path.join(BUILD_HISTORY_DIR, "_stats_cache.json")
+    from bot.report import _load_stats_cache, _save_stats_cache
+    cache = _load_stats_cache(cache_path)
+    dirty = False
+
+    result = {}
+    for player_dir in os.listdir(BUILD_HISTORY_DIR):
+        pdir = os.path.join(BUILD_HISTORY_DIR, player_dir)
+        if not os.path.isdir(pdir):
+            continue
+        total = 0
+        for i in range(1, 4):
+            img_path = os.path.join(pdir, f"{player_dir}_{i}.PNG")
+            if os.path.isfile(img_path):
+                mtime = str(os.path.getmtime(img_path))
+                cache_key = f"{player_dir}_{i}"
+                cached = cache.get(cache_key)
+                if cached and cached.get("mtime") == mtime:
+                    hp, atk = cached["hp"], cached["atk"]
+                else:
+                    hp, atk = ocr_build_stats(img_path)
+                    cache[cache_key] = {"mtime": mtime, "hp": hp, "atk": atk}
+                    dirty = True
+                total += hp + atk
+        if total > 0:
+            result[player_dir] = total
+
+    if dirty:
+        _save_stats_cache(cache_path, cache)
+
+    return result
+
+
+def format_top_players(slot_results: list, limit: int = 10) -> str:
+    """Format top players ranked by average strength with change deltas.
+
+    Aggregates HP/ATK across all of a player's slots and computes
+    per-car averages. Compares against build_history/ to show strength
+    changes since last scan.
+
+    Args:
+        slot_results: list of SlotData from a scan
+        limit: max players to show (default 10)
+
+    Returns:
+        Formatted string table, or empty string if no data.
+    """
+    if not slot_results:
         return ""
 
-    lines = ["RECOMMENDATIONS"]
-    for player, bnum, reason in recommendations:
-        lines.append(f"  {player} → B{bnum} ({reason})")
+    # Aggregate per player
+    players = {}
+    for s in slot_results:
+        p = players.setdefault(s.player, {
+            "total_hp": 0, "total_atk": 0, "total_str": 0, "count": 0,
+        })
+        p["total_hp"] += s.hp
+        p["total_atk"] += s.atk
+        p["total_str"] += s.hp + s.atk
+        p["count"] += 1
+
+    # Only include players with at least one car that has stats
+    ranked = [(name, d) for name, d in players.items() if d["total_str"] > 0]
+    ranked.sort(key=lambda x: x[1]["total_str"] // max(x[1]["count"], 1),
+                reverse=True)
+    ranked = ranked[:limit]
+
+    if not ranked:
+        return ""
+
+    # Load previous stats for delta column
+    try:
+        history = _get_history_stats()
+    except Exception:
+        history = {}
+
+    name_w = max(12, max(len(r[0]) for r in ranked) + 1)
+    lines = []
+    lines.append(f"{'#':<3} {'PLAYER':<{name_w}} {'AVG STR':>8} {'AVG HP':>8} {'AVG ATK':>8} CARS {'CHG':>6}")
+    lines.append("-" * (40 + name_w))
+
+    for i, (name, d) in enumerate(ranked, 1):
+        n = max(d["count"], 1)
+        # Compute delta vs history
+        delta_str = ""
+        prev = history.get(name)
+        if prev is not None:
+            diff = d["total_str"] - prev
+            if diff > 0:
+                delta_str = f"+{_fmt_stat(diff)}"
+            elif diff < 0:
+                delta_str = f"-{_fmt_stat(abs(diff))}"
+        lines.append(
+            f"{i:<3} {name:<{name_w}} "
+            f"{_fmt_stat(d['total_str'] // n):>8} "
+            f"{_fmt_stat(d['total_hp'] // n):>8} "
+            f"{_fmt_stat(d['total_atk'] // n):>8} "
+            f"{d['count']}    "
+            f"{delta_str:>6}"
+        )
+
     return "\n".join(lines)
 
 

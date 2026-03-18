@@ -19,13 +19,13 @@ import re
 import shutil
 import time
 import threading
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import numpy as np
 import pyautogui
 
 from bot.config import (
-    IMAGES_DIR, BUILDS_DIR, SCANS_DIR,
+    IMAGES_DIR, BUILDS_DIR, BUILD_HISTORY_DIR, SCANS_DIR,
     player_timezones, _KNOWN_NAMES,
     BOT_SLOTS_TOTAL, CFG,
     reload_config
@@ -240,23 +240,38 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         ctx.logo_cache[0] = None   # reset per-building card-position cache
 
         def _on_slot(slot, _bnum=bnum):
-            """Process one slot. Returns player name for wrap detection."""
+            """Process one slot. Returns player name for wrap detection.
+
+            ALWAYS captures the slot (screenshot + DEF/ATK status) even
+            when name OCR fails. Unknown names are recorded as the raw
+            OCR result so they still appear in the report.
+            """
             card   = find_player_card(win, ctx)
             player = ocr_player_name(card, ctx)
-            if not player or player not in player_timezones:
+
+            # Determine if this is a known player
+            known = bool(player) and player in player_timezones
+
+            if not known:
                 if player:
-                    print(f"[B{_bnum}] Unknown player '{player}' — skipping")
-                return player or None
+                    print(f"[B{_bnum}] Unknown player '{player}' — "
+                          f"capturing slot anyway")
+                else:
+                    print(f"[B{_bnum}] OCR returned empty — "
+                          f"capturing slot as UNKNOWN")
+                    player = f"UNKNOWN_{_bnum}_{slot}"
+
             count = ctx.players_dict.get(player, 0)
-            if count >= 3:
+            if known and count >= 3:
                 return player
 
             count += 1
             ctx.players_dict[player] = count
-            ctx.status(f"  B{_bnum} — {player} ({count}/3)")
+            ctx.status(f"  B{_bnum} — {player} ({count}/3)"
+                       + ("" if known else " [?]"))
 
-            # Auto-collect training sample for ML name model
-            if ctx.last_name_shot[0] is not None:
+            # Auto-collect training sample for ML name model (known only)
+            if known and ctx.last_name_shot[0] is not None:
                 from bot.name_model import save_training_sample
                 save_training_sample(player, ctx.last_name_shot[0])
 
@@ -264,7 +279,14 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                           "GUMSO" if player == "|-_-J" else player)
             pdir = os.path.join(BUILDS_DIR, safe)
             if count == 1:
-                shutil.rmtree(pdir, ignore_errors=True)
+                # Move old builds to history (merge, not replace whole folder)
+                if os.path.isdir(pdir):
+                    hist = os.path.join(BUILD_HISTORY_DIR, safe)
+                    os.makedirs(hist, exist_ok=True)
+                    for fname in os.listdir(pdir):
+                        shutil.move(os.path.join(pdir, fname),
+                                    os.path.join(hist, fname))
+                    shutil.rmtree(pdir, ignore_errors=True)
             os.makedirs(pdir, exist_ok=True)
             scr_path = os.path.join(pdir, f"{safe}_{count}.PNG")
             pyautogui.screenshot(region=card.build_region).save(scr_path)
@@ -311,12 +333,12 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
 
         with ThreadPoolExecutor(max_workers=6) as ex:
             futures = {ex.submit(_ocr_slot, s): s for s in slots_to_ocr}
-            for fut in futures:
+            for fut in as_completed(futures, timeout=60):
                 slot = futures[fut]
                 try:
-                    hp, atk = fut.result(timeout=30)
+                    hp, atk = fut.result()
                 except Exception as e:
-                    print(f"[stats] build OCR timeout/error for {slot.player}: {e}")
+                    print(f"[stats] build OCR error for {slot.player}: {e}")
                     hp, atk = 0, 0
                 slot.hp = hp
                 slot.atk = atk
@@ -332,14 +354,16 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
     time.sleep(0.5)   # let map screen settle after building exits
 
     timer_raw = ''
+    h = m = 0
     shot = timer_up = None
+    from PIL import Image as Img
+
     deadline = time.time() + 6.0
     while not _esc() and time.time() < deadline:
         shot     = pyautogui.screenshot(region=win.hud("timer"))
         timer_bw = convert_to_bw(shot)
         timer_bw = timer_bw.filter(ImageFilter.MinFilter(3))
-        from PIL import Image as Img
-        timer_up  = timer_bw.resize(
+        timer_up = timer_bw.resize(
             (timer_bw.width * 3, timer_bw.height * 3), Img.NEAREST)
         # Gap-based edge trim: crop to actual text content bounds
         arr = np.asarray(timer_up).copy()
@@ -351,11 +375,32 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             right = min(arr.shape[1], nz[-1] + 1 + pad_cols)
             arr = arr[:, left:right]
         padded = Img.fromarray(np.pad(arr, 20, constant_values=255))
-        raw = _ocr(padded, config=_TIMER_OCR).strip()
-        print(f"[timer] attempt raw={raw!r}")
-        if any(c.isdigit() for c in raw):
-            timer_raw = raw.strip("m\n ")
+
+        # Strategy 1: CNN model (handles 'h' and 'm' natively)
+        try:
+            from bot.ocr_model import is_model_ready, predict_text
+            if is_model_ready():
+                ml_text, ml_conf = predict_text(padded, field="timer")
+                if ml_text and ml_conf >= 0.7 and any(c.isdigit() for c in ml_text):
+                    print(f"[timer] CNN → '{ml_text}' (conf={ml_conf:.2f})")
+                    timer_raw = ml_text
+                    break
+        except Exception as e:
+            print(f"[timer] CNN error: {e}")
+
+        # Strategy 2: Tesseract with multiple configs
+        for cfg_str in [_TIMER_OCR,
+                        "--oem 1 --psm 8 -c tessedit_char_whitelist=0123456789hm ",
+                        "--oem 1 --psm 7 -c tessedit_char_whitelist=0123456789",
+                        "--oem 1 --psm 13 -c tessedit_char_whitelist=0123456789hm "]:
+            raw = _ocr(padded, config=cfg_str).strip()
+            if any(c.isdigit() for c in raw):
+                timer_raw = raw.strip("m\n ")
+                print(f"[timer] Tesseract → '{timer_raw}'")
+                break
+        if timer_raw:
             break
+
         time.sleep(0.2)
 
     if shot:
@@ -391,6 +436,16 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         except Exception:
             pass
 
+    # Pre-load OCR CNN model on the main scan thread before spawning workers.
+    # Without this, 5 threads all try `import torch` concurrently on first use,
+    # which can stall >15s and hit the timeout.
+    try:
+        from bot.ocr_model import is_model_ready, _load_model
+        if is_model_ready():
+            _load_model()
+    except Exception:
+        pass
+
     with ThreadPoolExecutor(max_workers=5) as ex:
         f_max = ex.submit(locate_number,
                           win.hud("max_points"), convert_white_text,
@@ -406,11 +461,11 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         f_tb  = ex.submit(locate_number, win.hud("team_bonus"),
                           convert_badge_text,
                           _BONUS_OCR, "team_bonus", 3, 0)
-        max_points  = f_max.result()
-        opp_points  = f_op.result()
-        opp_bonus   = f_ob.result()
-        team_points = f_tp.result()
-        team_bonus  = f_tb.result()
+        max_points  = f_max.result(timeout=15)
+        opp_points  = f_op.result(timeout=15)
+        opp_bonus   = f_ob.result(timeout=15)
+        team_points = f_tp.result(timeout=15)
+        team_bonus  = f_tb.result(timeout=15)
 
     max_points = (max_points + 500) // 1000 * 1000
 
@@ -448,53 +503,88 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
     # Evaluate and fire alerts (v5.0)
     _evaluate_alerts(ctx, meta)
 
-    # Auto-train all models after scan
+    # Auto-train in background thread — don't block scan completion
     if CFG.get("auto_train", True):
-        _auto_train_all(ctx)
+        threading.Thread(target=_auto_train_all, args=(ctx,),
+                         daemon=True).start()
 
     return report_str, meta
 
 
-def _auto_train_all(ctx):
-    """Train all ML models using data collected during scans."""
-
-    # 1. Name CNN classifier
+def _classes_unchanged(classes_path: str, current_set: set) -> bool:
+    """Return True if the saved class list matches current_set exactly."""
+    if not os.path.isfile(classes_path):
+        return False
     try:
-        from bot.name_model import get_training_stats, train_model
-        stats = get_training_stats()
-        total = sum(stats.values())
-        players_with_enough = sum(1 for c in stats.values() if c >= 3)
-        if players_with_enough >= 2 and total >= 10:
-            ctx.status("Training name model…")
-            result = train_model(min_samples=3)
-            if "error" not in result:
-                ctx.status(f"Name model: {result['accuracy']:.0%} acc, "
-                           f"{result['num_classes']} players")
-            else:
-                print(f"[train] Name model skipped: {result['error']}")
+        import json
+        with open(classes_path, "r", encoding="utf-8") as f:
+            return set(json.load(f)) == current_set
+    except Exception:
+        return False
+
+
+def _auto_train_all(ctx):
+    """Train all ML models using data collected during scans.
+
+    Runs in a background thread. Skips training if no new samples
+    have been collected since the last run.
+    """
+
+    # 1. Name CNN classifier — only retrain when new data exists
+    try:
+        from bot.name_model import (
+            needs_training, train_model, get_training_stats,
+            is_model_ready, CLASSES_PATH,
+        )
+        if not needs_training():
+            print("[train] Name model: no new samples — skipping")
         else:
-            print(f"[train] Name model: need more data "
-                  f"({total} samples, {players_with_enough} players with >=5)")
+            stats = get_training_stats()
+            total = sum(stats.values())
+            players_with_enough = sum(1 for c in stats.values() if c >= 3)
+            if players_with_enough >= 2 and total >= 10:
+                new_players = {p for p, c in stats.items() if c >= 3}
+                if is_model_ready() and _classes_unchanged(CLASSES_PATH, new_players):
+                    print("[train] Name model: same player set, "
+                          "extra samples — skipping retrain")
+                else:
+                    ctx.status("Training name model…")
+                    result = train_model(min_samples=3)
+                    if "error" not in result:
+                        ctx.status(f"Name model: {result['accuracy']:.0%} acc, "
+                                   f"{result['num_classes']} players")
+                    else:
+                        print(f"[train] Name model skipped: {result['error']}")
+            else:
+                print(f"[train] Name model: need more data "
+                      f"({total} samples, {players_with_enough} players with >=3)")
     except Exception as e:
         print(f"[train] Name model error: {e}")
 
-    # 2. OCR training data summary
+    # 2. OCR character CNN — train when new samples collected
     try:
-        ocr_train_dir = os.path.join(
-            os.path.dirname(IMAGES_DIR), "training_data", "ocr")
-        if os.path.isdir(ocr_train_dir):
-            fields = {}
-            for field in os.listdir(ocr_train_dir):
-                fdir = os.path.join(ocr_train_dir, field)
-                if os.path.isdir(fdir):
-                    count = len([f for f in os.listdir(fdir) if f.endswith("_raw.png")])
-                    if count > 0:
-                        fields[field] = count
-            if fields:
-                summary = ", ".join(f"{k}={v}" for k, v in sorted(fields.items()))
-                print(f"[train] OCR samples collected: {summary}")
+        from bot.ocr_model import (
+            needs_training as ocr_needs,
+            train_model as ocr_train,
+            get_training_stats as ocr_stats,
+        )
+        if not ocr_needs():
+            print("[train] OCR char model: no new samples — skipping")
+        else:
+            stats = ocr_stats()
+            if stats["total_samples"] >= 20:
+                ctx.status("Training OCR character model…")
+                result = ocr_train()
+                if "error" not in result:
+                    ctx.status(f"OCR model: {result['accuracy']:.0%} acc, "
+                               f"{result['num_classes']} classes")
+                else:
+                    print(f"[train] OCR char model skipped: {result['error']}")
+            else:
+                print(f"[train] OCR char model: need more data "
+                      f"({stats['total_samples']} samples)")
     except Exception as e:
-        print(f"[train] OCR stats error: {e}")
+        print(f"[train] OCR char model error: {e}")
 
 
 def _save_scan_to_db(ctx, meta: dict):

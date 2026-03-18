@@ -20,7 +20,7 @@
 - `_CJK_NAMES: bool` — whether CJK OCR path is active
 - `_TMPL_THRESHOLD: float` — Jaccard IoU threshold for name template matching
 - `_ENEMY_BLDGS_CFG: dict` — building number → [x, y] baseline coords
-- `BASE_DIR`, `IMAGES_DIR`, `BUILDS_DIR`, `SCANS_DIR`, `NAME_TMPL_DIR` — paths
+- `BASE_DIR`, `IMAGES_DIR`, `BUILDS_DIR`, `BUILD_HISTORY_DIR`, `SCANS_DIR`, `NAME_TMPL_DIR`, `DB_PATH` — paths
 - `save_ocr_correction(raw: str, corrected: str)` — persist correction to config.json
 
 **Key rule:** All other modules import constants FROM config. Config never imports from bot/.
@@ -128,6 +128,68 @@ Each `ScanContext` gets a fresh `NameMatcher` initialized from disk at scan star
 
 ---
 
+## bot/name_model.py (v5.0)
+
+**Purpose:** CNN classifier for player name recognition. Trained on name-region screenshots
+auto-collected during scans. Much faster and more accurate than OCR once trained.
+
+**Exports:**
+- `save_training_sample(player, shot)` — save labeled name crop (cap: 50 per player)
+- `predict_name(shot) -> (player, confidence)` — classify a name screenshot
+- `train_model(epochs=30, min_samples=3) -> dict` — train CNN, returns accuracy/num_classes
+- `get_training_stats() -> dict` — sample counts per player
+- `is_model_ready() -> bool` — True if trained model exists on disk
+- `needs_training() -> bool` — True if new samples since last training
+- `CLASSES_PATH` — path to `name_classes.json` (used by `_classes_unchanged()` in scan.py)
+
+**Architecture:** Lightweight CNN (~25 classes, 160×40 grayscale input). PyTorch imported
+lazily inside functions to avoid startup cost. Model state protected by `_model_lock`
+threading lock for concurrent scan + train threads.
+
+**Training optimizations:**
+- Early stopping with patience=10 — avoids wasted epochs when loss plateaus
+- `ReduceLROnPlateau` scheduler — halves LR after 5 epochs without improvement
+- `_last_train_count` updated inside `_model_lock` to prevent data races
+
+**Training data:** `training_data/names/{PLAYER}/{timestamp}.png`
+
+---
+
+## bot/ocr_model.py (v5.0)
+
+**Purpose:** Character-level CNN for game OCR. Segments conv images into individual
+character crops, classifies each via a small CNN (~20K params), joins into text.
+
+**Exports:**
+- `segment_characters(img) -> list` — vertical projection segmentation into char crops
+- `predict_text(img, field="") -> (text, confidence)` — segment + classify + join
+- `train_model(epochs=0) -> dict` — train CNN on all OCR field training data
+- `get_training_stats() -> dict` — char counts + sample counts per field
+- `needs_training() -> bool` — True if new samples since last training
+- `is_model_ready() -> bool` — True if trained model exists on disk
+
+**Training data:** `training_data/ocr/{field}/{timestamp}_{value}_conv.png`
+Labels extracted from filenames. Character crops segmented via vertical projection profiling.
+
+**Training optimizations:** Same as name_model — early stopping (patience=10),
+`ReduceLROnPlateau` scheduler, `_last_train_count` inside `_model_lock`.
+
+---
+
+## bot/easyocr_engine.py (v4.1)
+
+**Purpose:** Lazy-loaded EasyOCR wrapper. Only imported on first use (~2GB with PyTorch).
+Degrades gracefully when easyocr is not installed — returns empty results.
+
+**Exports:**
+- `is_available() -> bool` — check if easyocr can be imported
+- `read_ascii(image) -> str` — ASCII-only reader ('en')
+- `read_cjk(image) -> str` — CJK reader ('ja' + 'en')
+
+**Two cached reader instances:** `_reader_ascii` and `_reader_cjk`, created on first use.
+
+---
+
 ## bot/navigation.py
 
 **Purpose:** All mouse/keyboard interaction with the game. Knows the game's navigation flow.
@@ -143,6 +205,13 @@ No OCR, no image processing — pure click/wait/detect.
 - `_enter_building(win, ctx, pos) -> bool` — click building icon, return False if empty
 - `_advance_slot(win, build_region) -> bool` — click Next, wait for card change
 - `_cycle_slots(win, ctx, on_slot, advance_fn, build_region, check_lobby, max_slots)` — unified slot cycling
+
+**Key constants:**
+
+- `PIXEL_DIFF_THRESHOLD = 12` — mean pixel diff below which = same frame (wrap)
+- `SLOT_SETTLE_TIME = 0.15` — seconds to wait for new slot to render
+- `ADVANCE_POLL_INTERVAL = 0.04` — 40ms poll interval for frame change detection
+- Wrap confirmation: second screenshot after 50ms delay prevents false positives
 
 **Navigation flow (team and enemy use same flow):**
 ```
@@ -164,14 +233,21 @@ map screen
 This is the only module that knows the full scan flow.
 
 **Exports:**
+- `class CardInfo` — player card geometry (logo_box, name_region, build_region, paw_end)
 - `@dataclasses.dataclass SlotData` — data from one player slot
 - `@dataclasses.dataclass ScanContext` — all mutable scan state
+- `find_player_card(win, ctx) -> CardInfo` — locate player card via logo template
 - `capture_slot_stats(win, ctx, build_path) -> (hp, atk, defending)` — OCR HP/ATK/status
 - `run_team_scan(status_cb, correction_cb, avail_only) -> (report_str, meta_dict)`
 - `run_enemy_scan(building_num, status_cb) -> str`
+- `_auto_train_all(ctx)` — train name_model + ocr_model in background thread
+- `_classes_unchanged(classes_path, current_set) -> bool` — check if saved classes match current set
+- `_save_scan_to_db(ctx, meta)` — persist scan + war tracking to SQLite
+- `_evaluate_alerts(ctx, meta)` — evaluate alert conditions, fire to Discord
 
 **run_team_scan flow:**
-```
+
+```text
 detect_window → refresh_templates → create ScanContext
   for bnum in 1..6:
     enter_building → cycle_slots → [on_slot: OCR name + screenshot + DEF/ATK status]
@@ -182,6 +258,7 @@ detect_window → refresh_templates → create ScanContext
   build_report(ctx) → return (report, meta) [includes analysis sections]
   save to SQLite + war tracking + score snapshot
   evaluate alerts → fire to Discord if thresholds met
+  auto-train name_model + ocr_model in background thread
 ```
 
 **on_slot responsibilities:**
@@ -215,14 +292,14 @@ saved build images via OCR.
 
 ---
 
-## bot/history.py (v5.0)
+## bot/history.py (v4.0 + v5.0)
 
 **Purpose:** Persist scan results, war tracking, score trajectories, and opponent
 scouting data to SQLite.
 
-**DB Tables:** `scans`, `slots`, `player_stats`, `wars`, `score_snapshots`, `opponent_players`
+**DB Tables:** `scans`, `slots`, `player_stats`, `wars`, `score_snapshots`, `opponent_players` (+ indices)
 
-**Exports (v4.0):**
+**Exports (core — v4.0):**
 - `init_db()` — create tables if not exist
 - `save_scan(meta, slot_results) -> int` — returns scan_id
 - `save_player_stats(scan_id, timestamp, player, slots)` — aggregated player strength
@@ -233,7 +310,8 @@ scouting data to SQLite.
 - `get_opponent_history(opponent, limit) -> list`
 
 **Exports (v5.0 — war tracking):**
-- `get_or_create_war(opponent) -> int` — find ongoing war or create new
+
+- `get_or_create_war(opponent) -> int` — find ongoing war or create new; **auto-closes stale wars**
 - `save_score_snapshot(scan_id, war_id, meta)` — point-in-time score
 - `get_score_trajectory(war_id) -> list` — all snapshots for a war (ASC)
 - `close_war(war_id, result, our_final, opp_final)` — mark war complete
@@ -253,8 +331,8 @@ scouting data to SQLite.
 - `recommend_placements(slot_results, player_slots_placed, player_stats) -> list`
   - Returns `[(player, building, reason), ...]` — strongest unplaced → weakest buildings
 - `get_momentum(snapshots) -> dict` — velocity, acceleration, trend per team
-- `format_building_summary(analysis) -> str` — compact table
-- `format_recommendations(recommendations) -> str` — placement recommendations
+- `format_building_summary(analysis, alert_thresholds) -> str` — compact table with avg stats + alerts
+- `format_top_players(slot_results, limit=10) -> str` — ranked player table by avg strength
 - `format_momentum(momentum) -> str` — one-line "Team +N/min [trend] | Opp +N/min [trend]"
 
 ---
@@ -318,6 +396,7 @@ class ScanContext:
     correction_cb:     callable         # fn(raw) → triggers dialog on main thread
     slot_results:      list             # [SlotData] — accumulates during scan
     players_dict:      dict             # player → slot count placed this scan
+    ml_model_ready:    object = None    # None = unchecked, bool after first check
 ```
 
 ---

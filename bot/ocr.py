@@ -41,7 +41,7 @@ _NAME_OCR      = r"--oem 1 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQR
 _NAME_OCR_PSM8 = r"--oem 1 --psm 8 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
 _NAME_OCR_CJK  = r"--oem 1 --psm 7 -l chi_sim+chi_tra+jpn+kor+eng"
 _NUMBERS_OCR   = r"--oem 1 --psm 7 -c tessedit_char_whitelist=0123456789"
-_TIMER_OCR     = r"--oem 1 --psm 7 -c tessedit_char_whitelist=0123456789"
+_TIMER_OCR     = r"--oem 1 --psm 7 -c tessedit_char_whitelist=0123456789hm "
 
 # Template thumbnail dimensions
 _TMPL_W, _TMPL_H = 160, 40
@@ -90,19 +90,39 @@ def locate_number(region, converter=None, ocr_config=_NUMBERS_OCR,
         upscale, minfilter=minfilter)
     if debug_name:
         processed.save(os.path.join(IMAGES_DIR, f"debug_{debug_name}_conv.PNG"))
-    raw_text = _ocr(processed, config=ocr_config).strip()
-    result = _digits(raw_text)
-    if debug_name:
-        print(f"[ocr] {debug_name}: raw='{raw_text}' → {result}")
-    # Retry bonus with PSM 8 (single word) if PSM 7 failed
-    if result == 0 and debug_name and "bonus" in debug_name:
-        alt_config = ocr_config.replace("--psm 7", "--psm 8")
-        alt_text = _ocr(processed, config=alt_config).strip()
-        alt_result = _digits(alt_text)
-        print(f"[ocr] {debug_name} retry PSM 8: raw='{alt_text}' → {alt_result}")
-        if alt_result > 0:
-            result = alt_result
-    # EasyOCR fallback — only when Tesseract returned nothing useful
+
+    result = 0
+
+    # CNN model — try first (faster + more accurate on game font)
+    try:
+        from bot.ocr_model import is_model_ready, predict_text
+        if is_model_ready():
+            ml_text, ml_conf = predict_text(processed, field=debug_name or "")
+            if ml_text and ml_conf >= 0.8:
+                ml_val = _digits(ml_text)
+                if ml_val > 0:
+                    print(f"[ocr] {debug_name}: CNN → '{ml_text}' "
+                          f"(conf={ml_conf:.2f}) = {ml_val}")
+                    result = ml_val
+    except Exception as e:
+        print(f"[ocr] CNN error: {e}")
+
+    # Tesseract fallback
+    if result == 0:
+        raw_text = _ocr(processed, config=ocr_config).strip()
+        result = _digits(raw_text)
+        if debug_name:
+            print(f"[ocr] {debug_name}: Tesseract raw='{raw_text}' → {result}")
+        # Retry bonus with PSM 8 (single word) if PSM 7 failed
+        if result == 0 and debug_name and "bonus" in debug_name:
+            alt_config = ocr_config.replace("--psm 7", "--psm 8")
+            alt_text = _ocr(processed, config=alt_config).strip()
+            alt_result = _digits(alt_text)
+            print(f"[ocr] {debug_name} retry PSM 8: raw='{alt_text}' → {alt_result}")
+            if alt_result > 0:
+                result = alt_result
+
+    # EasyOCR fallback — only when nothing else worked
     if result == 0 and debug_name:
         try:
             from bot.easyocr_engine import read_number
@@ -114,6 +134,7 @@ def locate_number(region, converter=None, ocr_config=_NUMBERS_OCR,
                 print(f"[ocr] {debug_name} EasyOCR low-conf: {easy_val} (conf={easy_conf:.2f}) — skipped")
         except Exception as e:
             print(f"[ocr] {debug_name} EasyOCR unavailable: {e}")
+
     # Auto-save training sample when we got a valid result
     if result > 0 and debug_name:
         _save_ocr_training_sample(debug_name, shot, processed, result)
@@ -390,32 +411,30 @@ def ocr_player_name(card, ctx) -> str:
         if matches:
             break
 
-    # CJK fallback
-    if not matches and CFG.get("cjk_names", False):
+    # CJK fallback — use Otsu binarization on the raw shot (not the
+    # ASCII-processed image, which strips CJK characters).
+    # Auto-trigger when ASCII OCR returned short/empty results (len < 3),
+    # even if cjk_names is False — catches CJK names that ASCII can't parse.
+    ascii_too_short = len(raw.strip()) < 3
+    if not matches and (CFG.get("cjk_names", False) or ascii_too_short):
         raw_cjk = ""
-        try:
-            raw_cjk = _ocr(proc, config=_NAME_OCR_CJK).strip()
-        except Exception:
-            pass
-
-        if not raw_cjk:
-            gray_arr = np.asarray(shot.convert('L'), dtype=np.uint8)
-            _, bw_arr = cv2.threshold(gray_arr, 0, 255,
-                                      cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-            bw_cjk   = Img.fromarray(bw_arr)
-            bw_cjk   = bw_cjk.resize((bw_cjk.width * 3, bw_cjk.height * 3), Img.NEAREST)
-            bw_cjk   = bw_cjk.filter(ImageFilter.MinFilter(3))
-            arr_cjk  = np.pad(np.asarray(bw_cjk), 10, constant_values=255)
-            proc_cjk = Img.fromarray(arr_cjk)
-            proc_cjk.save(os.path.join(IMAGES_DIR, "debug_name_cjk.PNG"))
-            for _psm in ("--psm 7", "--psm 8"):
-                try:
-                    raw_cjk = _ocr(proc_cjk,
-                                   config=_NAME_OCR_CJK.replace("--psm 7", _psm)).strip()
-                except Exception as e:
-                    print(f"[name] CJK OCR error: {e}")
-                if raw_cjk:
-                    break
+        gray_arr = np.asarray(shot.convert('L'), dtype=np.uint8)
+        _, bw_arr = cv2.threshold(gray_arr, 0, 255,
+                                  cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        bw_cjk   = Img.fromarray(bw_arr)
+        bw_cjk   = bw_cjk.resize((bw_cjk.width * 3, bw_cjk.height * 3), Img.NEAREST)
+        bw_cjk   = bw_cjk.filter(ImageFilter.MinFilter(3))
+        arr_cjk  = np.pad(np.asarray(bw_cjk), 10, constant_values=255)
+        proc_cjk = Img.fromarray(arr_cjk)
+        proc_cjk.save(os.path.join(IMAGES_DIR, "debug_name_cjk.PNG"))
+        for _psm in ("--psm 7", "--psm 8"):
+            try:
+                raw_cjk = _ocr(proc_cjk,
+                               config=_NAME_OCR_CJK.replace("--psm 7", _psm)).strip()
+            except Exception as e:
+                print(f"[name] CJK OCR error: {e}")
+            if raw_cjk:
+                break
 
         print(f"[name] CJK raw={raw_cjk!r}")
         player_cjk  = _resolve_cjk(raw_cjk) if raw_cjk.strip() else ''
@@ -454,6 +473,15 @@ def ocr_player_name(card, ctx) -> str:
             m = _name_match(corrected)
             if m:
                 raw, matches = corrected, m
+
+    # Last-resort fuzzy match with lower cutoff (0.60) — catches partial OCR
+    # results like "ROBINHOO" → "ROBINHOOD" or "MUSHI" → "MUSCHI"
+    if not matches and len(raw.strip()) >= 3:
+        m = difflib.get_close_matches(
+            raw.upper(), list(_NAME_UPPER_MAP), n=1, cutoff=0.60)
+        if m:
+            print(f"[name] low-cutoff fuzzy match: {raw!r} → {m[0]!r}")
+            matches = m
 
     if matches:
         player = _NAME_UPPER_MAP[matches[0]]

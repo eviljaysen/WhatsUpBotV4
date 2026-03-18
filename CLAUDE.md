@@ -30,6 +30,7 @@ python -m pytest tests/ -v
 
 **Config:** `config.json` — players, timezones, OCR corrections, building coords.
 **Templates:** `images/` — required PNG templates for template matching.
+**Builds:** `builds/` — current scan screenshots. Old screenshots moved to `build_history/` (per-file merge).
 **Venv:** Always use the project venv. Never use system Python for this project.
 
 ---
@@ -37,25 +38,29 @@ python -m pytest tests/ -v
 ## Architecture
 
 ```
-WhatsUpBot.py          ← tkinter App UI + entry point ONLY
+WhatsUpBot.py            ← tkinter App UI + entry point ONLY
 └── bot/
-    ├── config.py      ← all constants, config load/reload, OCR correction persistence
-    ├── window.py      ← Window class + BlueStacks window detection
-    ├── templates.py   ← Templates cache (auto-rescaling), HUD coord map
-    ├── vision.py      ← image converters, badge extraction, blob detection
-    ├── ocr.py         ← all OCR: scores, timer, player names (ASCII + CJK), NameMatcher
-    ├── navigation.py  ← mouse/keyboard nav, slot cycling, building entry/exit
-    ├── scan.py        ← ScanContext, run_team_scan, run_enemy_scan, capture_slot_stats
-    ├── report.py      ← report builder, stats table, availability list, formatters
-    ├── history.py     ← SQLite scan history + war tracking (v5.0)
-    ├── analysis.py    ← Strategic analysis: buildings, momentum, recommendations (v5.0)
-    ├── alerts.py      ← Alert evaluation + Discord firing (v5.0)
-    └── discord_post.py← Discord webhook posting (v4.0)
+    ├── config.py        ← all constants, config load/reload, OCR correction persistence
+    ├── window.py        ← Window class + BlueStacks window detection
+    ├── templates.py     ← Templates cache (auto-rescaling), HUD coord map
+    ├── vision.py        ← image converters, badge extraction, blob detection
+    ├── ocr.py           ← all OCR: scores, timer, player names (ASCII + CJK), NameMatcher
+    ├── name_model.py    ← CNN classifier for player name recognition (v5.0)
+    ├── ocr_model.py     ← Character-level CNN for game OCR (v5.0)
+    ├── easyocr_engine.py← Lazy-loaded EasyOCR wrapper (v4.1)
+    ├── navigation.py    ← mouse/keyboard nav, slot cycling, building entry/exit
+    ├── scan.py          ← ScanContext, run_team_scan, run_enemy_scan, auto-training
+    ├── report.py        ← report builder, stats table, availability list, formatters
+    ├── history.py       ← SQLite scan history + war tracking (v5.0)
+    ├── analysis.py      ← Strategic analysis: buildings, momentum, recommendations (v5.0)
+    ├── alerts.py        ← Alert evaluation + Discord firing (v5.0)
+    └── discord_post.py  ← Discord webhook posting (v4.0)
 ```
 
 **Threading model:**
 - Main thread: tkinter event loop only. Never block it.
 - Scan threads: `threading.Thread(daemon=True)` — one at a time, started by App.
+- ML training thread: `threading.Thread(daemon=True)` — kicked off after each scan via `_auto_train_all()`.
 - All tkinter mutations from threads: `root.after(0, lambda m=msg: fn(m))` — value-captured lambdas.
 
 ---
@@ -71,6 +76,11 @@ WhatsUpBot.py
          │    └── bot.config                                   │ │
          ├── bot.ocr ──────────────────────────────────────────│─┤
          │    ├── bot.vision                                   │ │
+         │    ├── bot.easyocr_engine (lazy)                    │ │
+         │    └── bot.config                                   │ │
+         ├── bot.name_model (lazy, v5.0) ──────────────────────│─┤
+         │    └── bot.config                                   │ │
+         ├── bot.ocr_model  (lazy, v5.0) ──────────────────────│─┤
          │    └── bot.config                                   │ │
          ├── bot.report ─────────────────────────────────────── │
          │    └── bot.config                                     │
@@ -86,7 +96,10 @@ WhatsUpBot.py
 ```
 
 **Rule:** No circular imports. Lower modules never import from higher ones.
-Import order: `config` → `window` → `templates` → `vision` → `ocr` → `navigation` → `analysis` → `alerts` → `scan` → `report`
+Import order: `config` → `window` → `templates` → `vision` → `easyocr_engine` → `ocr` → `name_model` → `ocr_model` → `navigation` → `analysis` → `alerts` → `scan` → `report`
+
+**Note:** `name_model`, `ocr_model`, `easyocr_engine`, `history`, and `alerts` are imported lazily
+(inside functions) from `scan.py` and `report.py` to avoid heavy startup costs (PyTorch, SQLite).
 
 ---
 
@@ -107,8 +120,10 @@ class ScanContext:
     last_name_shot:    list            # [PIL.Image | None]
     correction_event:  threading.Event
     correction_result: list            # [str | None]
+    correction_cb:     callable        # fn(raw) → triggers dialog on main thread
     slot_results:      list            # list[SlotData]
     players_dict:      dict            # player → slots placed count
+    ml_model_ready:    object = None   # None = unchecked, bool after first check
 ```
 
 ---
@@ -165,7 +180,16 @@ pos = (480, 843)                # raw baseline — won't work at non-1920 resolu
     "cjk_match_cutoff":      0.65,
     "max_enemy_slots":       14,
     "discord_webhook_url":   "",
-    "scan_interval_minutes": 0
+    "scan_interval_minutes": 0,
+    "easyocr_enabled":       true,
+    "easyocr_gpu":           false,
+    "auto_train":            true,
+    "alert_thresholds": {
+        "instant_warning_minutes": 30,
+        "building_strength_min":   5000000,
+        "score_gap_warning":       10000
+    },
+    "alert_webhook_url":     ""
 }
 ```
 
@@ -193,11 +217,15 @@ build_card.PNG → crop bottom 14% → dark-text binarize → gap detection → 
 - Results cached in `_stats_cache.json` by file modification time
 
 ### Player Name OCR (in priority order)
-1. **Template match** (IoU ≥ `tmpl_threshold`) — NameMatcher, no Tesseract call
-2. **ASCII Tesseract PSM 7** — `_NAME_OCR` config, corrections applied
-3. **ASCII Tesseract PSM 8** — single-word mode, corrections applied
-4. **CJK Tesseract** — `_NAME_OCR_CJK`, Otsu binarize, `_resolve_cjk()` cleanup
-5. **Correction dialog** — user resolves, saves to config + template
+1. **CNN classifier** — `name_model.predict_name()`, fastest path when model is trained
+2. **Template match** (IoU ≥ `tmpl_threshold`) — NameMatcher, no Tesseract call
+3. **ASCII Tesseract PSM 7** — `_NAME_OCR` config, corrections applied
+4. **ASCII Tesseract PSM 8** — single-word mode, corrections applied
+5. **CJK Tesseract** — `_NAME_OCR_CJK`, Otsu binarize, `_resolve_cjk()` cleanup
+6. **Correction dialog** — user resolves, saves to config + template
+
+On every successful name match (any method), a training sample is auto-saved via
+`name_model.save_training_sample()` for future CNN training.
 
 ### Paw Icon Blanking (IMPORTANT)
 When blanking the paw icon from the name region, use **160 (mid-gray)**, NOT 255.
@@ -270,6 +298,86 @@ to see what Tesseract receives.
 - Build OCR: all saved screenshots OCR'd in parallel via `ThreadPoolExecutor(max_workers=6)` after slot loop.
 - Build stats cached by file mtime in `_stats_cache.json` — only re-OCR'd when image changes.
 - `_advance_slot` polls a 40×40 center crop, not the full build region.
+- ML models use lazy imports (`import torch` inside functions) to avoid ~3s startup cost.
+- **Pre-load OCR model before ThreadPoolExecutor** — concurrent `import torch` across 5 workers
+  causes deadlock/stall (>15s timeout). `_load_model()` is called on the scan thread first.
+- `_auto_train_all()` runs in a background daemon thread after each scan — never blocks scan completion.
+- Training is skipped if sample count hasn't changed since last run (`_last_train_count`).
+- Name model skips retrain when class set unchanged (`_classes_unchanged()` helper).
+- ML model state (`_model`, `_classes`) protected by `_model_lock` for scan + train thread safety.
+- Early stopping (patience=10) + ReduceLROnPlateau scheduler in both ML training loops.
+
+---
+
+## ML Training Data
+
+```
+training_data/
+├── names/                  ← name-region screenshots, one dir per player
+│   ├── JAYSEN/             ← {timestamp}.png files (cap: 50 per player)
+│   ├── KOIVU/
+│   └── ...
+├── ocr/                    ← OCR training samples, one dir per field type
+│   ├── timer/              ← {timestamp}_{value}_conv.png + _raw.png
+│   ├── team_points/
+│   ├── opp_points/
+│   ├── team_bonus/
+│   ├── opp_bonus/
+│   └── max_points/
+├── name_model.pth          ← trained CNN weights (name classifier)
+├── name_classes.json       ← class index → player name mapping
+├── ocr_char_model.pth      ← trained CNN weights (character classifier)
+└── ocr_char_classes.json   ← class index → character mapping
+```
+
+**Auto-training triggers:** After each scan, `_auto_train_all()` checks if new samples
+exist since last training. Name model needs ≥2 players with ≥3 samples each (≥10 total).
+OCR model needs ≥20 total samples. Training runs in a background thread.
+
+---
+
+## Wrap Detection (navigation.py)
+
+Slot cycling ends when the view wraps back to slot 1. Three detection methods:
+
+1. **Semantic wrap** — same player name as slot 1 AND pixel diff < 12 = same car = wrap.
+   Same name alone is NOT a wrap (a player can have up to 3 cars per building).
+2. **Pixel-diff fallback** — mean abs diff of full build region vs slot 1 frame < 12.
+   Confirmed with a second screenshot after 50ms to avoid transient false positives.
+3. **advance_fn failure** — Next button not found after retry = last slot.
+
+Key constants (tuned empirically):
+
+- `PIXEL_DIFF_THRESHOLD = 12` — tight enough for different cars, loose enough for animation jitter
+- `SLOT_SETTLE_TIME = 0.15` — wait for new slot to fully render before comparison
+- Confirmation: 50ms extra wait + second screenshot before declaring wrap
+
+---
+
+## Build History (build_history/)
+
+When a scan starts a new building pass, old screenshots are moved to `build_history/{PLAYER}/`
+using **per-file merge** — each file is overwritten individually. This preserves car 2 and
+car 3 screenshots from previous scans when only car 1 is detected in the current scan.
+
+```python
+# Per-file merge (correct):
+for fname in os.listdir(pdir):
+    shutil.move(os.path.join(pdir, fname), os.path.join(hist, fname))
+
+# NOT whole-folder replace (wrong — loses unfound cars):
+shutil.rmtree(hist); shutil.move(pdir, hist)
+```
+
+---
+
+## War Tracking (history.py)
+
+- `get_or_create_war(opponent)` finds ongoing war or creates new one.
+- **Auto-close**: when a new opponent is detected, all ongoing wars are automatically closed
+  using the last score snapshot to determine win/loss/draw.
+- Score snapshots saved per scan for trajectory analysis.
+- Enemy player slots saved per war for opponent scouting.
 
 ---
 
@@ -302,6 +410,18 @@ _last_result = something               # use ScanContext instead
 # ❌ Never call win.hud() inside a slot loop
 for slot in slots:
     r = win.hud("slot_hp")             # compute once before loop
+
+# ❌ Never import torch concurrently in ThreadPoolExecutor workers
+# Pre-load on the scan thread BEFORE spawning workers:
+from bot.ocr_model import is_model_ready, _load_model
+if is_model_ready():
+    _load_model()   # ← do this BEFORE ThreadPoolExecutor
+
+# ❌ Never delete build screenshots — move to build_history/ instead
+shutil.rmtree(builds_dir)             # use per-file merge into BUILD_HISTORY_DIR
+
+# ❌ Never update _last_train_count outside _model_lock
+_last_train_count = n                  # must be inside `with _model_lock:`
 ```
 
 ---
@@ -312,7 +432,7 @@ for slot in slots:
 |---|---|---|
 | Modular bot/ package | all | ✅ v4.0 |
 | ScanContext (no global state) | scan.py | ✅ v4.0 |
-| Config hot-reload | config.py | ✅ v4.0 |
+| Config hot-reload (mtime check) | config.py | ✅ v4.0 |
 | SQLite scan history | history.py | ✅ v4.0 |
 | Discord webhook post | discord_post.py | ✅ v4.0 |
 | Auto-scan interval | WhatsUpBot.py | ✅ v4.0 |
@@ -334,6 +454,17 @@ for slot in slots:
 | EasyOCR safe imports | ocr.py | ✅ v5.0 |
 | Parallel OCR timeout | scan.py | ✅ v5.0 |
 | Correction dialog fix | WhatsUpBot.py, scan.py | ✅ v5.0 |
+| CNN name classifier | name_model.py, scan.py | ✅ v5.0 |
+| CNN OCR character model | ocr_model.py, scan.py | ✅ v5.0 |
+| Auto-training after scans | scan.py | ✅ v5.0 |
+| Training data auto-collection | name_model.py, scan.py | ✅ v5.0 |
+| Build history preservation | scan.py, config.py | ✅ v5.0 |
+| War auto-close on new opponent | history.py | ✅ v5.0 |
+| ML early stopping + LR scheduler | name_model.py, ocr_model.py | ✅ v5.0 |
+| Thread-safe model loading | name_model.py, ocr_model.py | ✅ v5.0 |
+| OCR model pre-load (deadlock fix) | scan.py | ✅ v5.0 |
+| Wrap detection confirmation | navigation.py | ✅ v5.0 |
+| Smart retrain skip | scan.py | ✅ v5.0 |
 
 ---
 
@@ -346,7 +477,9 @@ tests/
 ├── test_vision.py       # convert_to_bw, convert_dark_text, convert_badge_text
 ├── test_history.py      # SQLite history, war tracking, score snapshots, opponent roster
 ├── test_analysis.py     # building analysis, momentum, recommendations, formatting
-└── test_alerts.py       # alert evaluation, thresholds, config
+├── test_alerts.py       # alert evaluation, thresholds, config
+├── test_config.py       # config loading, mtime check, derived constants
+└── test_ocr_model.py    # character segmentation, label extraction, dataset building
 ```
 
 Key test targets (no BlueStacks needed):
@@ -354,4 +487,5 @@ Key test targets (no BlueStacks needed):
 - `parse_timer("0823")` → `(8, 23)` (no 'h')
 - `_fmt_stat(1_234_567)` → `"1.2M"`
 - `_resolve_cjk("し りぶとん")` → `"LIPTON"` (given correction in config)
+- `segment_characters(img)` → list of character crops from conv image
 - Report builder given mock `SlotData` list → expected string output

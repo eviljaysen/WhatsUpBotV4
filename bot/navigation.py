@@ -29,11 +29,11 @@ LOBBY_THROTTLE_SEC      = 0.5    # min interval between lobby-visible checks
 LOBBY_HIGH_CONFIDENCE   = 0.9    # confidence for in-loop lobby checks
 NEXT_BTN_SEARCH_MARGIN  = (60, 40)   # (half-width, half-height) around baseline
 NEXT_BTN_WHITE_THRESH   = 240    # min channel value for "white" pixel
-NEXT_BTN_MAX_ATTEMPTS   = 40     # poll attempts to find Next button
-ADVANCE_MAX_POLLS       = 50     # poll attempts for frame change after click
+NEXT_BTN_MAX_ATTEMPTS   = 60     # poll attempts to find Next button
+ADVANCE_MAX_POLLS       = 60     # poll attempts for frame change after click
 ADVANCE_POLL_INTERVAL   = 0.04   # seconds between frame-change polls
-PIXEL_DIFF_THRESHOLD    = 8      # mean pixel diff below which = same frame (wrap)
-SLOT_SETTLE_TIME        = 0.1    # seconds to wait for new slot to render
+PIXEL_DIFF_THRESHOLD    = 12     # mean pixel diff below which = same frame (wrap)
+SLOT_SETTLE_TIME        = 0.15   # seconds to wait for new slot to render
 SCREEN_TRANSITION_TIMEOUT = 8.0  # seconds max for lobby transitions
 LOGO_CACHE_MARGIN_PX    = 20     # pixels around cached logo position for fast search
 
@@ -139,11 +139,17 @@ def _advance_slot(win, build_region) -> bool:
     """Click the Next button and wait for the build card to change.
 
     Used by both team and enemy slot cycling — same Next button in both views.
-    Uses the full build region for change detection (more reliable than a crop
-    when consecutive slots have visually similar cars).
+    Polls a 40×40 center crop of the build region for change detection —
+    much cheaper than screenshotting the full region on every 40ms poll.
     Returns True if the slot advanced, False if Next button not found.
     """
-    pre = np.asarray(pyautogui.screenshot(region=build_region))
+    # Compute a small center crop for fast change detection
+    bx, by, bw, bh = build_region
+    cx = bx + (bw - 40) // 2
+    cy = by + (bh - 40) // 2
+    poll_region = (cx, cy, 40, 40)
+
+    pre = np.asarray(pyautogui.screenshot(region=poll_region))
 
     btn = None
     for attempt in range(NEXT_BTN_MAX_ATTEMPTS):
@@ -161,7 +167,7 @@ def _advance_slot(win, build_region) -> bool:
 
     for i in range(ADVANCE_MAX_POLLS):
         time.sleep(ADVANCE_POLL_INTERVAL)
-        if not np.array_equal(pre, np.asarray(pyautogui.screenshot(region=build_region))):
+        if not np.array_equal(pre, np.asarray(pyautogui.screenshot(region=poll_region))):
             return True
     print(f"[advance] Frame did not change after clicking Next at {btn}")
     return False
@@ -191,8 +197,11 @@ def _cycle_slots(win, ctx, on_slot, advance_fn, build_region,
 
     Returns total slots visited.
     """
-    first_frame  = np.asarray(pyautogui.screenshot(region=build_region))
-    first_id     = None    # identifier from slot 1 (semantic wrap detection)
+    # Capture reference frame AFTER a brief settle — the building entry
+    # animation may still be playing.
+    time.sleep(SLOT_SETTLE_TIME)
+    first_frame  = None     # re-captured after on_slot(1) for accuracy
+    first_id     = None     # identifier from slot 1 (semantic wrap detection)
     slot         = 1
     _lobby_t     = time.time()  # grace period: skip lobby check on first iteration
     exit_reason  = "max_slots"
@@ -210,6 +219,13 @@ def _cycle_slots(win, ctx, on_slot, advance_fn, build_region,
 
         slot_id = on_slot(slot)
 
+        # Capture reference frame AFTER on_slot(1) processes — this ensures
+        # the reference is the actual rendered slot 1, not a transition frame.
+        # on_slot may move the mouse/take screenshots, so re-capture cleanly.
+        if slot == 1:
+            time.sleep(0.05)
+            first_frame = np.asarray(pyautogui.screenshot(region=build_region))
+
         # Track first slot's identifier for semantic wrap detection.
         if slot == 1 and slot_id:
             first_id = slot_id
@@ -218,7 +234,7 @@ def _cycle_slots(win, ctx, on_slot, advance_fn, build_region,
         # Semantic wrap: same player name as slot 1 — confirm with pixel diff.
         # A player can have up to 3 cars in one building, so same name alone
         # is NOT a wrap. Same name + same build-card frame = same car = wrap.
-        if slot >= 2 and first_id and slot_id == first_id:
+        if slot >= 2 and first_id and slot_id == first_id and first_frame is not None:
             cur = np.asarray(pyautogui.screenshot(region=build_region))
             diff = np.mean(np.abs(
                 cur.astype(np.int32) - first_frame.astype(np.int32)))
@@ -234,9 +250,12 @@ def _cycle_slots(win, ctx, on_slot, advance_fn, build_region,
 
         advanced = advance_fn(win, build_region)
         if not advanced:
-            # Retry once after a short pause — transient Next-button failure
-            time.sleep(0.3)
-            advanced = advance_fn(win, build_region)
+            # Retry twice with increasing pauses — transient Next-button failure
+            for retry_delay in (0.3, 0.5):
+                time.sleep(retry_delay)
+                advanced = advance_fn(win, build_region)
+                if advanced:
+                    break
             if not advanced:
                 exit_reason = f"no Next button at slot {slot}"
                 print(f"[slots] Last slot: {slot} ({exit_reason})")
@@ -247,18 +266,28 @@ def _cycle_slots(win, ctx, on_slot, advance_fn, build_region,
         time.sleep(SLOT_SETTLE_TIME)
 
         # Pixel-diff fallback: frame nearly identical to slot 1 = wrap.
-        # No minimum slot count — works for any building size including
-        # single-slot buildings. Threshold 8 (mean abs diff across ~500K
-        # pixel values) is tight enough to prevent false positives between
-        # genuinely different cars.
+        # Skip if first_frame wasn't captured (shouldn't happen but be safe).
+        if first_frame is None:
+            slot += 1
+            continue
+
         cur = np.asarray(pyautogui.screenshot(region=build_region))
         diff = np.mean(np.abs(cur.astype(np.int32) - first_frame.astype(np.int32)))
         print(f"[slots] slot {slot}→{slot+1} diff={diff:.1f}")
 
         if diff < PIXEL_DIFF_THRESHOLD:
-            exit_reason = f"pixel wrap at slot {slot} (diff={diff:.1f})"
-            print(f"[slots] Wrap detected: {exit_reason}")
-            break
+            # Confirm with a second screenshot — frame already settled from
+            # the first SLOT_SETTLE_TIME, so a brief pause suffices
+            time.sleep(0.05)
+            cur2 = np.asarray(pyautogui.screenshot(region=build_region))
+            diff2 = np.mean(np.abs(
+                cur2.astype(np.int32) - first_frame.astype(np.int32)))
+            print(f"[slots] wrap confirm: diff2={diff2:.1f}")
+            if diff2 < PIXEL_DIFF_THRESHOLD:
+                exit_reason = f"pixel wrap at slot {slot} (diff={diff2:.1f})"
+                print(f"[slots] Wrap detected: {exit_reason}")
+                break
+            print(f"[slots] false wrap avoided (diff {diff:.1f}→{diff2:.1f})")
 
         slot += 1
 
