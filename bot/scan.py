@@ -375,33 +375,39 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                 from bot.name_model import save_training_sample
                 save_training_sample(player, ctx.last_name_shot[0])
 
-            safe = re.sub(r'[\\/:*?"<>|]', '',
-                          "GUMSO" if player == "|-_-J" else player)
-            pdir = os.path.join(BUILDS_DIR, safe)
-            if count == 1:
-                # Clear current scan dir (build_history updated post-scan)
-                if os.path.isdir(pdir):
-                    shutil.rmtree(pdir, ignore_errors=True)
-            os.makedirs(pdir, exist_ok=True)
-            scr_path = os.path.join(pdir, f"{safe}_{count}.PNG")
-            pyautogui.screenshot(region=card.build_region).save(scr_path)
-
-            # Defending/attacking status from live screen pixel
+            # Only save screenshots, stats, and slot data for known players
+            scr_path = ''
             defending = True
-            try:
-                px = pyautogui.screenshot(
-                    region=win.hud("slot_status_px")).getpixel((0, 0))
-                defending = px[1] >= px[0]
-            except Exception as e:
-                _log.error("B%d: Status pixel check failed: %s", _bnum, e)
+            if known:
+                safe = re.sub(r'[\\/:*?"<>|]', '',
+                              "GUMSO" if player == "|-_-J" else player)
+                pdir = os.path.join(BUILDS_DIR, safe)
+                if count == 1:
+                    # Clear current scan dir (build_history updated post-scan)
+                    if os.path.isdir(pdir):
+                        shutil.rmtree(pdir, ignore_errors=True)
+                os.makedirs(pdir, exist_ok=True)
+                scr_path = os.path.join(pdir, f"{safe}_{count}.PNG")
+                pyautogui.screenshot(region=card.build_region).save(scr_path)
 
-            ctx.slot_results.append(SlotData(
-                player=player, building=_bnum,
-                hp=hp, atk=atk, defending=defending,
-                screenshot=scr_path,
-            ))
+                # Defending/attacking status from live screen pixel
+                try:
+                    px = pyautogui.screenshot(
+                        region=win.hud("slot_status_px")).getpixel((0, 0))
+                    defending = px[1] >= px[0]
+                except Exception as e:
+                    _log.error("B%d: Status pixel check failed: %s", _bnum, e)
 
-            # Return slot info dict for wrap detection
+                ctx.slot_results.append(SlotData(
+                    player=player, building=_bnum,
+                    hp=hp, atk=atk, defending=defending,
+                    screenshot=scr_path,
+                ))
+            else:
+                _log.debug("B%d: skipping artifacts for unknown player %r",
+                           _bnum, player)
+
+            # Return slot info dict for wrap detection (always, even unknown)
             return {'name': player, 'hp': hp, 'atk': atk}
 
         def _undo_wrap(info, _bnum=bnum):
