@@ -152,11 +152,12 @@ def find_player_card(win, ctx) -> CardInfo:
         if box is not None:
             ctx.logo_cache[0] = box
             panel_right = win.x + round(win.w * 0.35)
-            name_x  = box.left
-            paw_end = box.width + max(4, round(10 * win.sx))
+            name_x  = int(box.left)
+            name_y  = int(box.top)
+            paw_end = int(box.width) + max(4, round(10 * win.sx))
             name_w  = max(10, min(panel_right - name_x - 4, round(220 * win.sx)))
-            name_h  = max(6, round(box.height * 2 / 3))
-            name_r  = (name_x, box.top, name_w, name_h)
+            name_h  = max(6, round(int(box.height) * 2 / 3))
+            name_r  = (name_x, name_y, name_w, name_h)
             return CardInfo(box, name_r, build_r, paw_end=paw_end)
 
     # Fallback: fixed paw offset
