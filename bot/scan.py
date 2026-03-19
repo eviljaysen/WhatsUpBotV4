@@ -28,8 +28,10 @@ from bot.config import (
     IMAGES_DIR, BUILDS_DIR, BUILD_HISTORY_DIR, SCANS_DIR,
     player_timezones, _KNOWN_NAMES,
     BOT_SLOTS_TOTAL, CFG,
-    reload_config
+    reload_config, get_logger
 )
+
+_log = get_logger("scan")
 from bot.window import detect_window
 from bot.templates import get_tpl, _TEAM_BUILDINGS_BL, _HUD
 from bot.vision import convert_dark_text, convert_white_text, convert_badge_text
@@ -116,7 +118,7 @@ class ScanContext:
         return ctx
 
     def status(self, msg: str):
-        print(msg)
+        _log.info(msg)
         if self.status_cb:
             self.status_cb(msg)
 
@@ -187,7 +189,7 @@ def capture_slot_stats(win, ctx, build_path: str = '') -> tuple:
             from bot.ocr import ocr_build_stats
             hp, atk = ocr_build_stats(build_path)
         except Exception as e:
-            print(f"[stats] build OCR failed: {e}")
+            _log.error("build OCR failed: %s", e)
 
     # Fallback: HUD region OCR if build OCR returned nothing
     if hp == 0 and atk == 0:
@@ -197,15 +199,58 @@ def capture_slot_stats(win, ctx, build_path: str = '') -> tuple:
             atk = locate_number(win.hud("slot_atk"), converter=convert_dark_text,
                                 debug_name="slot_atk")
         except Exception as e:
-            print(f"[stats] HUD OCR failed: {e}")
+            _log.error("HUD OCR failed: %s", e)
 
     # Status pixel check (always from live screen)
     try:
         px = pyautogui.screenshot(region=win.hud("slot_status_px")).getpixel((0, 0))
         defending = px[1] >= px[0]   # green channel ≥ red → DEFENDING
     except Exception as e:
-        print(f"[stats] Status pixel check failed: {e}")
+        _log.error("Status pixel check failed: %s", e)
     return hp, atk, defending
+
+
+# ── Build history management ──────────────────────────────────────────────────
+def _update_build_history(ctx):
+    """Copy up to 3 screenshots per player from builds/ to build_history/.
+
+    build_history/ is a stable record of each player's 3 cars.
+    Only overwrites slots that have new data — if a player has only 2 cars
+    in this scan, the 3rd from a previous scan is preserved.
+    Extra files beyond 3 are removed.
+    """
+    if not os.path.isdir(BUILDS_DIR):
+        return
+
+    for player_dir in os.listdir(BUILDS_DIR):
+        src = os.path.join(BUILDS_DIR, player_dir)
+        if not os.path.isdir(src):
+            continue
+
+        pngs = sorted(f for f in os.listdir(src) if f.upper().endswith('.PNG'))
+        if not pngs:
+            continue
+
+        dst = os.path.join(BUILD_HISTORY_DIR, player_dir)
+        os.makedirs(dst, exist_ok=True)
+
+        # Copy first 3 screenshots as {PLAYER}_1.PNG, _2.PNG, _3.PNG
+        for i, fname in enumerate(pngs[:3], 1):
+            src_path = os.path.join(src, fname)
+            dst_path = os.path.join(dst, f"{player_dir}_{i}.PNG")
+            shutil.copy2(src_path, dst_path)
+
+        # Remove extras beyond 3 in history
+        for fname in sorted(os.listdir(dst)):
+            if not fname.upper().endswith('.PNG'):
+                continue
+            # Keep _1, _2, _3 only
+            stem = fname.rsplit('.', 1)[0]
+            suffix = stem.rsplit('_', 1)[-1]
+            if suffix.isdigit() and int(suffix) > 3:
+                os.remove(os.path.join(dst, fname))
+
+    _log.info("build_history updated from builds/")
 
 
 # ── Team Scan ──────────────────────────────────────────────────────────────────
@@ -219,6 +264,9 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
     Returns:
         (report_string, metadata_dict)
     """
+    from bot.config import truncate_log
+    truncate_log()
+
     cfg = reload_config()
     win = detect_window()
     get_tpl().refresh(win)
@@ -244,9 +292,9 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             """Process one slot. Returns dict for wrap detection.
 
             Returns:
-                dict with keys {name, hp, atk} on success — used by
-                _cycle_slots for wrap detection (same name + same HP/ATK
-                + same car fingerprint = wrapped back to slot 1).
+                dict with key {name} on success — used by _cycle_slots
+                for wrap detection (same name + same car fingerprint
+                = wrapped back to slot 1).
                 None on crash (slot skipped).
 
             ALWAYS captures the slot (screenshot + DEF/ATK status) even
@@ -258,44 +306,57 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             # Validate card geometry — bad card means OCR will fail
             nr = card.name_region
             if nr[2] < 10 or nr[3] < 4:
-                print(f"[B{_bnum}] Bad card geometry {nr} — using fallback")
+                _log.warning("B%d: Bad card geometry %s — using fallback", _bnum, nr)
                 ctx.logo_cache[0] = None
                 card = find_player_card(win, ctx)
 
             try:
                 player = ocr_player_name(card, ctx)
             except Exception as e:
-                print(f"[B{_bnum}] Name OCR crashed: {e}")
+                _log.error("B%d: Name OCR crashed: %s", _bnum, e, exc_info=True)
                 player = ""
 
             # Read HP/ATK from the info card NOW (needed for wrap detection)
             hp = atk = 0
             try:
-                hp  = locate_number(win.hud("slot_hp"),
-                                    converter=convert_dark_text,
-                                    debug_name=None)
-                atk = locate_number(win.hud("slot_atk"),
-                                    converter=convert_dark_text,
-                                    debug_name=None)
+                hp_raw = locate_number(win.hud("slot_hp"),
+                                       converter=convert_dark_text,
+                                       debug_name="slot_hp" if slot == 1 else None)
+                atk_raw = locate_number(win.hud("slot_atk"),
+                                        converter=convert_dark_text,
+                                        debug_name="slot_atk" if slot == 1 else None)
+                # Sanity: reject values < 1000 — no car in the game has HP or ATK
+                # that low. Values like "2" or "28" are CNN/OCR garbage.
+                hp  = hp_raw  if hp_raw  >= 1000 else 0
+                atk = atk_raw if atk_raw >= 1000 else 0
+                if hp_raw > 0 and hp == 0:
+                    _log.warning("B%d slot %d: HP=%d rejected (too low, likely OCR error)",
+                                 _bnum, slot, hp_raw)
+                if atk_raw > 0 and atk == 0:
+                    _log.warning("B%d slot %d: ATK=%d rejected (too low, likely OCR error)",
+                                 _bnum, slot, atk_raw)
             except Exception as e:
-                print(f"[B{_bnum}] HP/ATK OCR failed: {e}")
+                _log.error("B%d: HP/ATK OCR failed: %s", _bnum, e)
 
             # Determine if this is a known player
             known = bool(player) and player in player_timezones
 
             if not known:
                 if player:
-                    print(f"[B{_bnum}] Unknown player '{player}' — "
-                          f"capturing slot anyway")
+                    _log.warning("B%d: Unknown player '%s' — capturing slot anyway",
+                                _bnum, player)
                 else:
-                    print(f"[B{_bnum}] OCR returned empty — "
-                          f"capturing slot as UNKNOWN")
+                    _log.warning("B%d: OCR returned empty — capturing slot as UNKNOWN",
+                                 _bnum)
                     player = f"UNKNOWN_{_bnum}_{slot}"
 
             # Per-BUILDING count — a player can have max 3 cars per building.
-            bldg_count = _bldg_counts.get(player, 0)
-            bldg_count += 1
+            bldg_count = _bldg_counts.get(player, 0) + 1
             _bldg_counts[player] = bldg_count
+            if bldg_count > 3:
+                _log.warning("B%d: %s has %d cars in this building (max 3) "
+                             "— wrap detection may have failed",
+                             _bnum, player, bldg_count)
             count = ctx.players_dict.get(player, 0) + 1
             ctx.players_dict[player] = count
             ctx.status(f"  B{_bnum} — {player} ({count}/3)"
@@ -310,13 +371,8 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                           "GUMSO" if player == "|-_-J" else player)
             pdir = os.path.join(BUILDS_DIR, safe)
             if count == 1:
-                # Move old builds to history (merge, not replace whole folder)
+                # Clear current scan dir (build_history updated post-scan)
                 if os.path.isdir(pdir):
-                    hist = os.path.join(BUILD_HISTORY_DIR, safe)
-                    os.makedirs(hist, exist_ok=True)
-                    for fname in os.listdir(pdir):
-                        shutil.move(os.path.join(pdir, fname),
-                                    os.path.join(hist, fname))
                     shutil.rmtree(pdir, ignore_errors=True)
             os.makedirs(pdir, exist_ok=True)
             scr_path = os.path.join(pdir, f"{safe}_{count}.PNG")
@@ -329,7 +385,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                     region=win.hud("slot_status_px")).getpixel((0, 0))
                 defending = px[1] >= px[0]
             except Exception as e:
-                print(f"[B{_bnum}] Status pixel check failed: {e}")
+                _log.error("B%d: Status pixel check failed: %s", _bnum, e)
 
             ctx.slot_results.append(SlotData(
                 player=player, building=_bnum,
@@ -340,22 +396,40 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             # Return slot info dict for wrap detection
             return {'name': player, 'hp': hp, 'atk': atk}
 
+        def _undo_wrap(info, _bnum=bnum):
+            """Undo the wrap slot — on_slot already saved data for it."""
+            if not ctx.slot_results:
+                return
+            last = ctx.slot_results.pop()
+            name = last.player
+            ctx.players_dict[name] = max(0, ctx.players_dict.get(name, 1) - 1)
+            _bldg_counts[name] = max(0, _bldg_counts.get(name, 1) - 1)
+            if os.path.isfile(last.screenshot):
+                os.remove(last.screenshot)
+            _log.debug("undid wrap slot: removed %s count for %s", last.screenshot, name)
+
         slots_before = len(ctx.slot_results)
         visited = _cycle_slots(win, ctx, _on_slot, _advance_slot,
-                               win.hud("build"), check_lobby=True)
+                               win.hud("build"), check_lobby=True,
+                               on_wrap=_undo_wrap)
         slots_after = len(ctx.slot_results)
         captured = slots_after - slots_before
-        print(f"[B{bnum}] visited={visited} captured={captured}")
+        _log.info("B%d: visited=%d captured=%d", bnum, visited, captured)
         if captured < visited:
-            print(f"[B{bnum}] WARNING: visited {visited} slots but only "
-                  f"captured {captured} — some names may have failed OCR")
+            _log.warning("B%d: visited %d slots but only captured %d "
+                         "— some names may have failed OCR",
+                         bnum, visited, captured)
+        if captured > 20:
+            _log.warning("B%d: captured %d slots — abnormally high, "
+                         "wrap detection likely failed (expected ≤15)",
+                         bnum, captured)
         _move_lobby(win, ctx)
 
     # ── Parallel build OCR (HP/ATK from saved screenshots) ───────────────────
-    # Only OCR slots where live HUD reading failed (hp==0 and atk==0).
+    # OCR slots where live HUD reading failed for either HP or ATK.
     # Most slots already have HP/ATK from the live info card read.
     slots_to_ocr = [s for s in ctx.slot_results
-                    if s.screenshot and s.hp == 0 and s.atk == 0]
+                    if s.screenshot and (s.hp == 0 or s.atk == 0)]
     if slots_to_ocr:
         ctx.status(f"OCR'ing {len(slots_to_ocr)} build screenshots "
                    f"(live OCR missed)…")
@@ -365,7 +439,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             try:
                 return ocr_build_stats(slot.screenshot)
             except Exception as e:
-                print(f"[stats] build OCR failed for {slot.player}: {e}")
+                _log.error("build OCR failed for %s: %s", slot.player, e)
                 return (0, 0)
 
         with ThreadPoolExecutor(max_workers=6) as ex:
@@ -375,10 +449,18 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                 try:
                     hp, atk = fut.result()
                 except Exception as e:
-                    print(f"[stats] build OCR error for {slot.player}: {e}")
+                    _log.error("build OCR error for %s: %s", slot.player, e)
                     hp, atk = 0, 0
-                slot.hp = hp
-                slot.atk = atk
+                # Apply same minimum threshold as live OCR
+                hp  = hp  if hp  >= 1000 else 0
+                atk = atk if atk >= 1000 else 0
+                if slot.hp == 0:
+                    slot.hp = hp
+                if slot.atk == 0:
+                    slot.atk = atk
+
+    # ── Update build_history (stable 3-car record per player) ───────────────
+    _update_build_history(ctx)
 
     # ── Score / timer capture ─────────────────────────────────────────────────
     ctx.status("Capturing scores…")
@@ -419,11 +501,20 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             if is_model_ready():
                 ml_text, ml_conf = predict_text(padded, field="timer")
                 if ml_text and ml_conf >= 0.7 and any(c.isdigit() for c in ml_text):
-                    print(f"[timer] CNN → '{ml_text}' (conf={ml_conf:.2f})")
-                    timer_raw = ml_text
-                    break
+                    # Reject garbage: all-same-digit or too many digits for a timer
+                    digits_only = re.sub(r'[^0-9]', '', ml_text)
+                    if digits_only and len(set(digits_only)) == 1 and len(digits_only) > 2:
+                        _log.warning("timer CNN → '%s' rejected (all-same-digit garbage)",
+                                     ml_text)
+                    elif len(digits_only) > 4:
+                        _log.warning("timer CNN → '%s' rejected (too many digits: %d)",
+                                     ml_text, len(digits_only))
+                    else:
+                        _log.info("timer CNN → '%s' (conf=%.2f)", ml_text, ml_conf)
+                        timer_raw = ml_text
+                        break
         except Exception as e:
-            print(f"[timer] CNN error: {e}")
+            _log.error("timer CNN error: %s", e)
 
         # Strategy 2: Tesseract with multiple configs
         for cfg_str in [_TIMER_OCR,
@@ -433,7 +524,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             raw = _ocr(padded, config=cfg_str).strip()
             if any(c.isdigit() for c in raw):
                 timer_raw = raw.strip("m\n ")
-                print(f"[timer] Tesseract → '{timer_raw}'")
+                _log.info("timer Tesseract → '%s'", timer_raw)
                 break
         if timer_raw:
             break
@@ -446,9 +537,9 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         timer_up.save(os.path.join(IMAGES_DIR, "debug_timer_conv.PNG"))
 
     h, m = parse_timer(timer_raw)
-    print(f"[timer] raw='{timer_raw}'  →  h={h} m={m}")
+    _log.info("timer raw='%s' → h=%d m=%d", timer_raw, h, m)
     if h == 0 and m == 0:
-        print(f"[WARNING] Timer OCR failed — raw: '{timer_raw}'")
+        _log.warning("Timer OCR failed — raw: '%s'", timer_raw)
 
     # Auto-save timer training sample
     if (h > 0 or m > 0) and shot:
@@ -469,9 +560,13 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             easy_opp, easy_conf = read_text(opp_shot)
             if easy_opp and easy_conf > 0.3:
                 opponent = easy_opp
-                print(f"[opponent] EasyOCR fallback: '{opponent}' (conf={easy_conf:.2f})")
+                _log.info("opponent EasyOCR fallback: '%s' (conf=%.2f)", opponent, easy_conf)
         except Exception as e:
-            print(f"[opponent] EasyOCR fallback failed: {e}")
+            _log.error("opponent EasyOCR fallback failed: %s", e)
+
+    # Apply OCR corrections to opponent name
+    from bot.ocr import _apply_correction
+    opponent = _apply_correction(opponent)
 
     # Pre-load OCR CNN model on the main scan thread before spawning workers.
     # Without this, 5 threads all try `import torch` concurrently on first use,
@@ -481,7 +576,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         if is_model_ready():
             _load_model()
     except Exception as e:
-        print(f"[scan] OCR model pre-load failed: {e}")
+        _log.error("OCR model pre-load failed: %s", e)
 
     with ThreadPoolExecutor(max_workers=5) as ex:
         f_max = ex.submit(locate_number,
@@ -506,20 +601,39 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
 
     max_points = (max_points + 500) // 1000 * 1000
 
-    print(f"[raw] team_bonus={team_bonus} opp_bonus={opp_bonus} "
-          f"team_points={team_points} opp_points={opp_points} max_points={max_points}")
+    _log.info("raw scores: team_bonus=%d opp_bonus=%d team_points=%d "
+              "opp_points=%d max_points=%d",
+              team_bonus, opp_bonus, team_points, opp_points, max_points)
 
     # Sanity warnings — log suspicious values but don't silently alter them
     if team_bonus > 400:
-        print(f"[WARNING] team_bonus={team_bonus} looks too high — check debug_team_bonus_raw.PNG")
+        _log.warning("team_bonus=%d looks too high — check debug_team_bonus_raw.PNG", team_bonus)
     if opp_bonus > 400:
-        print(f"[WARNING] opp_bonus={opp_bonus} looks too high — check debug_opp_bonus_raw.PNG")
+        _log.warning("opp_bonus=%d looks too high — check debug_opp_bonus_raw.PNG", opp_bonus)
     if team_points > 145000:
-        print(f"[WARNING] team_points={team_points} looks too high — check debug_team_points_raw.PNG")
+        _log.warning("team_points=%d looks too high — check debug_team_points_raw.PNG", team_points)
     if opp_points > 145000:
-        print(f"[WARNING] opp_points={opp_points} looks too high — check debug_opp_points_raw.PNG")
+        _log.warning("opp_points=%d looks too high — check debug_opp_points_raw.PNG", opp_points)
     if max_points == 0:
-        print("[WARNING] max_points OCR failed — check debug_max_points_raw.PNG")
+        _log.warning("max_points OCR failed — check debug_max_points_raw.PNG")
+
+    # ── Scan totals sanity check ─────────────────────────────────────────
+    total_slots = len(ctx.slot_results)
+    total_players = len(set(s.player for s in ctx.slot_results))
+    if total_slots > BOT_SLOTS_TOTAL:
+        _log.warning("Total slots captured (%d) exceeds bot_slots_total (%d) "
+                     "— wrap detection likely failed in one or more buildings",
+                     total_slots, BOT_SLOTS_TOTAL)
+    # Check for players with impossibly many cars (max 3 per building × 6 = 18)
+    from collections import Counter
+    player_counts = Counter(s.player for s in ctx.slot_results)
+    for player, pcount in player_counts.most_common():
+        if pcount > 18:
+            _log.error("Player %s has %d slots — impossible (max 18). "
+                       "Wrap detection failed.", player, pcount)
+        elif pcount > 6:
+            _log.warning("Player %s has %d slots — suspicious (typical max ~3-6)",
+                         player, pcount)
 
     elapsed = int(time.time() - start_time)
     ctx.status(f"Done in {elapsed // 60}m{elapsed % 60}s")
@@ -530,7 +644,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         max_points=max_points,   opponent=opponent,
     )
     report_str, meta = build_report(ctx, scores, h, m, avail_only=avail_only)
-    print(report_str)
+    _log.info("Report generated:\n%s", report_str)
 
     # Persist scan + player stats to SQLite
     meta["timer_h"] = h
@@ -557,7 +671,7 @@ def _classes_unchanged(classes_path: str, current_set: set) -> bool:
         with open(classes_path, "r", encoding="utf-8") as f:
             return set(json.load(f)) == current_set
     except Exception as e:
-        print(f"[train] Failed to read classes file: {e}")
+        _log.error("Failed to read classes file: %s", e)
         return False
 
 
@@ -575,7 +689,7 @@ def _auto_train_all(ctx):
             is_model_ready, CLASSES_PATH,
         )
         if not needs_training():
-            print("[train] Name model: no new samples — skipping")
+            _log.debug("Name model: no new samples — skipping")
         else:
             stats = get_training_stats()
             total = sum(stats.values())
@@ -583,8 +697,8 @@ def _auto_train_all(ctx):
             if players_with_enough >= 2 and total >= 10:
                 new_players = {p for p, c in stats.items() if c >= 3}
                 if is_model_ready() and _classes_unchanged(CLASSES_PATH, new_players):
-                    print("[train] Name model: same player set, "
-                          "extra samples — skipping retrain")
+                    _log.debug("Name model: same player set, "
+                              "extra samples — skipping retrain")
                 else:
                     ctx.status("Training name model…")
                     result = train_model(min_samples=3)
@@ -592,12 +706,13 @@ def _auto_train_all(ctx):
                         ctx.status(f"Name model: {result['accuracy']:.0%} acc, "
                                    f"{result['num_classes']} players")
                     else:
-                        print(f"[train] Name model skipped: {result['error']}")
+                        _log.info("Name model skipped: %s", result['error'])
             else:
-                print(f"[train] Name model: need more data "
-                      f"({total} samples, {players_with_enough} players with >=3)")
+                _log.debug("Name model: need more data "
+                           "(%d samples, %d players with >=3)",
+                           total, players_with_enough)
     except Exception as e:
-        print(f"[train] Name model error: {e}")
+        _log.error("Name model error: %s", e, exc_info=True)
 
     # 2. OCR character CNN — train when new samples collected
     try:
@@ -607,7 +722,7 @@ def _auto_train_all(ctx):
             get_training_stats as ocr_stats,
         )
         if not ocr_needs():
-            print("[train] OCR char model: no new samples — skipping")
+            _log.debug("OCR char model: no new samples — skipping")
         else:
             stats = ocr_stats()
             if stats["total_samples"] >= 20:
@@ -617,12 +732,12 @@ def _auto_train_all(ctx):
                     ctx.status(f"OCR model: {result['accuracy']:.0%} acc, "
                                f"{result['num_classes']} classes")
                 else:
-                    print(f"[train] OCR char model skipped: {result['error']}")
+                    _log.info("OCR char model skipped: %s", result['error'])
             else:
-                print(f"[train] OCR char model: need more data "
-                      f"({stats['total_samples']} samples)")
+                _log.debug("OCR char model: need more data (%d samples)",
+                           stats['total_samples'])
     except Exception as e:
-        print(f"[train] OCR char model error: {e}")
+        _log.error("OCR char model error: %s", e, exc_info=True)
 
 
 def _save_scan_to_db(ctx, meta: dict):
@@ -657,11 +772,11 @@ def _save_scan_to_db(ctx, meta: dict):
 
         if saved:
             ctx.status(f"Saved stats for {saved} players to DB")
-            print(f"[history] Player stats saved: {saved} players (3 cars each)")
+            _log.info("Player stats saved: %d players (3 cars each)", saved)
         else:
-            print(f"[history] No players with 3 cars + valid HP — stats not saved")
+            _log.debug("No players with 3 cars + valid HP — stats not saved")
     except Exception as e:
-        print(f"[history] DB save error: {e}")
+        _log.error("DB save error: %s", e, exc_info=True)
 
 
 def _evaluate_alerts(ctx, meta: dict):
@@ -682,7 +797,7 @@ def _evaluate_alerts(ctx, meta: dict):
                 war_id = get_or_create_war(opponent)
                 trajectory = get_score_trajectory(war_id)
         except Exception as e:
-            print(f"[alerts] Failed to load trajectory: {e}")
+            _log.error("Failed to load trajectory: %s", e)
 
         # Get previous slot count for CARS_LOST detection
         prev_count = 0
@@ -694,14 +809,14 @@ def _evaluate_alerts(ctx, meta: dict):
                 if prev_slots:
                     prev_count = len(prev_slots)
         except Exception as e:
-            print(f"[alerts] Failed to load previous slot count: {e}")
+            _log.error("Failed to load previous slot count: %s", e)
 
         alerts = evaluator.evaluate(meta, analysis, trajectory, prev_count)
         if alerts:
             ctx.status(f"⚠️ {len(alerts)} alert(s) triggered")
             evaluator.fire(alerts)
     except Exception as e:
-        print(f"[alerts] Evaluation error: {e}")
+        _log.error("Alert evaluation error: %s", e, exc_info=True)
 
 
 # ── Enemy Scan ─────────────────────────────────────────────────────────────────
@@ -741,7 +856,7 @@ def run_enemy_scan(building_num: int, status_cb=None) -> str:
         cjk_raw = _ocr(opp_proc, config=_NAME_OCR_CJK).strip()
         if cjk_raw:
             resolved = _resolve_cjk(cjk_raw)
-            print(f"[opponent] CJK: raw={cjk_raw!r} → {resolved!r}")
+            _log.info("opponent CJK: raw=%r → %r", cjk_raw, resolved)
             if resolved:
                 opponent_raw = resolved
     # EasyOCR fallback
@@ -751,10 +866,10 @@ def run_enemy_scan(building_num: int, status_cb=None) -> str:
             use_cjk = cfg.get("cjk_names", False)
             easy_opp, easy_conf = _easy_read_name(opp_shot, cjk=use_cjk)
             if easy_opp and easy_conf > 0.3:
-                print(f"[opponent] EasyOCR: '{easy_opp}' (conf={easy_conf:.2f})")
+                _log.info("opponent EasyOCR: '%s' (conf=%.2f)", easy_opp, easy_conf)
                 opponent_raw = easy_opp
         except Exception as e:
-            print(f"[opponent] EasyOCR fallback failed: {e}")
+            _log.error("opponent EasyOCR fallback failed: %s", e)
     opponent = re.sub(r'[^A-Za-z0-9_\- ]', '', opponent_raw).strip() or "enemy"
     ctx.status(f"  Opponent: {opponent}")
 
@@ -769,7 +884,7 @@ def run_enemy_scan(building_num: int, status_cb=None) -> str:
         init_db()
         war_id = get_or_create_war(opponent)
     except Exception as e:
-        print(f"[history] War tracking init error: {e}")
+        _log.error("War tracking init error: %s", e)
 
     def _capture(slot):
         """Capture one enemy slot. Returns dict for wrap detection."""
@@ -790,12 +905,20 @@ def run_enemy_scan(building_num: int, status_cb=None) -> str:
                 save_enemy_slot(war_id, opponent, player,
                                 building_num, screenshot=path)
             except Exception as e:
-                print(f"[history] Enemy slot save error: {e}")
+                _log.error("Enemy slot save error: %s", e)
         # Return dict for wrap detection (no HP/ATK for enemy — use 0)
-        return {'name': player, 'hp': 0, 'atk': 0}
+        return {'name': player, 'hp': 0, 'atk': 0, 'screenshot': path}
+
+    def _undo_enemy_wrap(info):
+        """Undo the wrap slot for enemy scan."""
+        nonlocal captured
+        captured = max(0, captured - 1)
+        if info and info.get('screenshot') and os.path.isfile(info['screenshot']):
+            os.remove(info['screenshot'])
 
     _cycle_slots(win, ctx, _capture, _advance_slot,
-                 build_r, check_lobby=True, max_slots=max_slots)
+                 build_r, check_lobby=True, max_slots=max_slots,
+                 on_wrap=_undo_enemy_wrap)
     _move_lobby(win, ctx)
 
     result = (f"Enemy building {building_num}: {captured} slot(s) captured.\n"

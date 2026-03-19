@@ -222,42 +222,51 @@ class TestFormatBuildingSummary:
 
 
 class TestFormatTopPlayers:
+    """format_top_players reads from build_history/ — these tests mock the
+    get_player_stats_from_builds return value to avoid needing real images."""
+
     def test_basic_ranking(self):
-        slots = [
-            _slot("ALICE", 1, hp=3_000_000, atk=1_000_000),
-            _slot("ALICE", 2, hp=2_000_000, atk=500_000),
-            _slot("BOB", 1, hp=1_000_000, atk=200_000),
+        mock_stats = [
+            {"player": "ALICE", "total_hp": 5_000_000, "total_atk": 1_500_000,
+             "total_str": 6_500_000, "cars_found": 2,
+             "hp_1": 3_000_000, "atk_1": 1_000_000,
+             "hp_2": 2_000_000, "atk_2": 500_000,
+             "hp_3": 0, "atk_3": 0},
+            {"player": "BOB", "total_hp": 1_000_000, "total_atk": 200_000,
+             "total_str": 1_200_000, "cars_found": 1,
+             "hp_1": 1_000_000, "atk_1": 200_000,
+             "hp_2": 0, "atk_2": 0, "hp_3": 0, "atk_3": 0},
         ]
-        text = format_top_players(slots)
+        from unittest.mock import patch
+        with patch("bot.report.get_player_stats_from_builds", return_value=mock_stats):
+            text = format_top_players()
         assert "ALICE" in text
         assert "BOB" in text
-        # ALICE avg_str = 6.5M/2 = 3.2M → ranked first
-        lines = text.strip().split("\n")
-        # Find first data line (after header + divider)
-        data_lines = [l for l in lines if l.strip() and not l.startswith("-")
-                      and not l.startswith("#")]
+        data_lines = [l for l in text.strip().split("\n")
+                      if l.strip() and not l.startswith("-")
+                      and not l.startswith("#") and "PLAYER" not in l]
         assert "ALICE" in data_lines[0]
 
-    def test_empty_slots(self):
-        assert format_top_players([]) == ""
+    def test_empty(self):
+        from unittest.mock import patch
+        with patch("bot.report.get_player_stats_from_builds", return_value=[]):
+            assert format_top_players() == ""
 
     def test_limit(self):
-        slots = [_slot(f"P{i}", 1, hp=1000 * i, atk=500) for i in range(1, 15)]
-        text = format_top_players(slots, limit=5)
-        # Should only show 5 players
+        mock_stats = [
+            {"player": f"P{i}", "total_hp": 1000 * i, "total_atk": 500,
+             "total_str": 1000 * i + 500, "cars_found": 1,
+             "hp_1": 1000 * i, "atk_1": 500,
+             "hp_2": 0, "atk_2": 0, "hp_3": 0, "atk_3": 0}
+            for i in range(14, 0, -1)
+        ]
+        from unittest.mock import patch
+        with patch("bot.report.get_player_stats_from_builds", return_value=mock_stats):
+            text = format_top_players(limit=5)
         data_lines = [l for l in text.split("\n")
                       if l.strip() and not l.startswith("-")
                       and not l.startswith("#") and "PLAYER" not in l]
         assert len(data_lines) == 5
-
-    def test_zero_stats_excluded(self):
-        slots = [
-            _slot("A", 1, hp=1000, atk=500),
-            _slot("B", 2, hp=0, atk=0),
-        ]
-        text = format_top_players(slots)
-        assert "A" in text
-        assert "B" not in text
 
 
 class TestFormatMomentum:

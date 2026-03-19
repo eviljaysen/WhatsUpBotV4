@@ -25,7 +25,9 @@ import numpy as np
 from PIL import Image as Img
 from collections import Counter
 
-from bot.config import BASE_DIR
+from bot.config import BASE_DIR, get_logger
+
+_log = get_logger("ocr_model")
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 OCR_TRAIN_DIR = os.path.join(BASE_DIR, "training_data", "ocr")
@@ -242,6 +244,7 @@ def _label_from_filename(field: str, fname: str) -> str:
 
     Timer: value 1653 → "16h53m" (hours * 100 + minutes format)
     Bonus fields: value 85 → "85" (ignore the '+' in the image)
+    Name: value is the player name string, e.g. "JAYSEN"
     All others: value as digit string, e.g. "1393007"
     """
     parts = fname.split("_")
@@ -256,6 +259,10 @@ def _label_from_filename(field: str, fname: str) -> str:
             return f"{hours}h{mins}m"
         except ValueError:
             return ""
+    if field == "name":
+        # Player names — rejoin all parts between timestamp and suffix
+        # e.g. "123_NOT HEY_conv.png" → "NOT HEY"
+        return "_".join(parts[1:-1]).replace("_conv.png", "")
     return value_str
 
 
@@ -323,7 +330,7 @@ def _build_char_dataset(augment: bool = True):
                 img = Img.open(path).convert("L")
                 crops = segment_characters(img)
             except Exception as e:
-                print(f"[ocr_model] Failed to segment {path}: {e}")
+                _log.warning("Failed to segment %s: %s", path, e)
                 continue
 
             # Align: segment count must match label length
@@ -449,7 +456,7 @@ def train_model(epochs: int = 0, lr: float = 0.001) -> dict:
 
     images, labels, class_names = _build_char_dataset(augment=True)
     if images is None or len(class_names) < 2:
-        print("[ocr_model] Not enough data to train")
+        _log.warning("Not enough data to train")
         return {"error": "insufficient data"}
 
     num_classes = len(class_names)
@@ -467,10 +474,10 @@ def train_model(epochs: int = 0, lr: float = 0.001) -> dict:
         else:
             epochs = 45
 
-    print(f"[ocr_model] Training: {num_classes} classes, "
-          f"{len(images)} samples, {epochs} epochs")
+    _log.info("Training: %d classes, %d samples, %d epochs",
+              num_classes, len(images), epochs)
     for i, name in enumerate(class_names):
-        print(f"  '{name}': {counts.get(i, 0)} samples")
+        _log.debug("  '%s': %d samples", name, counts.get(i, 0))
 
     device = torch.device("cpu")
     X = torch.from_numpy(images)
@@ -522,8 +529,8 @@ def train_model(epochs: int = 0, lr: float = 0.001) -> dict:
             val_acc = -1
 
         if (epoch + 1) % 10 == 0 or epoch == 0:
-            print(f"  Epoch {epoch + 1}/{epochs}: "
-                  f"loss={avg_loss:.4f} val_acc={val_acc:.3f}")
+            _log.debug("  Epoch %d/%d: loss=%.4f val_acc=%.3f",
+                       epoch + 1, epochs, avg_loss, val_acc)
 
         # Early stopping
         if avg_loss < best_loss - 0.001:
@@ -532,7 +539,7 @@ def train_model(epochs: int = 0, lr: float = 0.001) -> dict:
         else:
             patience_counter += 1
             if patience_counter >= EARLY_STOP_PATIENCE:
-                print(f"  Early stop at epoch {epoch + 1} (loss plateau)")
+                _log.debug("  Early stop at epoch %d (loss plateau)", epoch + 1)
                 break
 
     # Save model
@@ -567,8 +574,7 @@ def train_model(epochs: int = 0, lr: float = 0.001) -> dict:
         "num_samples": len(images),
         "class_names": class_names,
     }
-    print(f"[ocr_model] Training complete: acc={train_acc:.3f} "
-          f"val_acc={best_acc:.3f}")
+    _log.info("Training complete: acc=%.3f val_acc=%.3f", train_acc, best_acc)
     return result
 
 
@@ -593,11 +599,15 @@ def _load_model():
             _model = _build_model(ckpt["num_classes"]).to(_device)
             _model.load_state_dict(ckpt["state_dict"])
             _model.eval()
-            print(f"[ocr_model] Loaded model: {len(_classes)} classes")
+            _log.info("Loaded model: %d classes", len(_classes))
             return _model, _classes
         except Exception as e:
-            print(f"[ocr_model] Failed to load model: {e}")
+            _log.error("Failed to load model: %s", e, exc_info=True)
             return None, None
+
+
+_DIGIT_FIELDS = {"team_points", "opp_points", "max_points", "slot_hp", "slot_atk"}
+_TIMER_FIELDS = {"timer"}
 
 
 def predict_text(img, field: str = "") -> tuple:
@@ -605,7 +615,8 @@ def predict_text(img, field: str = "") -> tuple:
 
     Args:
         img: PIL Image (B&W conv image)
-        field: optional field name for logging
+        field: optional field name — used to restrict output classes
+               (digit-only fields won't predict letters)
 
     Returns:
         (text: str, avg_confidence: float). ('', 0.0) if unavailable.
@@ -618,6 +629,17 @@ def predict_text(img, field: str = "") -> tuple:
     if not crops:
         return '', 0.0
 
+    # Build allowed class mask based on field type.
+    # Digit-only fields (scores, HP/ATK) restrict to 0-9.
+    # Timer fields restrict to 0-9 + h + m.
+    # All other fields (names, unknown) allow all classes.
+    allowed_mask = None
+    if field in _DIGIT_FIELDS:
+        allowed_mask = [i for i, c in enumerate(classes) if c.isdigit()]
+    elif field in _TIMER_FIELDS:
+        allowed_mask = [i for i, c in enumerate(classes)
+                        if c.isdigit() or c in ('h', 'm')]
+
     try:
         import torch
 
@@ -627,6 +649,12 @@ def predict_text(img, field: str = "") -> tuple:
 
         with torch.no_grad():
             logits = model(batch)
+            # Mask out disallowed classes before softmax
+            if allowed_mask is not None:
+                mask = torch.full(logits.shape, float('-inf'), device=_device)
+                for idx in allowed_mask:
+                    mask[:, idx] = 0.0
+                logits = logits + mask
             probs = torch.softmax(logits, dim=1)
             confs, idxs = probs.max(dim=1)
 
@@ -642,7 +670,7 @@ def predict_text(img, field: str = "") -> tuple:
         avg_conf = total_conf / len(chars) if chars else 0.0
         return text, avg_conf
     except Exception as e:
-        print(f"[ocr_model] Prediction error: {e}")
+        _log.error("Prediction error: %s", e, exc_info=True)
         return '', 0.0
 
 

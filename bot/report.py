@@ -13,8 +13,10 @@ from datetime import datetime, timedelta
 import pytz
 
 from bot.config import (
-    player_timezones, BOT_SLOTS_TOTAL, SLEEP_START, SLEEP_END
+    player_timezones, BOT_SLOTS_TOTAL, SLEEP_START, SLEEP_END, get_logger
 )
+
+_log = get_logger("report")
 
 
 # ── Formatting helpers ─────────────────────────────────────────────────────────
@@ -215,8 +217,8 @@ def build_report(ctx, scores: dict, h: int, m: int, avail_only: bool = False) ->
     alert_thresholds = _cfg.get("alert_thresholds", {})
     bldg_summary = format_building_summary(analysis, alert_thresholds)
 
-    # Top players by average strength
-    top_players_text = format_top_players(ctx.slot_results, limit=10)
+    # Top players from build_history (stable 3-car record)
+    top_players_text = format_top_players(limit=10)
 
     # Score momentum (requires war trajectory from DB)
     momentum_text = ""
@@ -229,7 +231,7 @@ def build_report(ctx, scores: dict, h: int, m: int, avail_only: bool = False) ->
                 momentum = get_momentum(trajectory)
                 momentum_text = format_momentum(momentum)
     except Exception as e:
-        print(f"[report] Momentum analysis failed: {e}")
+        _log.warning("Momentum analysis failed: %s", e)
 
     # Append analysis sections
     if momentum_text:
@@ -257,7 +259,7 @@ def _load_stats_cache(cache_path: str) -> dict:
             with open(cache_path, encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            print(f"[report] Stats cache load failed: {e}")
+            _log.warning("Stats cache load failed: %s", e)
     return {}
 
 
@@ -268,14 +270,17 @@ def _save_stats_cache(cache_path: str, cache: dict):
         with open(cache_path, "w", encoding="utf-8") as f:
             json.dump(cache, f, indent=2)
     except Exception as e:
-        print(f"[stats] Failed to save cache: {e}")
+        _log.warning("Failed to save stats cache: %s", e)
 
 
-def get_player_stats_from_builds() -> list:
-    """Extract HP/ATK from saved build images in builds/ folder.
+def get_player_stats_from_builds(directory: str = None) -> list:
+    """Extract HP/ATK from saved build images.
 
     Uses a JSON cache keyed by file modification time so only changed
     images are re-OCR'd. Opening the Stats dialog is instant on repeat views.
+
+    Args:
+        directory: folder to scan (default: BUILDS_DIR)
 
     Returns:
         List of dicts sorted by total_str descending:
@@ -285,35 +290,37 @@ def get_player_stats_from_builds() -> list:
     from bot.config import BUILDS_DIR
     from bot.ocr import ocr_build_stats
 
-    if not os.path.isdir(BUILDS_DIR):
+    target_dir = directory or BUILDS_DIR
+    if not os.path.isdir(target_dir):
         return []
 
-    cache_path = os.path.join(BUILDS_DIR, "_stats_cache.json")
+    cache_path = os.path.join(target_dir, "_stats_cache.json")
     cache = _load_stats_cache(cache_path)
     dirty = False
 
     results = []
-    for player_dir in sorted(os.listdir(BUILDS_DIR)):
-        pdir = os.path.join(BUILDS_DIR, player_dir)
+    for player_dir in sorted(os.listdir(target_dir)):
+        pdir = os.path.join(target_dir, player_dir)
         if not os.path.isdir(pdir):
             continue
 
         car_stats = []
-        for i in range(1, 4):
-            img_path = os.path.join(pdir, f"{player_dir}_{i}.PNG")
-            if os.path.isfile(img_path):
-                mtime = str(os.path.getmtime(img_path))
-                cache_key = f"{player_dir}_{i}"
-                cached = cache.get(cache_key)
-                if cached and cached.get("mtime") == mtime:
-                    hp, atk = cached["hp"], cached["atk"]
-                else:
-                    hp, atk = ocr_build_stats(img_path)
-                    cache[cache_key] = {"mtime": mtime, "hp": hp, "atk": atk}
-                    dirty = True
-                car_stats.append((hp, atk))
+        # Scan all numbered build screenshots (players can have up to
+        # 18 cars: 3 per building × 6 buildings).
+        for fname in sorted(os.listdir(pdir)):
+            if not fname.upper().endswith(".PNG"):
+                continue
+            img_path = os.path.join(pdir, fname)
+            mtime = str(os.path.getmtime(img_path))
+            cache_key = f"{player_dir}_{fname}"
+            cached = cache.get(cache_key)
+            if cached and cached.get("mtime") == mtime:
+                hp, atk = cached["hp"], cached["atk"]
             else:
-                car_stats.append((0, 0))
+                hp, atk = ocr_build_stats(img_path)
+                cache[cache_key] = {"mtime": mtime, "hp": hp, "atk": atk}
+                dirty = True
+            car_stats.append((hp, atk))
 
         while len(car_stats) < 3:
             car_stats.append((0, 0))
@@ -415,7 +422,7 @@ def build_image_grid(screenshot_paths: list, cols: int = 3):
             try:
                 images.append(Img.open(p).convert("RGB"))
             except Exception as e:
-                print(f"[report] Failed to load image {p}: {e}")
+                _log.warning("Failed to load image %s: %s", p, e)
 
     if not images:
         return None

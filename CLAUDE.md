@@ -9,7 +9,7 @@
 
 WhatsUpBot scans a BlueStacks game window via screenshot + OCR to generate Discord defense
 reports for a CK Alliance. It identifies players by name, captures build screenshots, reads
-HP/armor/score/timer values, and produces a formatted report with player stats, win projection,
+HP/ATK/score/timer values, and produces a formatted report with player stats, win projection,
 bot availability, building strength analysis, placement recommendations, score momentum,
 and configurable alerts.
 
@@ -175,14 +175,9 @@ pos = (480, 843)                # raw baseline — won't work at non-1920 resolu
     "sleep_start":           21,
     "sleep_end":             8,
     "cjk_names":             false,
-    "tmpl_threshold":        0.40,
-    "tmpl_confidence":       0.75,
-    "cjk_match_cutoff":      0.65,
     "max_enemy_slots":       14,
     "discord_webhook_url":   "",
     "scan_interval_minutes": 0,
-    "easyocr_enabled":       true,
-    "easyocr_gpu":           false,
     "auto_train":            true,
     "alert_thresholds": {
         "instant_warning_minutes": 30,
@@ -217,12 +212,14 @@ build_card.PNG → crop bottom 14% → dark-text binarize → gap detection → 
 - Results cached in `_stats_cache.json` by file modification time
 
 ### Player Name OCR (in priority order)
-1. **CNN classifier** — `name_model.predict_name()`, fastest path when model is trained
-2. **Template match** (IoU ≥ `tmpl_threshold`) — NameMatcher, no Tesseract call
+1. **Template match** — NameMatcher, fastest path (no Tesseract/ML needed)
+2. **CNN classifier** — `name_model.predict_name()`, fast ~5ms when model is trained
 3. **ASCII Tesseract PSM 7** — `_NAME_OCR` config, corrections applied
 4. **ASCII Tesseract PSM 8** — single-word mode, corrections applied
 5. **CJK Tesseract** — `_NAME_OCR_CJK`, Otsu binarize, `_resolve_cjk()` cleanup
-6. **Correction dialog** — user resolves, saves to config + template
+6. **EasyOCR fallback** — handles complex scripts, slower
+7. **Low-cutoff fuzzy match** — last-resort matching at reduced threshold
+8. **Correction dialog** — user resolves, saves to config + template
 
 On every successful name match (any method), a training sample is auto-saved via
 `name_model.save_training_sample()` for future CNN training.
@@ -288,6 +285,41 @@ to see what Tesseract receives.
 
 ---
 
+## Logging Infrastructure
+
+All modules use Python's `logging` module via `get_logger(name)` from `bot/config.py`.
+No `print()` statements remain in the codebase.
+
+```python
+from bot.config import get_logger
+_log = get_logger("module_name")   # returns logging.getLogger("bot.module_name")
+```
+
+**Output:** Dual — rotating file (`bot.log`, 2MB max, 3 backups) + console (INFO+).
+**Log levels:**
+- `DEBUG` — verbose OCR details, cache hits, fingerprint diffs
+- `INFO` — scan progress, slot captures, matches, training results
+- `WARNING` — suspicious values, failed OCR, rejected garbage, slot count anomalies
+- `ERROR` — on_slot crashes (with `exc_info=True`), impossible player counts
+- `CRITICAL` — unhandled exceptions in main crash handler
+
+**Log file:** `bot.log` in project root (`LOG_PATH` in config.py).
+
+---
+
+## OCR Validation & Sanity Checks
+
+- **HP/ATK minimum:** Live OCR values < 1000 are rejected as garbage (set to 0).
+  CNN sometimes returns tiny values like "2" — these are logged as warnings.
+- **Timer garbage:** All-same-digit strings (e.g. '11111') from CNN are rejected.
+- **Per-building slot cap:** Warning logged when a player has > 3 cars in one building
+  (max possible is 3 — indicates wrap detection failure).
+- **Total scan cap:** Warning when total slots > `BOT_SLOTS_TOTAL` (75).
+- **Per-player cap:** Error when > 18 slots (impossible — 6 buildings × 3 max),
+  warning when > 6 (suspicious).
+
+---
+
 ## Performance Invariants
 
 - `pyautogui.PAUSE = 0` and `MINIMUM_DURATION = 0` — set in `navigation.py`, never change.
@@ -338,35 +370,47 @@ OCR model needs ≥20 total samples. Training runs in a background thread.
 
 ## Wrap Detection (navigation.py)
 
-Slot cycling ends when the view wraps back to slot 1. Three detection methods:
+Slot cycling ends when the view wraps back to slot 1. Two detection criteria
+(BOTH must match for a wrap):
 
-1. **Semantic wrap** — same player name as slot 1 AND pixel diff < 12 = same car = wrap.
-   Same name alone is NOT a wrap (a player can have up to 3 cars per building).
-2. **Pixel-diff fallback** — mean abs diff of full build region vs slot 1 frame < 12.
-   Confirmed with a second screenshot after 50ms to avoid transient false positives.
-3. **advance_fn failure** — Next button not found after retry = last slot.
+1. **Same player name** as slot 1
+2. **Similar car screenshot** — fingerprint diff < `WRAP_FP_THRESHOLD` (32×32 grayscale
+   downscale, mean abs diff)
+
+**HP/ATK is NOT used for wrap detection.** Live OCR is too noisy — the CNN returns
+garbage values like "2" (rejected to 0) or wildly different readings like 2813 vs 6845
+for the same slot. This caused buildings to loop 3–5x before wrapping (B3: 45 slots,
+B4: 51 slots). The fingerprint comparison reliably distinguishes different cars
+(diff 0–1 for same car vs 30+ for different cars).
+
+Same name alone is NOT a wrap (a player can have up to 3 cars per building).
+Other end conditions: ESC held, lobby visible, advance_fn failure after retry, stuck
+detection (frame unchanged), max_slots reached.
 
 Key constants (tuned empirically):
 
-- `PIXEL_DIFF_THRESHOLD = 12` — tight enough for different cars, loose enough for animation jitter
-- `SLOT_SETTLE_TIME = 0.15` — wait for new slot to fully render before comparison
-- Confirmation: 50ms extra wait + second screenshot before declaring wrap
+- `WRAP_FP_THRESHOLD = 5` — fingerprint diff below which = same car
+- `SLOT_SETTLE_TIME = 0.50` — wait for new slot to fully render before comparison
 
 ---
 
 ## Build History (build_history/)
 
-When a scan starts a new building pass, old screenshots are moved to `build_history/{PLAYER}/`
-using **per-file merge** — each file is overwritten individually. This preserves car 2 and
-car 3 screenshots from previous scans when only car 1 is detected in the current scan.
+Stable 3-car record per player. After each scan's slot loop completes, `_update_build_history()`
+copies up to 3 screenshots per player from `builds/` to `build_history/{PLAYER}/` using
+`shutil.copy2` (not move). Files are renamed to `{PLAYER}_1.PNG` through `{PLAYER}_3.PNG`.
+Any files numbered `_4` or higher are cleaned up.
+
+This ensures `build_history/` always has the latest 3-car record regardless of how many
+cars were deployed on the map during the current scan. The top players report
+(`format_top_players()`) reads from `build_history/` so it always reflects all 3 cars.
 
 ```python
-# Per-file merge (correct):
-for fname in os.listdir(pdir):
-    shutil.move(os.path.join(pdir, fname), os.path.join(hist, fname))
+# Correct: copy from builds/ to build_history/ (preserves builds/ for next scan)
+shutil.copy2(src_path, os.path.join(dst, f"{player}_{i}.PNG"))
 
-# NOT whole-folder replace (wrong — loses unfound cars):
-shutil.rmtree(hist); shutil.move(pdir, hist)
+# Wrong: move (destroys builds/ source)
+shutil.move(src_path, dst_path)
 ```
 
 ---
@@ -417,8 +461,8 @@ from bot.ocr_model import is_model_ready, _load_model
 if is_model_ready():
     _load_model()   # ← do this BEFORE ThreadPoolExecutor
 
-# ❌ Never delete build screenshots — move to build_history/ instead
-shutil.rmtree(builds_dir)             # use per-file merge into BUILD_HISTORY_DIR
+# ❌ Never delete build_history/ — it's the stable 3-car record
+shutil.rmtree(build_history_dir)      # builds/ is ephemeral; build_history/ is the record
 
 # ❌ Never update _last_train_count outside _model_lock
 _last_train_count = n                  # must be inside `with _model_lock:`
@@ -465,6 +509,7 @@ _last_train_count = n                  # must be inside `with _model_lock:`
 | OCR model pre-load (deadlock fix) | scan.py | ✅ v5.0 |
 | Wrap detection confirmation | navigation.py | ✅ v5.0 |
 | Smart retrain skip | scan.py | ✅ v5.0 |
+| Macro recorder | TBD | 🔲 planned |
 
 ---
 

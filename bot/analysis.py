@@ -4,7 +4,10 @@ Pure computation — no screen capture, no OCR, no pyautogui.
 All functions take data structures and return analysis results.
 """
 
+from bot.config import get_logger
 from bot.report import _fmt_stat
+
+_log = get_logger("analysis")
 
 
 # ── Building strength analysis ───────────────────────────────────────────────
@@ -242,107 +245,48 @@ def format_building_summary(analysis: dict, alert_thresholds: dict = None) -> st
     return "\n".join(lines)
 
 
-def _get_history_stats() -> dict:
-    """Load previous player stats from build_history/ for delta comparison.
 
-    Returns:
-        {player_name: total_str, ...} from build_history/ screenshots.
-    """
-    from bot.config import BUILD_HISTORY_DIR
-    from bot.ocr import ocr_build_stats
-    import os
+def format_top_players(limit: int = 10) -> str:
+    """Format top players ranked by total strength from build_history/.
 
-    if not os.path.isdir(BUILD_HISTORY_DIR):
-        return {}
-
-    # Use the same cache pattern as get_player_stats_from_builds
-    cache_path = os.path.join(BUILD_HISTORY_DIR, "_stats_cache.json")
-    from bot.report import _load_stats_cache, _save_stats_cache
-    cache = _load_stats_cache(cache_path)
-    dirty = False
-
-    result = {}
-    for player_dir in os.listdir(BUILD_HISTORY_DIR):
-        pdir = os.path.join(BUILD_HISTORY_DIR, player_dir)
-        if not os.path.isdir(pdir):
-            continue
-        total = 0
-        for i in range(1, 4):
-            img_path = os.path.join(pdir, f"{player_dir}_{i}.PNG")
-            if os.path.isfile(img_path):
-                mtime = str(os.path.getmtime(img_path))
-                cache_key = f"{player_dir}_{i}"
-                cached = cache.get(cache_key)
-                if cached and cached.get("mtime") == mtime:
-                    hp, atk = cached["hp"], cached["atk"]
-                else:
-                    hp, atk = ocr_build_stats(img_path)
-                    cache[cache_key] = {"mtime": mtime, "hp": hp, "atk": atk}
-                    dirty = True
-                total += hp + atk
-        if total > 0:
-            result[player_dir] = total
-
-    if dirty:
-        _save_stats_cache(cache_path, cache)
-
-    return result
-
-
-def format_top_players(slot_results: list, limit: int = 10) -> str:
-    """Format top players ranked by average strength with change deltas.
-
-    Aggregates HP/ATK across all of a player's slots and computes
-    per-car averages. Compares against build_history/ to show strength
-    changes since last scan.
+    Reads HP/ATK from build_history/ screenshots (stable 3-car record per
+    player, updated after each scan). Uses mtime-based OCR cache for speed.
+    Compares against SQLite player_stats for change deltas.
 
     Args:
-        slot_results: list of SlotData from a scan
         limit: max players to show (default 10)
 
     Returns:
         Formatted string table, or empty string if no data.
     """
-    if not slot_results:
+    from bot.config import BUILD_HISTORY_DIR
+    from bot.report import get_player_stats_from_builds
+
+    stats = get_player_stats_from_builds(BUILD_HISTORY_DIR)
+    if not stats:
         return ""
 
-    # Aggregate per player
-    players = {}
-    for s in slot_results:
-        p = players.setdefault(s.player, {
-            "total_hp": 0, "total_atk": 0, "total_str": 0, "count": 0,
-        })
-        p["total_hp"] += s.hp
-        p["total_atk"] += s.atk
-        p["total_str"] += s.hp + s.atk
-        p["count"] += 1
+    ranked = stats[:limit]
 
-    # Only include players with at least one car that has stats
-    ranked = [(name, d) for name, d in players.items() if d["total_str"] > 0]
-    ranked.sort(key=lambda x: x[1]["total_str"] // max(x[1]["count"], 1),
-                reverse=True)
-    ranked = ranked[:limit]
-
-    if not ranked:
-        return ""
-
-    # Load previous stats for delta column
+    # Load previous stats from DB for delta column
+    prev_stats = {}
     try:
-        history = _get_history_stats()
+        from bot.history import get_latest_player_stats
+        for row in get_latest_player_stats():
+            prev_stats[row["player"]] = row["total_str"]
     except Exception as e:
-        print(f"[analysis] History stats load failed: {e}")
-        history = {}
+        _log.debug("DB stats not available for delta: %s", e)
 
-    name_w = max(12, max(len(r[0]) for r in ranked) + 1)
+    name_w = max(12, max(len(r["player"]) for r in ranked) + 1)
     lines = []
-    lines.append(f"{'#':<3} {'PLAYER':<{name_w}} {'AVG STR':>8} {'AVG HP':>8} {'AVG ATK':>8} CARS {'CHG':>6}")
+    lines.append(f"{'#':<3} {'PLAYER':<{name_w}} {'TOT STR':>8} {'TOT HP':>8} {'TOT ATK':>8} CARS {'CHG':>6}")
     lines.append("-" * (40 + name_w))
 
-    for i, (name, d) in enumerate(ranked, 1):
-        n = max(d["count"], 1)
-        # Compute delta vs history
+    for i, d in enumerate(ranked, 1):
+        name = d["player"]
+        # Compute delta vs DB history
         delta_str = ""
-        prev = history.get(name)
+        prev = prev_stats.get(name)
         if prev is not None:
             diff = d["total_str"] - prev
             if diff > 0:
@@ -351,10 +295,10 @@ def format_top_players(slot_results: list, limit: int = 10) -> str:
                 delta_str = f"-{_fmt_stat(abs(diff))}"
         lines.append(
             f"{i:<3} {name:<{name_w}} "
-            f"{_fmt_stat(d['total_str'] // n):>8} "
-            f"{_fmt_stat(d['total_hp'] // n):>8} "
-            f"{_fmt_stat(d['total_atk'] // n):>8} "
-            f"{d['count']}    "
+            f"{_fmt_stat(d['total_str']):>8} "
+            f"{_fmt_stat(d['total_hp']):>8} "
+            f"{_fmt_stat(d['total_atk']):>8} "
+            f"{d['cars_found']}    "
             f"{delta_str:>6}"
         )
 

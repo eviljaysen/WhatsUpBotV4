@@ -22,17 +22,20 @@ from PIL import Image as Img, ImageFilter
 from bot.config import (
     IMAGES_DIR, NAME_TMPL_DIR, CFG,
     _OCR_CORRECTIONS, _KNOWN_NAMES, _NAME_UPPER_MAP,
+    get_logger,
 )
 from bot.vision import convert_to_bw
+
+_log = get_logger("ocr")
 
 
 # ── Tesseract setup ────────────────────────────────────────────────────────────
 _TESS_EXE = CFG.get("tesseract_path", r'C:\Program Files\Tesseract-OCR\tesseract.exe')
 if os.path.isfile(_TESS_EXE):
     pytesseract.pytesseract.tesseract_cmd = _TESS_EXE
-    print("Tesseract configured.")
+    _log.info("Tesseract configured.")
 else:
-    print("[WARNING] Tesseract not found at default path — ensure it is on PATH.")
+    _log.warning("Tesseract not found at default path — ensure it is on PATH.")
 
 
 # ── OCR config strings ─────────────────────────────────────────────────────────
@@ -55,6 +58,11 @@ def _ocr(image, config: str) -> str:
 def _digits(text: str) -> int:
     d = re.sub(r'[^0-9]', '', text)
     return int(d) if d else 0
+
+
+def _apply_correction(text: str) -> str:
+    """Look up text in OCR corrections (exact then uppercased)."""
+    return _OCR_CORRECTIONS.get(text, _OCR_CORRECTIONS.get(text.upper(), text))
 
 
 def _prepare_for_ocr(img, converter, upscale: int = 1, pad: int = 10,
@@ -101,24 +109,24 @@ def locate_number(region, converter=None, ocr_config=_NUMBERS_OCR,
             if ml_text and ml_conf >= 0.8:
                 ml_val = _digits(ml_text)
                 if ml_val > 0:
-                    print(f"[ocr] {debug_name}: CNN → '{ml_text}' "
-                          f"(conf={ml_conf:.2f}) = {ml_val}")
+                    _log.info("%s: CNN → '%s' (conf=%.2f) = %d",
+                             debug_name or "ocr", ml_text, ml_conf, ml_val)
                     result = ml_val
     except Exception as e:
-        print(f"[ocr] CNN error: {e}")
+        _log.error("CNN error: %s", e)
 
     # Tesseract fallback
     if result == 0:
         raw_text = _ocr(processed, config=ocr_config).strip()
         result = _digits(raw_text)
         if debug_name:
-            print(f"[ocr] {debug_name}: Tesseract raw='{raw_text}' → {result}")
+            _log.debug("%s: Tesseract raw='%s' → %d", debug_name, raw_text, result)
         # Retry bonus with PSM 8 (single word) if PSM 7 failed
         if result == 0 and debug_name and "bonus" in debug_name:
             alt_config = ocr_config.replace("--psm 7", "--psm 8")
             alt_text = _ocr(processed, config=alt_config).strip()
             alt_result = _digits(alt_text)
-            print(f"[ocr] {debug_name} retry PSM 8: raw='{alt_text}' → {alt_result}")
+            _log.debug("%s: retry PSM 8: raw='%s' → %d", debug_name, alt_text, alt_result)
             if alt_result > 0:
                 result = alt_result
 
@@ -128,12 +136,13 @@ def locate_number(region, converter=None, ocr_config=_NUMBERS_OCR,
             from bot.easyocr_engine import read_number
             easy_val, easy_conf = read_number(processed)
             if easy_val > 0 and easy_conf > 0.3:
-                print(f"[ocr] {debug_name} EasyOCR fallback: {easy_val} (conf={easy_conf:.2f})")
+                _log.info("%s: EasyOCR fallback: %d (conf=%.2f)", debug_name, easy_val, easy_conf)
                 result = easy_val
             elif easy_val > 0:
-                print(f"[ocr] {debug_name} EasyOCR low-conf: {easy_val} (conf={easy_conf:.2f}) — skipped")
+                _log.debug("%s: EasyOCR low-conf: %d (conf=%.2f) — skipped",
+                           debug_name, easy_val, easy_conf)
         except Exception as e:
-            print(f"[ocr] {debug_name} EasyOCR unavailable: {e}")
+            _log.debug("%s: EasyOCR unavailable: %s", debug_name, e)
 
     # Auto-save training sample when we got a valid result
     if result > 0 and debug_name:
@@ -144,16 +153,21 @@ def locate_number(region, converter=None, ocr_config=_NUMBERS_OCR,
 _train_save_lock = threading.Lock()
 
 
-def _save_ocr_training_sample(field: str, raw_img, conv_img, value: int):
-    """Save an OCR training sample (raw + conv image with label)."""
+def _save_ocr_training_sample(field: str, raw_img, conv_img, value):
+    """Save an OCR training sample (raw + conv image with label).
+
+    Args:
+        value: int or str — the ground-truth label for the image.
+    """
     import time
     with _train_save_lock:
         train_dir = os.path.join(os.path.dirname(IMAGES_DIR), "training_data", "ocr", field)
         os.makedirs(train_dir, exist_ok=True)
 
-        # Cap at 100 samples per field
+        # Cap samples per field (names get more since there are many players)
+        cap = 250 if field == "name" else 100
         existing = sorted(f for f in os.listdir(train_dir) if f.endswith("_raw.png"))
-        if len(existing) >= 100:
+        if len(existing) >= cap:
             # Remove oldest pair
             oldest = existing[0].replace("_raw.png", "")
             for suffix in ("_raw.png", "_conv.png"):
@@ -186,8 +200,7 @@ def _read_name(proc, cfg: str) -> str:
     """OCR proc with cfg, normalise to ASCII, apply corrections."""
     t = _ocr(proc, config=cfg).strip()
     t = ' '.join(t.split()).encode('ascii', 'ignore').decode('ascii')
-    # Normalize to upper for correction lookup (corrections stored in mixed case)
-    return _OCR_CORRECTIONS.get(t.upper(), _OCR_CORRECTIONS.get(t, t))
+    return _apply_correction(t.upper())
 
 
 def _name_match(text: str) -> list:
@@ -260,8 +273,8 @@ class NameMatcher:
                 p: list(entries)
                 for p, entries in NameMatcher._cached_templates.items()
             }
-            print(f"[name_matcher] Reused cached templates "
-                  f"({sum(len(v) for v in self._templates.values())} total)")
+            _log.debug("name_matcher: reused cached templates (%d total)",
+                      sum(len(v) for v in self._templates.values()))
             return
 
         for fname in sorted(os.listdir(NAME_TMPL_DIR)):
@@ -274,7 +287,7 @@ class NameMatcher:
                 if arr is not None:
                     self._templates.setdefault(player, []).append((arr, arr < 128))
             except Exception as e:
-                print(f"[name_matcher] Failed to load {fname}: {e}")
+                _log.error("name_matcher: failed to load %s: %s", fname, e)
         # Cap at 5 templates per player (sorted order = oldest first)
         for player in self._templates:
             if len(self._templates[player]) > 5:
@@ -284,8 +297,8 @@ class NameMatcher:
             p: list(entries) for p, entries in self._templates.items()
         }
         NameMatcher._cached_mtime = dir_mtime
-        print(f"[name_matcher] Loaded {sum(len(v) for v in self._templates.values())} "
-              f"templates from disk")
+        _log.info("name_matcher: loaded %d templates from disk",
+                  sum(len(v) for v in self._templates.values()))
 
     @staticmethod
     def _binarise(shot) -> np.ndarray:
@@ -318,7 +331,7 @@ class NameMatcher:
                 if score > best_score:
                     best_score, best_player = score, player
         if best_score >= CFG.get("tmpl_threshold", 0.40):
-            print(f"[name_matcher] Matched {best_player!r} (score={best_score:.3f})")
+            _log.info("name_matcher: matched %r (score=%.3f)", best_player, best_score)
             return best_player
         return ''
 
@@ -336,7 +349,7 @@ class NameMatcher:
         cv2.imwrite(path, arr)
         # Invalidate class-level cache so next NameMatcher picks up the new file
         NameMatcher._cached_mtime = 0.0
-        print(f"[name_matcher] Saved template: {path}")
+        _log.info("name_matcher: saved template: %s", path)
 
 
 # ── Player name OCR — full pipeline ───────────────────────────────────────────
@@ -369,13 +382,13 @@ def ocr_player_name(card, ctx) -> str:
         return result
 
     # Retry once — re-capture after a brief settle in case of transition frame
-    print(f"[name] First attempt returned {result!r} (unmatched) — "
-          f"retrying after 200ms settle")
+    _log.info("name: first attempt returned %r (unmatched) — retrying after 200ms",
+              result)
     _time.sleep(0.2)
     result2 = _ocr_player_name_once(card, ctx)
     known2 = bool(result2) and result2 in _KNOWN_NAMES
     if known2:
-        print(f"[name] Retry succeeded: {result2!r}")
+        _log.info("name: retry succeeded: %r", result2)
         return result2
 
     # Use whichever raw text is longer (more likely to be real)
@@ -391,7 +404,7 @@ def ocr_player_name(card, ctx) -> str:
         matches = _name_match(player)
         if matches:
             player = _NAME_UPPER_MAP[matches[0]]
-        print(f"[name] correction dialog → {player!r}")
+        _log.info("name: correction dialog → %r", player)
         return player
 
     return raw
@@ -411,35 +424,37 @@ def _ocr_player_name_once(card, ctx) -> str:
     shot.save(os.path.join(IMAGES_DIR, "debug_name_raw.PNG"))
     ctx.last_name_shot[0] = shot
 
-    # Pass 0: ML model prediction (fastest, most accurate when trained)
-    # Cache the model-ready check per scan to avoid repeated os.path.isfile + torch imports
+    # Pass 1: Template match (fast, no Tesseract)
+    tmpl = ctx.name_matcher.match(shot)
+    if tmpl:
+        _log.info("name: template → %r", tmpl)
+        return tmpl
+
+    # Pass 2: ML model (fast ~5ms, most accurate when trained)
     if ctx.ml_model_ready is None:
         try:
             from bot.name_model import is_model_ready
             ctx.ml_model_ready = is_model_ready()
         except Exception as e:
-            print(f"[name] ML model check failed: {e}")
+            _log.error("name: ML model check failed: %s", e)
             ctx.ml_model_ready = False
     if ctx.ml_model_ready:
         from bot.name_model import predict_name
         ml_name, ml_conf = predict_name(shot)
         ml_threshold = CFG.get("ml_name_confidence", 0.85)
         if ml_name and ml_conf >= ml_threshold:
-            print(f"[name] ML model → {ml_name!r} (conf={ml_conf:.3f})")
+            _log.info("name: ML model → %r (conf=%.3f)", ml_name, ml_conf)
+            proc = _prep_name_image(shot)
+            _save_ocr_training_sample("name", shot, proc, ml_name)
             return ml_name
         elif ml_name:
-            print(f"[name] ML model low-conf: {ml_name!r} (conf={ml_conf:.3f} < {ml_threshold})")
-
-    # Pass 1: Template match
-    tmpl = ctx.name_matcher.match(shot)
-    if tmpl:
-        print(f"[name] template → {tmpl!r}")
-        return tmpl
+            _log.debug("name: ML model low-conf: %r (conf=%.3f < %.2f)",
+                       ml_name, ml_conf, ml_threshold)
 
     proc = _prep_name_image(shot)
     proc.save(os.path.join(IMAGES_DIR, "debug_name_conv.PNG"))
 
-    # Multi-pass ASCII
+    # Pass 3: Multi-pass ASCII OCR (slower, handles unseen names)
     raw = player = ''
     matches = []
     for cfg_str in (_NAME_OCR, _NAME_OCR_PSM8):
@@ -478,11 +493,11 @@ def _ocr_player_name_once(card, ctx) -> str:
                 raw_cjk = _ocr(proc_cjk,
                                config=_NAME_OCR_CJK.replace("--psm 7", _psm)).strip()
             except Exception as e:
-                print(f"[name] CJK OCR error: {e}")
+                _log.error("name: CJK OCR error: %s", e)
             if raw_cjk:
                 break
 
-        print(f"[name] CJK raw={raw_cjk!r}")
+        _log.info("name: CJK raw=%r", raw_cjk)
         player_cjk  = _resolve_cjk(raw_cjk) if raw_cjk.strip() else ''
         matches_cjk = difflib.get_close_matches(
             player_cjk.upper(), list(_NAME_UPPER_MAP), n=1, cutoff=0.65)
@@ -496,7 +511,7 @@ def _ocr_player_name_once(card, ctx) -> str:
             use_cjk = CFG.get("cjk_names", False)
             easy_text, easy_conf = _easy_read_name(shot, cjk=use_cjk)
             if easy_text and easy_conf > 0.3:
-                print(f"[name] EasyOCR: '{easy_text}' (conf={easy_conf:.2f})")
+                _log.info("name: EasyOCR: '%s' (conf=%.2f)", easy_text, easy_conf)
                 # Try correction first
                 corrected_easy = _OCR_CORRECTIONS.get(
                     easy_text, _OCR_CORRECTIONS.get(easy_text.upper(), ''))
@@ -510,7 +525,7 @@ def _ocr_player_name_once(card, ctx) -> str:
                     if m:
                         raw, matches = easy_text, m
         except Exception as e:
-            print(f"[name] EasyOCR unavailable: {e}")
+            _log.debug("name: EasyOCR unavailable: %s", e)
 
     # Pre-dialog correction check
     if not matches:
@@ -526,16 +541,19 @@ def _ocr_player_name_once(card, ctx) -> str:
         m = difflib.get_close_matches(
             raw.upper(), list(_NAME_UPPER_MAP), n=1, cutoff=0.60)
         if m:
-            print(f"[name] low-cutoff fuzzy match: {raw!r} → {m[0]!r}")
+            _log.info("name: low-cutoff fuzzy match: %r → %r", raw, m[0])
             matches = m
 
     if matches:
         player = _NAME_UPPER_MAP[matches[0]]
-        print(f"[name] raw={raw!r}  matched={player!r}")
+        _log.info("name: raw=%r matched=%r", raw, player)
+        # Save OCR training sample for the character model
+        if proc is not None:
+            _save_ocr_training_sample("name", shot, proc, player)
         return player
 
     # No match found — return raw text (caller may retry or show dialog)
-    print(f"[name] raw={raw!r}  no match found")
+    _log.warning("name: raw=%r no match found", raw)
     return raw
 
 
@@ -556,7 +574,7 @@ def ocr_build_stats(image_path: str) -> tuple:
     try:
         img = Img.open(image_path).convert("RGB")
     except Exception as e:
-        print(f"[ocr] Failed to open {image_path}: {e}")
+        _log.error("Failed to open %s: %s", image_path, e)
         return 0, 0
 
     w, h = img.size
@@ -647,7 +665,7 @@ def _ocr_stat_region(region: np.ndarray) -> int:
             if easy_val > 0 and easy_conf > 0.3:
                 result = easy_val
         except Exception as e:
-            print(f"[ocr] EasyOCR stat fallback failed: {e}")
+            _log.debug("EasyOCR stat fallback failed: %s", e)
 
     return result
 
@@ -670,7 +688,7 @@ def _ocr_enemy_name(win) -> str:
         arr_cjk = np.pad(np.asarray(bw_cjk), 10, constant_values=255)
         raw     = ' '.join(_ocr(Img.fromarray(arr_cjk),
                                 config=_NAME_OCR_CJK).strip().split())
-        raw     = _OCR_CORRECTIONS.get(raw, _OCR_CORRECTIONS.get(raw.upper(), raw))
+        raw     = _apply_correction(raw)
 
     # EasyOCR fallback for enemy names
     if not raw or raw == "unknown":
@@ -679,10 +697,9 @@ def _ocr_enemy_name(win) -> str:
             use_cjk = CFG.get("cjk_names", False)
             easy_text, easy_conf = _easy_read_name(shot, cjk=use_cjk)
             if easy_text and easy_conf > 0.3:
-                print(f"[enemy_name] EasyOCR: '{easy_text}' (conf={easy_conf:.2f})")
-                raw = _OCR_CORRECTIONS.get(
-                    easy_text, _OCR_CORRECTIONS.get(easy_text.upper(), easy_text))
+                _log.info("enemy_name: EasyOCR: '%s' (conf=%.2f)", easy_text, easy_conf)
+                raw = _apply_correction(easy_text)
         except Exception as e:
-            print(f"[enemy_name] EasyOCR unavailable: {e}")
+            _log.debug("enemy_name: EasyOCR unavailable: %s", e)
 
     return re.sub(r'[\\/:*?"<>|]', '', raw) or "unknown"

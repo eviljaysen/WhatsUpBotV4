@@ -183,8 +183,9 @@ Degrades gracefully when easyocr is not installed — returns empty results.
 
 **Exports:**
 - `is_available() -> bool` — check if easyocr can be imported
-- `read_ascii(image) -> str` — ASCII-only reader ('en')
-- `read_cjk(image) -> str` — CJK reader ('ja' + 'en')
+- `read_text(image, cjk, allowlist, detail) -> (str, float)` — general text reader
+- `read_number(image, cjk) -> (int, float)` — digit-only reader
+- `read_name(image, cjk) -> (str, float)` — name reader (uppercase ASCII)
 
 **Two cached reader instances:** `_reader_ascii` and `_reader_cjk`, created on first use.
 
@@ -208,10 +209,9 @@ No OCR, no image processing — pure click/wait/detect.
 
 **Key constants:**
 
-- `PIXEL_DIFF_THRESHOLD = 12` — mean pixel diff below which = same frame (wrap)
-- `SLOT_SETTLE_TIME = 0.15` — seconds to wait for new slot to render
+- `WRAP_FP_THRESHOLD = 5` — fingerprint diff below which = same car (wrap)
+- `SLOT_SETTLE_TIME = 0.20` — seconds to wait for new slot to render
 - `ADVANCE_POLL_INTERVAL = 0.04` — 40ms poll interval for frame change detection
-- Wrap confirmation: second screenshot after 50ms delay prevents false positives
 
 **Navigation flow (team and enemy use same flow):**
 ```
@@ -332,7 +332,7 @@ scouting data to SQLite.
   - Returns `[(player, building, reason), ...]` — strongest unplaced → weakest buildings
 - `get_momentum(snapshots) -> dict` — velocity, acceleration, trend per team
 - `format_building_summary(analysis, alert_thresholds) -> str` — compact table with avg stats + alerts
-- `format_top_players(slot_results, limit=10) -> str` — ranked player table by avg strength
+- `format_top_players(limit=10) -> str` — ranked player table from build_history/ (total strength, delta vs DB)
 - `format_momentum(momentum) -> str` — one-line "Team +N/min [trend] | Opp +N/min [trend]"
 
 ---
