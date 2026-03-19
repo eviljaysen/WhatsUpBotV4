@@ -7,6 +7,10 @@ to Discord when conditions are met. No screen capture, no pyautogui.
 import time
 from dataclasses import dataclass, field
 
+from bot.config import get_logger
+
+_log = get_logger("alerts")
+
 
 @dataclass
 class Alert:
@@ -135,19 +139,20 @@ class AlertEvaluator:
         try:
             from bot.discord_post import post_alert
         except ImportError:
-            print("[alerts] discord_post not available")
+            _log.error("discord_post not available")
             return
 
         now = time.time()
         for alert in alerts:
             last = _last_fired.get(alert.alert_type, 0)
             if now - last < ALERT_COOLDOWN_SEC:
-                print(f"[alert] {alert.alert_type} rate-limited "
-                      f"({int(ALERT_COOLDOWN_SEC - (now - last))}s remaining)")
+                _log.debug("%s rate-limited (%ds remaining)",
+                           alert.alert_type,
+                           int(ALERT_COOLDOWN_SEC - (now - last)))
                 continue
-            print(f"[alert] {alert.severity}: {alert.message}")
+            _log.info("%s: %s", alert.severity, alert.message)
             try:
                 post_alert(alert.message, webhook_url=self.webhook_url)
                 _last_fired[alert.alert_type] = now
             except Exception as e:
-                print(f"[alert] Failed to post: {e}")
+                _log.error("Failed to post alert: %s", e, exc_info=True)

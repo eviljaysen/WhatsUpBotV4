@@ -11,7 +11,9 @@ import sqlite3
 import time
 from contextlib import contextmanager
 
-from bot.config import DB_PATH
+from bot.config import DB_PATH, get_logger
+
+_log = get_logger("history")
 
 
 # ── Schema ─────────────────────────────────────────────────────────────────────
@@ -122,7 +124,7 @@ def init_db():
     """Create tables and indexes if they don't exist. Safe to call repeatedly."""
     with _conn() as con:
         con.executescript(_DDL)
-    print(f"[history] DB ready: {DB_PATH}")
+    _log.info("DB ready: %s", DB_PATH)
 
 
 # ── Write ──────────────────────────────────────────────────────────────────────
@@ -159,7 +161,7 @@ def save_scan(meta: dict, slot_results: list) -> int:
                 (scan_id, s.player, s.building, s.hp, s.atk,
                  1 if s.defending else 0, s.screenshot))
 
-    print(f"[history] Saved scan #{scan_id}: {len(slot_results)} slots")
+    _log.info("Saved scan #%s: %d slots", scan_id, len(slot_results))
     return scan_id
 
 
@@ -306,7 +308,7 @@ def get_or_create_war(opponent: str) -> int:
             "INSERT INTO wars (opponent, start_ts) VALUES (?, ?)",
             (opponent, int(time.time())))
         war_id = cur.lastrowid
-        print(f"[history] New war #{war_id} vs {opponent}")
+        _log.info("New war #%s vs %s", war_id, opponent)
         return war_id
 
 
@@ -353,7 +355,7 @@ def _close_war_row(con, war_id: int, outcome: str,
         "UPDATE wars SET end_ts = ?, result = ?, "
         "our_final = ?, opp_final = ? WHERE id = ?",
         (int(time.time()), outcome, our_final, opp_final, war_id))
-    print(f"[history] War #{war_id} closed: {outcome} ({our_final}-{opp_final})")
+    _log.info("War #%s closed: %s (%d-%d)", war_id, outcome, our_final, opp_final)
 
 
 def close_war(war_id: int, result: str,

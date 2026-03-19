@@ -11,8 +11,10 @@ import os
 import pyautogui
 
 from bot.config import (
-    GAME_WINDOW_TITLE, CONTENT_OFFSET_X, CONTENT_OFFSET_Y, IMAGES_DIR
+    GAME_WINDOW_TITLE, CONTENT_OFFSET_X, CONTENT_OFFSET_Y, IMAGES_DIR, get_logger
 )
+
+_log = get_logger("window")
 from bot.templates import _HUD
 
 
@@ -126,7 +128,8 @@ def detect_window() -> Window:
             u32.GetClientRect(hwnd, ctypes.byref(rc))
             wx, wy, ww, wh = pt.x, pt.y, rc.right, rc.bottom
     else:
-        print(f"[window] '{GAME_WINDOW_TITLE}' not found — full-screen fallback {ww}×{wh}")
+        _log.warning("'%s' not found — full-screen fallback %d×%d",
+                     GAME_WINDOW_TITLE, ww, wh)
 
     wx += CONTENT_OFFSET_X
     wy += CONTENT_OFFSET_Y
@@ -134,12 +137,13 @@ def detect_window() -> Window:
     wh -= CONTENT_OFFSET_Y
 
     win = Window(wx, wy, ww, wh)
-    print(f"  Window: '{title}'  ({wx},{wy})  {ww}×{wh}  scale=({win.sx:.4f},{win.sy:.4f})")
+    _log.info("Window: '%s'  (%d,%d)  %d×%d  scale=(%.4f,%.4f)",
+              title, wx, wy, ww, wh, win.sx, win.sy)
 
     try:
         pyautogui.screenshot(region=win.region).save(
             os.path.join(IMAGES_DIR, "debug_window.PNG"))
     except Exception as e:
-        print(f"[window] Debug screenshot failed: {e}")
+        _log.warning("Debug screenshot failed: %s", e)
 
     return win

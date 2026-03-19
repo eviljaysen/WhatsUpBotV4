@@ -23,7 +23,9 @@ import numpy as np
 from PIL import Image as Img
 from collections import Counter
 
-from bot.config import BASE_DIR, CFG
+from bot.config import BASE_DIR, CFG, get_logger
+
+_log = get_logger("name_model")
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 NAME_TRAIN_DIR = os.path.join(BASE_DIR, "training_data", "names")
@@ -227,7 +229,7 @@ def _load_dataset(augment: bool = True):
                         images.append(aug_arr[np.newaxis, :, :])
                         labels.append(class_to_idx[player])
             except Exception as e:
-                print(f"[name_model] Failed to load {path}: {e}")
+                _log.warning("Failed to load %s: %s", path, e)
 
     if not images:
         return None, None, []
@@ -257,15 +259,16 @@ def train_model(epochs: int = 0, lr: float = 0.001,
 
     images, labels, class_names = _load_dataset(augment=True)
     if images is None or len(class_names) < 2:
-        print("[name_model] Not enough data to train (need ≥2 players with samples)")
+        _log.warning("Not enough data to train (need ≥2 players with samples)")
         return {"error": "insufficient data"}
 
     # Filter classes with too few samples
     counts = Counter(labels.tolist())
     valid_classes = {c for c, n in counts.items() if n >= min_samples}
     if len(valid_classes) < 2:
-        print(f"[name_model] Need ≥{min_samples} samples per player. "
-              f"Current: {dict(zip(class_names, [counts.get(i, 0) for i, _ in enumerate(class_names)]))}")
+        _log.warning("Need ≥%d samples per player. Current: %s",
+                     min_samples,
+                     dict(zip(class_names, [counts.get(i, 0) for i, _ in enumerate(class_names)])))
         return {"error": "insufficient samples per class"}
 
     # Remap to contiguous labels
@@ -289,10 +292,11 @@ def train_model(epochs: int = 0, lr: float = 0.001,
         else:
             epochs = 50
 
-    print(f"[name_model] Training: {num_classes} players, {len(images)} samples, {epochs} epochs")
+    _log.info("Training: %d players, %d samples, %d epochs",
+              num_classes, len(images), epochs)
     for i, name in enumerate(class_names):
         n = int(np.sum(labels == i))
-        print(f"  {name}: {n} samples")
+        _log.debug("  %s: %d samples", name, n)
 
     device = torch.device("cpu")
     X = torch.from_numpy(images)
@@ -349,7 +353,8 @@ def train_model(epochs: int = 0, lr: float = 0.001,
             val_acc = -1
 
         if (epoch + 1) % 10 == 0 or epoch == 0:
-            print(f"  Epoch {epoch + 1}/{epochs}: loss={avg_loss:.4f} val_acc={val_acc:.3f}")
+            _log.debug("  Epoch %d/%d: loss=%.4f val_acc=%.3f",
+                       epoch + 1, epochs, avg_loss, val_acc)
 
         # Early stopping: stop when loss stops improving
         if avg_loss < best_loss - 0.001:
@@ -358,7 +363,7 @@ def train_model(epochs: int = 0, lr: float = 0.001,
         else:
             patience_counter += 1
             if patience_counter >= EARLY_STOP_PATIENCE:
-                print(f"  Early stop at epoch {epoch + 1} (loss plateau)")
+                _log.debug("  Early stop at epoch %d (loss plateau)", epoch + 1)
                 break
 
     # Save model + class names
@@ -396,8 +401,8 @@ def train_model(epochs: int = 0, lr: float = 0.001,
         "class_names": class_names,
         "final_loss": epoch_losses[-1],
     }
-    print(f"[name_model] Training complete: acc={train_acc:.3f} val_acc={best_acc:.3f}")
-    print(f"[name_model] Model saved: {MODEL_PATH}")
+    _log.info("Training complete: acc=%.3f val_acc=%.3f", train_acc, best_acc)
+    _log.info("Model saved: %s", MODEL_PATH)
     return result
 
 
@@ -421,10 +426,10 @@ def _load_model():
             _model = _build_model(checkpoint["num_classes"]).to(_device)
             _model.load_state_dict(checkpoint["state_dict"])
             _model.eval()
-            print(f"[name_model] Loaded model: {len(_classes)} classes")
+            _log.info("Loaded model: %d classes", len(_classes))
             return _model, _classes
         except Exception as e:
-            print(f"[name_model] Failed to load model: {e}")
+            _log.error("Failed to load model: %s", e, exc_info=True)
             return None, None
 
 
@@ -457,7 +462,7 @@ def predict_name(shot) -> tuple:
 
         return player, confidence
     except Exception as e:
-        print(f"[name_model] Prediction error: {e}")
+        _log.error("Prediction error: %s", e, exc_info=True)
         return '', 0.0
 
 

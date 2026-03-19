@@ -8,7 +8,9 @@ import os
 import pyautogui
 from PIL import Image as Img
 
-from bot.config import IMAGES_DIR, CFG
+from bot.config import IMAGES_DIR, CFG, get_logger
+
+_log = get_logger("templates")
 
 
 # ── HUD layout (1920×1080 baseline — fixed game-UI positions) ─────────────────
@@ -78,7 +80,7 @@ class Templates:
     def _load(self, filename: str, sx: float, sy: float):
         path = os.path.join(IMAGES_DIR, filename)
         if not os.path.isfile(path):
-            print(f"[tpl] Missing: {filename}")
+            _log.warning("Missing template: %s", filename)
             self._cache[filename] = None
             return
         img = Img.open(path).convert("RGB")
@@ -109,7 +111,7 @@ class Templates:
         try:
             return pyautogui.locateOnScreen(tpl, region=region, confidence=confidence)
         except Exception as e:
-            print(f"[templates] locateOnScreen failed for {filename}: {e}")
+            _log.error("locateOnScreen failed for %s: %s", filename, e)
             return None
 
     def find_center(self, filename: str, region=None, confidence: float = 0.8):

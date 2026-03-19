@@ -24,9 +24,11 @@ from tkinter import Text, WORD
 import pytz
 from datetime import datetime
 
-from bot.config import SCANS_DIR, IMAGES_DIR
+from bot.config import SCANS_DIR, IMAGES_DIR, get_logger
 from bot.scan import run_team_scan, run_enemy_scan
 from bot.discord_post import post_report, DISCORD_WEBHOOK_URL
+
+_log = get_logger("app")
 
 # System tray — optional dependency
 try:
@@ -35,7 +37,7 @@ try:
     _TRAY_AVAILABLE = True
 except ImportError:
     _TRAY_AVAILABLE = False
-    print("[tray] pystray not installed — system tray disabled")
+    _log.warning("pystray not installed — system tray disabled")
 
 
 # ── Crash handler ──────────────────────────────────────────────────────────────
@@ -49,13 +51,13 @@ def _crash_handler(exc_type, exc_value, exc_tb):
     tb_str   = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
     with open(log_path, "w", encoding="utf-8") as f:
         f.write(f"WhatsUpBot {VERSION} crash\n{'='*60}\n{tb_str}")
-    print(f"\n{'='*60}\nCRASH: {exc_value}\nDetails: {log_path}\n{'='*60}")
+    _log.critical("CRASH: %s\nDetails: %s\n%s", exc_value, log_path, tb_str)
     try:
         import tkinter.messagebox as mb
         mb.showerror("WhatsUpBot — Error",
                      f"{exc_value}\n\nFull details saved to:\n{log_path}")
     except Exception as e:
-        print(f"[crash] Could not show error dialog: {e}")
+        _log.error("Could not show error dialog: %s", e)
 
 sys.excepthook = _crash_handler
 
@@ -304,7 +306,7 @@ class App:
         with open(path, "a", encoding="utf-8") as fh:
             fh.write(body)
         self._set_status(f"Saved: {os.path.basename(path)}")
-        print(f"Report saved: {path}")
+        _log.info("Report saved: %s", path)
 
     def _post_discord(self):
         """v4.0: Post current report text to Discord webhook."""
@@ -482,7 +484,7 @@ class App:
                              f"({b['slot_count']})")
             self._bldg_text.config(text="  ".join(parts))
         except Exception as e:
-            print(f"[ui] Building display error: {e}")
+            _log.error("Building display error: %s", e)
 
     # ── v5.0: War status indicator ────────────────────────────────────────────
     def _update_war_status(self, opponent: str = ""):
@@ -504,7 +506,7 @@ class App:
                 self.root.title(
                     f"Wolf Pack Defense v{VERSION} — {result_icon} vs {opponent}")
         except Exception as e:
-            print(f"[ui] War status error: {e}")
+            _log.error("War status error: %s", e)
 
     # ── v5.0: Scouting dialog ─────────────────────────────────────────────────
     def _show_scouting(self):
@@ -932,7 +934,7 @@ class App:
             try:
                 self._tray_icon.notify(message, title)
             except Exception as e:
-                print(f"[tray] Notification failed: {e}")
+                _log.warning("Tray notification failed: %s", e)
 
     def _quit(self):
         if self._interval_job:
@@ -941,7 +943,7 @@ class App:
             try:
                 self._tray_icon.stop()
             except Exception as e:
-                print(f"[tray] Stop error: {e}")
+                _log.warning("Tray stop error: %s", e)
         self.root.destroy()
 
 

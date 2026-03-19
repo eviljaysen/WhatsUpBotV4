@@ -12,7 +12,9 @@ import urllib.request
 import urllib.error
 import os
 
-from bot.config import DISCORD_WEBHOOK_URL
+from bot.config import DISCORD_WEBHOOK_URL, get_logger
+
+_log = get_logger("discord_post")
 
 
 def post_report(report_text: str, image_path: str = None,
@@ -84,7 +86,7 @@ def _post_multipart(url: str, text: str, image_path: str) -> bool:
         with open(image_path, "rb") as f:
             image_data = f.read()
     except OSError as e:
-        print(f"[discord] Cannot read image {image_path}: {e}")
+        _log.error("Cannot read image %s: %s", image_path, e)
         return False
 
     def _part(name, data, content_type, fname=None):
@@ -112,10 +114,10 @@ def _post_multipart(url: str, text: str, image_path: str) -> bool:
         with urllib.request.urlopen(req, timeout=15) as resp:
             return 200 <= resp.status < 300
     except urllib.error.HTTPError as e:
-        print(f"[discord] HTTP {e.code}: {e.reason}")
+        _log.error("HTTP %s: %s", e.code, e.reason)
         return False
     except Exception as e:
-        print(f"[discord] Multipart post failed: {e}")
+        _log.error("Multipart post failed: %s", e, exc_info=True)
         return False
 
 
@@ -138,8 +140,8 @@ def _post_json(url: str, payload: dict) -> bool:
         with urllib.request.urlopen(req, timeout=10) as resp:
             return 200 <= resp.status < 300
     except urllib.error.HTTPError as e:
-        print(f"[discord] HTTP {e.code}: {e.reason}")
+        _log.error("HTTP %s: %s", e.code, e.reason)
         return False
     except Exception as e:
-        print(f"[discord] Post failed: {e}")
+        _log.error("Post failed: %s", e, exc_info=True)
         return False

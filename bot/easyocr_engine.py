@@ -11,7 +11,9 @@ they return empty results so callers never need to check availability first.
 import numpy as np
 from PIL import Image as Img
 
-from bot.config import CFG
+from bot.config import CFG, get_logger
+
+_log = get_logger("easyocr_engine")
 
 # Cached reader instances — created on first use
 _reader_ascii = None
@@ -28,7 +30,7 @@ def is_available() -> bool:
             _available = True
         except ImportError:
             _available = False
-            print("[easyocr] Not installed — fallback OCR disabled")
+            _log.warning("Not installed — fallback OCR disabled")
     return _available
 
 
@@ -56,15 +58,15 @@ def _get_reader(cjk: bool = False):
 
     if cjk:
         if _reader_cjk is None:
-            print("[easyocr] Loading CJK reader (ja+en)… this may take a moment")
+            _log.info("Loading CJK reader (ja+en)… this may take a moment")
             _reader_cjk = easyocr.Reader(['ja', 'en'], gpu=gpu, verbose=False)
-            print("[easyocr] CJK reader ready")
+            _log.info("CJK reader ready")
         return _reader_cjk
     else:
         if _reader_ascii is None:
-            print("[easyocr] Loading ASCII reader (en)… this may take a moment")
+            _log.info("Loading ASCII reader (en)… this may take a moment")
             _reader_ascii = easyocr.Reader(['en'], gpu=gpu, verbose=False)
-            print("[easyocr] ASCII reader ready")
+            _log.info("ASCII reader ready")
         return _reader_ascii
 
 
@@ -102,7 +104,7 @@ def read_text(image, cjk: bool = False, allowlist: str = None,
         results.sort(key=lambda r: r[2], reverse=True)
         return results
     except Exception as e:
-        print(f"[easyocr] OCR error: {e}")
+        _log.error("OCR error: %s", e, exc_info=True)
         return []
 
 

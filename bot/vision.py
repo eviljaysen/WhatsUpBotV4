@@ -5,7 +5,7 @@ or numpy arrays and return PIL Images or numpy arrays. Fully testable offline.
 """
 
 import numpy as np
-from PIL import Image as Img, ImageFilter
+from PIL import Image as Img
 
 
 def convert_to_bw(image, white_threshold=(235, 242, 254)) -> Img.Image:
