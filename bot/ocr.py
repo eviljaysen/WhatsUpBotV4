@@ -357,8 +357,8 @@ def ocr_player_name(card, ctx) -> str:
     """OCR the player name using the card's detected name region.
 
     Pipeline (stops at first confident match):
-    1. ML model prediction (fastest, most accurate when trained)
-    2. Template match (IoU) — fast, no Tesseract
+    1. Template match (IoU) — fast, no Tesseract/ML needed
+    2. ML model prediction (fast ~5ms, most accurate when trained)
     3. Multi-pass ASCII: PSM 7, then PSM 8
        - Each pass also tries stripping 1 leading char (logo-edge bleed)
     4. CJK fallback (if cjk_names enabled or ASCII too short): Otsu binarize

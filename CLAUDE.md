@@ -159,8 +159,8 @@ pos = (480, 843)                # raw baseline — won't work at non-1920 resolu
     "content_offset_y":     0,
     "tesseract_path":       "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
     "players": {
-        "JAYSEN":   "UTC+1",
-        "KOIVU":    "UTC+2"
+        "JAYSEN":   "GMT-7",
+        "KOIVU":    "GMT+2"
     },
     "ocr_corrections": {
         "鮭とば":          "SAKETOBA",
@@ -176,16 +176,12 @@ pos = (480, 843)                # raw baseline — won't work at non-1920 resolu
     "sleep_start":           21,
     "sleep_end":             8,
     "cjk_names":             false,
+    "tmpl_threshold":        0.40,
+    "cjk_match_cutoff":      0.65,
     "max_enemy_slots":       14,
     "discord_webhook_url":   "",
     "scan_interval_minutes": 0,
-    "auto_train":            true,
-    "alert_thresholds": {
-        "instant_warning_minutes": 30,
-        "building_strength_min":   5000000,
-        "score_gap_warning":       10000
-    },
-    "alert_webhook_url":     ""
+    "hud_overrides":         {}
 }
 ```
 

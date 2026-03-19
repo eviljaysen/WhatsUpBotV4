@@ -32,7 +32,7 @@
     },
     "ocr_corrections": {
         "鮭とば": "SAKETOBA",
-        "ぴよきち": "PIYO",
+        "ひよきち": "PIYO",
         "りぷとん": "LIPTON",
         "毒舞茸": "MUSHROOM",
         "PATRICKSPATZ": "PATRICK",
@@ -69,17 +69,12 @@
             534
         ]
     },
-    "enemy_select_next": [
-        211,
-        842
-    ],
     "name_match_cutoff": 0.8,
     "bot_slots_total": 75,
     "sleep_start": 21,
     "sleep_end": 8,
     "cjk_names": true,
     "tmpl_threshold": 0.4,
-    "tmpl_confidence": 0.75,
     "cjk_match_cutoff": 0.65,
     "max_enemy_slots": 14,
     "discord_webhook_url": "https://discord.com/api/webhooks/1482401167022493842/Ige3aGDJ4Ki2OkT8tQBCg_iXJtBGwRgER4HmhItFXwbHtd7VG7-K9FetvFxdUYncJyTd",
