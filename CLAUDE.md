@@ -30,7 +30,7 @@ python -m pytest tests/ -v
 
 **Config:** `config.json` — players, timezones, OCR corrections, building coords.
 **Templates:** `images/` — required PNG templates for template matching.
-**Builds:** `builds/` — current scan screenshots. Old screenshots moved to `build_history/` (per-file merge).
+**Builds:** `builds/` — current scan screenshots, copied to `build_history/` as stable 3-car record.
 **Venv:** Always use the project venv. Never use system Python for this project.
 
 ---
@@ -58,6 +58,7 @@ WhatsUpBot.py            ← tkinter App UI + entry point ONLY
 ```
 
 **Threading model:**
+
 - Main thread: tkinter event loop only. Never block it.
 - Scan threads: `threading.Thread(daemon=True)` — one at a time, started by App.
 - ML training thread: `threading.Thread(daemon=True)` — kicked off after each scan via `_auto_train_all()`.
@@ -195,23 +196,28 @@ pos = (480, 843)                # raw baseline — won't work at non-1920 resolu
 ## OCR Pipeline
 
 ### Score / Timer OCR
+
 ```
 screenshot(region) → converter(image) → upscale 2× NEAREST → MinFilter(3) → pad 10px → Tesseract
 ```
+
 - `convert_to_bw` — near-white (R≥235,G≥242,B≥254) → black ink (white HUD text)
 - `convert_dark_text` — dark pixels (luminance < 170) → black ink (scores, opponent name)
 - `convert_white_text` — generic white text → black ink (max_points)
 - `convert_badge_text` — white pixels (≥180 all channels) → black ink (bonus badges)
 
 ### Build Image Stats OCR
+
 ```
 build_card.PNG → crop bottom 14% → dark-text binarize → gap detection → split HP|ATK → Tesseract
 ```
+
 - Gap-based: finds widest gap between digit groups to separate HP and ATK sections
 - Skips heart/sword icons via gap detection (no color matching needed)
 - Results cached in `_stats_cache.json` by file modification time
 
 ### Player Name OCR (in priority order)
+
 1. **Template match** — NameMatcher, fastest path (no Tesseract/ML needed)
 2. **CNN classifier** — `name_model.predict_name()`, fast ~5ms when model is trained
 3. **ASCII Tesseract PSM 7** — `_NAME_OCR` config, corrections applied
@@ -225,6 +231,7 @@ On every successful name match (any method), a training sample is auto-saved via
 `name_model.save_training_sample()` for future CNN training.
 
 ### Paw Icon Blanking (IMPORTANT)
+
 When blanking the paw icon from the name region, use **160 (mid-gray)**, NOT 255.
 Pure white (255) triggers `convert_to_bw`'s near-white threshold and becomes black ink,
 producing spurious OCR characters (e.g. 'C') from the blanked area.
@@ -297,6 +304,7 @@ _log = get_logger("module_name")   # returns logging.getLogger("bot.module_name"
 
 **Output:** Dual — rotating file (`bot.log`, 2MB max, 3 backups) + console (INFO+).
 **Log levels:**
+
 - `DEBUG` — verbose OCR details, cache hits, fingerprint diffs
 - `INFO` — scan progress, slot captures, matches, training results
 - `WARNING` — suspicious values, failed OCR, rejected garbage, slot count anomalies
@@ -390,7 +398,7 @@ detection (frame unchanged), max_slots reached.
 Key constants (tuned empirically):
 
 - `WRAP_FP_THRESHOLD = 5` — fingerprint diff below which = same car
-- `SLOT_SETTLE_TIME = 0.50` — wait for new slot to fully render before comparison
+- `SLOT_SETTLE_TIME = 0.20` — wait for new slot to fully render before comparison
 
 ---
 
@@ -446,7 +454,7 @@ _name_templates[player].append(new)   # always cap at 5
 try:
     ...
 except Exception:
-    pass                               # log it: print(f"[module] {e}")
+    pass                               # log it: _log.error("msg: %s", e)
 
 # ❌ Never write scan state to module globals
 _last_result = something               # use ScanContext instead
@@ -528,6 +536,7 @@ tests/
 ```
 
 Key test targets (no BlueStacks needed):
+
 - `parse_timer("17h 23m")` → `(17, 23)`
 - `parse_timer("0823")` → `(8, 23)` (no 'h')
 - `_fmt_stat(1_234_567)` → `"1.2M"`

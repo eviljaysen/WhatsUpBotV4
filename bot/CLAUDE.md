@@ -9,6 +9,7 @@
 **Purpose:** Single source of truth for all configuration. Loaded once at startup, reloadable on demand.
 
 **Exports:**
+
 - `CFG: dict` — raw config dict
 - `reload_config() -> dict` — reload config.json, update all derived constants, return new dict
 - `GAME_WINDOW_TITLE`, `CONTENT_OFFSET_X/Y` — window detection params
@@ -18,7 +19,6 @@
 - `_OCR_CORRECTIONS: dict` — raw OCR string → corrected player name
 - `NAME_MATCH_CUTOFF`, `BOT_SLOTS_TOTAL`, `SLEEP_START/END` — scalar settings
 - `_CJK_NAMES: bool` — whether CJK OCR path is active
-- `_TMPL_THRESHOLD: float` — Jaccard IoU threshold for name template matching
 - `_ENEMY_BLDGS_CFG: dict` — building number → [x, y] baseline coords
 - `BASE_DIR`, `IMAGES_DIR`, `BUILDS_DIR`, `BUILD_HISTORY_DIR`, `SCANS_DIR`, `NAME_TMPL_DIR`, `DB_PATH` — paths
 - `save_ocr_correction(raw: str, corrected: str)` — persist correction to config.json
@@ -32,6 +32,7 @@
 **Purpose:** Detect the BlueStacks game window and expose scaled coordinate helpers.
 
 **Exports:**
+
 - `class Window` — geometry + scale helpers
   - `win.sp(bx, by) -> (x, y)` — scale 1920×1080 point to live screen
   - `win.sr(bx, by, bw, bh) -> (x, y, w, h)` — scale 1920×1080 region
@@ -40,6 +41,7 @@
 - `detect_window() -> Window` — find BlueStacks, save debug_window.PNG
 
 **How window detection works:**
+
 1. `EnumWindows` finds all visible top-level windows matching `GAME_WINDOW_TITLE`
 2. `EnumChildWindows` finds the largest child surface (render canvas)
 3. `ClientToScreen` converts client coords to screen coords
@@ -53,6 +55,7 @@
 **Purpose:** Lazy-loading, auto-rescaling template image cache. Also owns the HUD coord map.
 
 **Exports:**
+
 - `_HUD_DEFAULTS: dict` — default HUD regions as 1920×1080 `(bx, by, bw, bh)` tuples
 - `_HUD: dict` — active HUD regions (defaults + any user overrides from config)
 - `reload_hud_overrides()` — re-apply HUD overrides from CFG after config reload
@@ -66,6 +69,7 @@
 - `get_tpl() -> Templates` — access the singleton
 
 **HUD regions to calibrate (verify with debug images after first scan):**
+
 - `slot_hp` — HP value row below car card
 - `slot_armor` — armor/power value row below car card
 - `slot_status_px` — 1px sample for DEF/ATK detection
@@ -78,6 +82,7 @@
 return PIL Images or numpy arrays.
 
 **Exports:**
+
 - `convert_to_bw(image, white_threshold=(235,242,254)) -> PIL.Image`
   - Near-white pixels → black ink; everything else → white background
   - Used for: white HUD text (timer, names)
@@ -105,6 +110,7 @@ specifically chosen to NOT trigger this threshold.
 CJK support, name template matching.
 
 **Exports:**
+
 - OCR config strings: `_BONUS_OCR`, `_NAME_OCR`, `_NAME_OCR_PSM8`, `_NAME_OCR_CJK`,
   `_NUMBERS_OCR`, `_TIMER_OCR`
 - `_ocr(image, config) -> str` — raw Tesseract call
@@ -134,6 +140,7 @@ Each `ScanContext` gets a fresh `NameMatcher` initialized from disk at scan star
 auto-collected during scans. Much faster and more accurate than OCR once trained.
 
 **Exports:**
+
 - `save_training_sample(player, shot)` — save labeled name crop (cap: 50 per player)
 - `predict_name(shot) -> (player, confidence)` — classify a name screenshot
 - `train_model(epochs=30, min_samples=3) -> dict` — train CNN, returns accuracy/num_classes
@@ -147,6 +154,7 @@ lazily inside functions to avoid startup cost. Model state protected by `_model_
 threading lock for concurrent scan + train threads.
 
 **Training optimizations:**
+
 - Early stopping with patience=10 — avoids wasted epochs when loss plateaus
 - `ReduceLROnPlateau` scheduler — halves LR after 5 epochs without improvement
 - `_last_train_count` updated inside `_model_lock` to prevent data races
@@ -161,6 +169,7 @@ threading lock for concurrent scan + train threads.
 character crops, classifies each via a small CNN (~20K params), joins into text.
 
 **Exports:**
+
 - `segment_characters(img) -> list` — vertical projection segmentation into char crops
 - `predict_text(img, field="") -> (text, confidence)` — segment + classify + join
 - `train_model(epochs=0) -> dict` — train CNN on all OCR field training data
@@ -182,6 +191,7 @@ Labels extracted from filenames. Character crops segmented via vertical projecti
 Degrades gracefully when easyocr is not installed — returns empty results.
 
 **Exports:**
+
 - `is_available() -> bool` — check if easyocr can be imported
 - `read_text(image, cjk, allowlist, detail) -> (str, float)` — general text reader
 - `read_number(image, cjk) -> (int, float)` — digit-only reader
@@ -197,6 +207,7 @@ Degrades gracefully when easyocr is not installed — returns empty results.
 No OCR, no image processing — pure click/wait/detect.
 
 **Exports:**
+
 - `_esc() -> bool` — check if ESC is held
 - `_lobby_visible(win, ctx, confidence) -> bool` — throttled lobby template check
 - `_find_next_btn_pos(win) -> (x,y) | None` — locate white Next button cluster
@@ -214,6 +225,7 @@ No OCR, no image processing — pure click/wait/detect.
 - `ADVANCE_POLL_INTERVAL = 0.04` — 40ms poll interval for frame change detection
 
 **Navigation flow (team and enemy use same flow):**
+
 ```
 map screen
   → click building icon (_enter_building)
@@ -233,6 +245,7 @@ map screen
 This is the only module that knows the full scan flow.
 
 **Exports:**
+
 - `class CardInfo` — player card geometry (logo_box, name_region, build_region, paw_end)
 - `@dataclasses.dataclass SlotData` — data from one player slot
 - `@dataclasses.dataclass ScanContext` — all mutable scan state
@@ -253,6 +266,7 @@ detect_window → refresh_templates → create ScanContext
     enter_building → cycle_slots → [on_slot: OCR name + screenshot + DEF/ATK status]
     exit_building
   parallel build OCR (ThreadPoolExecutor — all saved screenshots at once)
+  _update_build_history (copy up to 3 PNGs per player to build_history/)
   capture scores (parallel ThreadPoolExecutor)
   capture timer
   build_report(ctx) → return (report, meta) [includes analysis sections]
@@ -262,6 +276,7 @@ detect_window → refresh_templates → create ScanContext
 ```
 
 **on_slot responsibilities:**
+
 1. OCR player name
 2. Validate against known players, check slot count (max 3)
 3. Save build screenshot
@@ -277,6 +292,7 @@ Builds formatted reports from scan data and extracts player stats from
 saved build images via OCR.
 
 **Exports:**
+
 - `_fmt_hm(minutes: int) -> str` — `"17H 23m"`
 - `_fmt_stat(n: int) -> str` — `"2.2M"`, `"639K"`, `"—"`
 - `parse_timer(text: str) -> (hours, minutes)`
@@ -286,7 +302,7 @@ saved build images via OCR.
   - Player stats table (sorted by HP desc)
   - Bot availability (awake/asleep split)
   - Win/loss instant projection
-- `get_player_stats_from_builds() -> list` — OCR HP/ATK from saved build images (mtime-cached)
+- `get_player_stats_from_builds(directory=None) -> list` — OCR HP/ATK from build images (mtime-cached, defaults to BUILDS_DIR)
 - `format_player_stats_table(stats) -> str` — format stats list into readable table
 - `build_image_grid(screenshot_paths, cols) -> PIL.Image` — grid collage of build screenshots
 
@@ -300,6 +316,7 @@ scouting data to SQLite.
 **DB Tables:** `scans`, `slots`, `player_stats`, `wars`, `score_snapshots`, `opponent_players` (+ indices)
 
 **Exports (core — v4.0):**
+
 - `init_db()` — create tables if not exist
 - `save_scan(meta, slot_results) -> int` — returns scan_id
 - `save_player_stats(scan_id, timestamp, player, slots)` — aggregated player strength
@@ -327,6 +344,7 @@ scouting data to SQLite.
 **Purpose:** Pure strategic analysis — no screen capture, no OCR, no pyautogui.
 
 **Exports:**
+
 - `analyze_buildings(slot_results) -> dict` — per-building totals, weakest/strongest/empty
 - `recommend_placements(slot_results, player_slots_placed, player_stats) -> list`
   - Returns `[(player, building, reason), ...]` — strongest unplaced → weakest buildings
@@ -344,6 +362,7 @@ scouting data to SQLite.
 **Alert types:** `INSTANT_WARNING`, `BUILDING_WEAK`, `SCORE_GAP_CLOSING`, `CARS_LOST`
 
 **Exports:**
+
 - `class Alert` — dataclass: alert_type, severity, message
 - `class AlertEvaluator`
   - `__init__(cfg)` — reads `alert_thresholds` from config
@@ -351,6 +370,7 @@ scouting data to SQLite.
   - `fire(alerts)` — post to Discord via `post_alert()`
 
 **Config keys:**
+
 ```json
 {
     "alert_thresholds": {
@@ -369,6 +389,7 @@ scouting data to SQLite.
 **Purpose:** Post scan reports to Discord via webhook. No dependencies beyond stdlib.
 
 **Exports:**
+
 - `post_report(webhook_url, report_text, image_path=None) -> bool`
   - POSTs text as a Discord message embed
   - Optionally attaches a build image grid
@@ -419,6 +440,7 @@ class SlotData:
 ## Common Patterns
 
 ### Pattern: Throttled visibility check
+
 ```python
 _lobby_t = 0.0
 while ...:
@@ -429,6 +451,7 @@ while ...:
 ```
 
 ### Pattern: Pixel-change wait with timeout
+
 ```python
 pre = np.asarray(pyautogui.screenshot(region=region))
 deadline = time.time() + timeout_s
@@ -440,12 +463,14 @@ while time.time() < deadline and not _esc():
 ```
 
 ### Pattern: Thread-safe UI update
+
 ```python
 # In a background thread:
 ctx.status_cb(f"Building {n}/6…")      # calls root.after(0, ...) internally
 ```
 
 ### Pattern: Safe file path from player name
+
 ```python
 safe = re.sub(r'[\\/:*?"<>|]', '', player)
 path = os.path.join(BUILDS_DIR, safe, f"{safe}_{count}.PNG")
