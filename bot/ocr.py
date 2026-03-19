@@ -395,7 +395,7 @@ def ocr_player_name(card, ctx) -> str:
     raw = result2 if len(result2.strip()) > len(result.strip()) else result
 
     # Last resort: correction dialog (blocks scan thread up to 30s)
-    if len(raw.strip()) >= 2 and ctx.correction_cb is not None:
+    if len(raw.strip()) >= 1 and ctx.correction_cb is not None:
         ctx.correction_event.clear()
         ctx.correction_result[0] = raw
         ctx.correction_cb(raw)
@@ -510,20 +510,29 @@ def _ocr_player_name_once(card, ctx) -> str:
             from bot.easyocr_engine import read_name as _easy_read_name
             use_cjk = CFG.get("cjk_names", False)
             easy_text, easy_conf = _easy_read_name(shot, cjk=use_cjk)
-            if easy_text and easy_conf > 0.3:
+            if easy_text and easy_conf > 0.15:
                 _log.info("name: EasyOCR: '%s' (conf=%.2f)", easy_text, easy_conf)
-                # Try correction first
+                # Try exact correction first
                 corrected_easy = _OCR_CORRECTIONS.get(
                     easy_text, _OCR_CORRECTIONS.get(easy_text.upper(), ''))
                 if corrected_easy:
                     m = _name_match(corrected_easy)
                     if m:
                         raw, matches = corrected_easy, m
-                # Then direct fuzzy match
+                # Fuzzy CJK correction (handles 駐とば → 鮭とば etc.)
+                if not matches:
+                    resolved = _resolve_cjk(easy_text)
+                    if resolved != easy_text:
+                        m = _name_match(resolved)
+                        if m:
+                            raw, matches = resolved, m
+                # Then direct fuzzy match against player names
                 if not matches:
                     m = _name_match(easy_text)
                     if m:
                         raw, matches = easy_text, m
+            elif easy_text:
+                _log.debug("name: EasyOCR low-conf: '%s' (conf=%.2f)", easy_text, easy_conf)
         except Exception as e:
             _log.debug("name: EasyOCR unavailable: %s", e)
 

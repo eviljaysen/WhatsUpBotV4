@@ -322,10 +322,12 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             try:
                 hp_raw = locate_number(win.hud("slot_hp"),
                                        converter=convert_dark_text,
-                                       debug_name="slot_hp" if slot == 1 else None)
+                                       debug_name="slot_hp" if slot == 1 else None,
+                                       minfilter=0)
                 atk_raw = locate_number(win.hud("slot_atk"),
                                         converter=convert_dark_text,
-                                        debug_name="slot_atk" if slot == 1 else None)
+                                        debug_name="slot_atk" if slot == 1 else None,
+                                        minfilter=0)
                 # Sanity: reject values < 1000 — no car in the game has HP or ATK
                 # that low. Values like "2" or "28" are CNN/OCR garbage.
                 hp  = hp_raw  if hp_raw  >= 1000 else 0
@@ -550,7 +552,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
     opp_shot = pyautogui.screenshot(region=win.hud("opponent"))
     opp_shot.save(os.path.join(IMAGES_DIR, "debug_opponent_raw.PNG"))
     from bot.ocr import _prepare_for_ocr
-    opp_proc = _prepare_for_ocr(opp_shot, convert_dark_text, upscale=2, minfilter=3)
+    opp_proc = _prepare_for_ocr(opp_shot, convert_dark_text, upscale=2, minfilter=0)
     opp_proc.save(os.path.join(IMAGES_DIR, "debug_opponent_conv.PNG"))
     opponent = _ocr(opp_proc, config='--oem 1 --psm 7').strip()
     if not opponent:
@@ -585,12 +587,12 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                           "--oem 1 --psm 7 -c tessedit_char_whitelist=0123456789",
                           "max_points", 2)
         f_op  = ex.submit(locate_number, win.hud("opp_points"),
-                          convert_dark_text, _NUMBERS_OCR, "opp_points", 2)
+                          convert_dark_text, _NUMBERS_OCR, "opp_points", 2, 0)
         f_ob  = ex.submit(locate_number, win.hud("opp_bonus"),
                           convert_badge_text,
                           _BONUS_OCR, "opp_bonus", 3, 0)
         f_tp  = ex.submit(locate_number, win.hud("team_points"),
-                          convert_dark_text, _NUMBERS_OCR, "team_points", 2)
+                          convert_dark_text, _NUMBERS_OCR, "team_points", 2, 0)
         f_tb  = ex.submit(locate_number, win.hud("team_bonus"),
                           convert_badge_text,
                           _BONUS_OCR, "team_bonus", 3, 0)
@@ -847,7 +849,7 @@ def run_enemy_scan(building_num: int, status_cb=None) -> str:
     opp_shot = pyautogui.screenshot(region=win.hud("opponent"))
     opp_shot.save(os.path.join(IMAGES_DIR, "debug_opponent_raw.PNG"))
     from bot.ocr import _prepare_for_ocr, _NAME_OCR_CJK, _resolve_cjk
-    opp_proc = _prepare_for_ocr(opp_shot, convert_dark_text, upscale=2, minfilter=3)
+    opp_proc = _prepare_for_ocr(opp_shot, convert_dark_text, upscale=2, minfilter=0)
     opp_proc.save(os.path.join(IMAGES_DIR, "debug_opponent_conv.PNG"))
     opponent_raw = _ocr(opp_proc, config='--oem 1 --psm 7').strip()
     if not opponent_raw:
