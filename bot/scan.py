@@ -223,9 +223,14 @@ def _update_build_history(ctx):
     if not os.path.isdir(BUILDS_DIR):
         return
 
+    known = set(_KNOWN_NAMES)
     for player_dir in os.listdir(BUILDS_DIR):
         src = os.path.join(BUILDS_DIR, player_dir)
         if not os.path.isdir(src):
+            continue
+        # Skip directories for unknown/garbage OCR names
+        if player_dir not in known:
+            _log.debug("build_history: skipping unknown player %r", player_dir)
             continue
 
         pngs = sorted(f for f in os.listdir(src) if f.upper().endswith('.PNG'))
