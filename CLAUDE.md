@@ -37,7 +37,7 @@ python -m pytest tests/ -v
 
 ## Architecture
 
-```
+```text
 WhatsUpBot.py            ← tkinter App UI + entry point ONLY
 └── bot/
     ├── config.py        ← all constants, config load/reload, OCR correction persistence
@@ -68,7 +68,7 @@ WhatsUpBot.py            ← tkinter App UI + entry point ONLY
 
 ## Module Dependency Graph
 
-```
+```text
 WhatsUpBot.py
     └── bot.scan ──────────────────────────────────────────────┐
          ├── bot.navigation ──────────────────────────────────┐ │
@@ -193,7 +193,7 @@ pos = (480, 843)                # raw baseline — won't work at non-1920 resolu
 
 ### Score / Timer OCR
 
-```
+```text
 screenshot(region) → converter(image) → upscale 2× NEAREST → MinFilter(3) → pad 10px → Tesseract
 ```
 
@@ -204,7 +204,7 @@ screenshot(region) → converter(image) → upscale 2× NEAREST → MinFilter(3)
 
 ### Build Image Stats OCR
 
-```
+```text
 build_card.PNG → crop bottom 14% → dark-text binarize → gap detection → split HP|ATK → Tesseract
 ```
 
@@ -242,7 +242,7 @@ arr[:, :card.paw_end] = 255   # WRONG — creates black ink in processed image
 ## Key Pixel Colour Rules (team building map icons)
 
 | Pixel colour | Meaning |
-|---|---|
+| --- | --- |
 | `(255,101,100)` or `(94,106,131)` | Building empty — skip |
 | `(144,179,235)` or `(0,0,0)` | Loading / placeholder — keep clicking |
 | `(169,202,250)` | First slot indicator — wrapped back to start |
@@ -255,7 +255,7 @@ arr[:, :card.paw_end] = 255   # WRONG — creates black ink in processed image
 ## Template Images Required (images/)
 
 | File | Used for |
-|---|---|
+| --- | --- |
 | `lobby.PNG` | Detect lobby screen (DEFEND/ATTACK choice) |
 | `team_logo.png` | Locate player card, derive name region |
 
@@ -269,7 +269,7 @@ in `templates.py` — no template images needed for buttons.
 All debug images saved to `images/`:
 
 | File | What it shows |
-|---|---|
+| --- | --- |
 | `debug_window.PNG` | Full game window at scan start |
 | `debug_name_raw.PNG` | Raw name region screenshot |
 | `debug_name_conv.PNG` | Name after convert_to_bw + upscale |
@@ -393,8 +393,8 @@ detection (frame unchanged), max_slots reached.
 
 Key constants (tuned empirically):
 
-- `WRAP_FP_THRESHOLD = 5` — fingerprint diff below which = same car
-- `SLOT_SETTLE_TIME = 0.20` — wait for new slot to fully render before comparison
+- `WRAP_FP_THRESHOLD = 20` — fingerprint diff below which = same car
+- `SLOT_SETTLE_TIME = 0.15` — wait for new slot to fully render before comparison
 
 ---
 
@@ -477,7 +477,7 @@ _last_train_count = n                  # must be inside `with _model_lock:`
 ## Feature Status
 
 | Feature | Module | Status |
-|---|---|---|
+| --- | --- | --- |
 | Modular bot/ package | all | ✅ v4.0 |
 | ScanContext (no global state) | scan.py | ✅ v4.0 |
 | Config hot-reload (mtime check) | config.py | ✅ v4.0 |

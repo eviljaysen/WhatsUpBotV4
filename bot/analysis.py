@@ -268,12 +268,15 @@ def format_top_players(limit: int = 10) -> str:
 
     ranked = stats[:limit]
 
-    # Load previous stats from DB for delta column
+    # Load previous stats from DB for delta column (skip garbage values)
     prev_stats = {}
     try:
+        from bot.config import MAX_PLAYER_TOTAL
         from bot.history import get_latest_player_stats
         for row in get_latest_player_stats():
-            prev_stats[row["player"]] = row["total_str"]
+            total = row["total_str"]
+            if total <= MAX_PLAYER_TOTAL:
+                prev_stats[row["player"]] = total
     except Exception as e:
         _log.debug("DB stats not available for delta: %s", e)
 

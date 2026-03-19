@@ -279,6 +279,11 @@ def get_player_stats_from_builds(directory: str = None) -> list:
     Uses a JSON cache keyed by file modification time so only changed
     images are re-OCR'd. Opening the Stats dialog is instant on repeat views.
 
+    Before building results, prunes stale cache entries (files that no longer
+    exist) and validates all values against sanity bounds — per-car maximums
+    and per-player totals. Garbage OCR values are zeroed out so they never
+    appear in reports.
+
     Args:
         directory: folder to scan (default: BUILDS_DIR)
 
@@ -287,7 +292,8 @@ def get_player_stats_from_builds(directory: str = None) -> list:
         {player, total_hp, total_atk, total_str,
          hp_1, atk_1, hp_2, atk_2, hp_3, atk_3, cars_found}
     """
-    from bot.config import BUILDS_DIR
+    from bot.config import (BUILDS_DIR, MAX_HP_PER_CAR, MAX_ATK_PER_CAR,
+                            MAX_PLAYER_TOTAL, MIN_STAT_VALUE)
     from bot.ocr import ocr_build_stats
 
     target_dir = directory or BUILDS_DIR
@@ -298,6 +304,23 @@ def get_player_stats_from_builds(directory: str = None) -> list:
     cache = _load_stats_cache(cache_path)
     dirty = False
 
+    # Prune stale cache entries (files that were deleted or moved)
+    valid_keys = set()
+    for player_dir in os.listdir(target_dir):
+        pdir = os.path.join(target_dir, player_dir)
+        if not os.path.isdir(pdir):
+            continue
+        for fname in os.listdir(pdir):
+            if fname.upper().endswith(".PNG"):
+                valid_keys.add(f"{player_dir}_{fname}")
+    stale_keys = [k for k in cache if k not in valid_keys]
+    if stale_keys:
+        for k in stale_keys:
+            del cache[k]
+        dirty = True
+        _log.debug("Pruned %d stale stats cache entries from %s",
+                   len(stale_keys), target_dir)
+
     results = []
     for player_dir in sorted(os.listdir(target_dir)):
         pdir = os.path.join(target_dir, player_dir)
@@ -305,8 +328,6 @@ def get_player_stats_from_builds(directory: str = None) -> list:
             continue
 
         car_stats = []
-        # Scan all numbered build screenshots (players can have up to
-        # 18 cars: 3 per building × 6 buildings).
         for fname in sorted(os.listdir(pdir)):
             if not fname.upper().endswith(".PNG"):
                 continue
@@ -320,6 +341,18 @@ def get_player_stats_from_builds(directory: str = None) -> list:
                 hp, atk = ocr_build_stats(img_path)
                 cache[cache_key] = {"mtime": mtime, "hp": hp, "atk": atk}
                 dirty = True
+
+            # Per-car sanity bounds — reject garbage OCR values
+            if hp < MIN_STAT_VALUE or hp > MAX_HP_PER_CAR:
+                if hp > 0:
+                    _log.warning("Stats: %s HP=%d rejected (outside %d–%d)",
+                                 cache_key, hp, MIN_STAT_VALUE, MAX_HP_PER_CAR)
+                hp = 0
+            if atk < MIN_STAT_VALUE or atk > MAX_ATK_PER_CAR:
+                if atk > 0:
+                    _log.warning("Stats: %s ATK=%d rejected (outside %d–%d)",
+                                 cache_key, atk, MIN_STAT_VALUE, MAX_ATK_PER_CAR)
+                atk = 0
             car_stats.append((hp, atk))
 
         while len(car_stats) < 3:
@@ -328,6 +361,13 @@ def get_player_stats_from_builds(directory: str = None) -> list:
         total_hp = sum(c[0] for c in car_stats)
         total_atk = sum(c[1] for c in car_stats)
         total_str = total_hp + total_atk
+
+        # Per-player total sanity check
+        if total_str > MAX_PLAYER_TOTAL:
+            _log.warning("Stats: %s total %d exceeds max %d — zeroed",
+                         player_dir, total_str, MAX_PLAYER_TOTAL)
+            continue
+
         cars_found = sum(1 for c in car_stats if c[0] > 0 or c[1] > 0)
 
         if cars_found > 0:

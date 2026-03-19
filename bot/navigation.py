@@ -35,9 +35,9 @@ NEXT_BTN_WHITE_THRESH   = 240    # min channel value for "white" pixel
 NEXT_BTN_MAX_ATTEMPTS   = 60     # poll attempts to find Next button
 ADVANCE_MAX_POLLS       = 60     # poll attempts for frame change after click
 ADVANCE_POLL_INTERVAL   = 0.04   # seconds between frame-change polls
-WRAP_FP_THRESHOLD       = 5      # fingerprint diff below which = same car (wrap)
+WRAP_FP_THRESHOLD       = 20     # fingerprint diff below which = same car (wrap)
 
-SLOT_SETTLE_TIME        = 0.20   # seconds to wait for new slot to render
+SLOT_SETTLE_TIME        = 0.15   # seconds to wait for new slot to render
 SCREEN_TRANSITION_TIMEOUT = 8.0  # seconds max for lobby transitions
 LOGO_CACHE_MARGIN_PX    = 20     # pixels around cached logo position for fast search
 

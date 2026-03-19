@@ -110,6 +110,12 @@ _KNOWN_NAMES:     list = []
 _NAME_UPPER_MAP:  dict = {}
 _ENEMY_BLDGS_CFG: dict = {}
 
+# OCR sanity bounds — set by _derive(), importable by other modules
+MAX_HP_PER_CAR:   int = 6_000_000
+MAX_ATK_PER_CAR:  int = 4_000_000
+MAX_PLAYER_TOTAL: int = 20_000_000
+MIN_STAT_VALUE:   int = 1000
+
 
 def _derive(cfg: dict):
     """Derive all module-level constants from a config dict.
@@ -135,6 +141,15 @@ def _derive(cfg: dict):
     _CJK_NAMES           = cfg.get("cjk_names",             False)
     DISCORD_WEBHOOK_URL  = cfg.get("discord_webhook_url",   "")
     SCAN_INTERVAL_MINUTES= cfg.get("scan_interval_minutes", 0)
+
+    # OCR sanity bounds — values outside these ranges are rejected as garbage.
+    # Per-car: no single car should exceed these values.
+    # Per-player: total across all cars (max 3) should not exceed these.
+    global MAX_HP_PER_CAR, MAX_ATK_PER_CAR, MAX_PLAYER_TOTAL, MIN_STAT_VALUE
+    MAX_HP_PER_CAR     = cfg.get("max_hp_per_car",      6_000_000)
+    MAX_ATK_PER_CAR    = cfg.get("max_atk_per_car",     4_000_000)
+    MAX_PLAYER_TOTAL   = cfg.get("max_player_total",   20_000_000)
+    MIN_STAT_VALUE     = cfg.get("min_stat_value",           1000)
 
     # Mutable containers — mutate in-place so imported refs stay valid
     player_timezones.clear()

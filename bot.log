@@ -1,1249 +1,301 @@
-2026-03-18 18:54:27 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 18:54:27 [bot.window] INFO  Window: 'BlueStacks App Player'  (1282,31)  1252×704  scale=(0.6521,0.6519)
-2026-03-18 18:54:27 [bot.ocr] INFO  name_matcher: loaded 0 templates from disk
-2026-03-18 18:54:27 [bot.scan] INFO  Building 1/6…
-2026-03-18 18:54:29 [bot.ocr] INFO  name: raw='TIY' matched='TIGY'
-2026-03-18 18:54:32 [bot.ocr_model] INFO  Loaded model: 12 classes
-2026-03-18 18:54:33 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1495089' → 1495089
-2026-03-18 18:54:33 [bot.ocr] DEBUG  slot_atk: Tesseract raw='0435073' → 435073
-2026-03-18 18:54:33 [bot.scan] INFO    B1 — TIGY (1/3)
-2026-03-18 18:54:33 [bot.nav] INFO  slot 1 ref: name='TIGY'
-2026-03-18 18:54:33 [bot.nav] INFO  slot 1 captured (name='TIGY'), advancing…
-2026-03-18 18:54:33 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:34 [bot.ocr] INFO  name: raw='JOEBOOMBANG' matched='JOEBOOMBANG'
-2026-03-18 18:54:35 [bot.scan] INFO    B1 — JOEBOOMBANG (1/3)
-2026-03-18 18:54:35 [bot.nav] INFO  slot 2 captured (name='JOEBOOMBANG'), advancing…
-2026-03-18 18:54:35 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:35 [bot.nav] WARNING  Center changed but full region diff=0.2 — likely animation noise, not a real advance
-2026-03-18 18:54:36 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:37 [bot.ocr] INFO  name: raw='KOIVU' matched='KOIVU'
-2026-03-18 18:54:37 [bot.scan] INFO    B1 — KOIVU (1/3)
-2026-03-18 18:54:37 [bot.nav] INFO  slot 3 captured (name='KOIVU'), advancing…
-2026-03-18 18:54:38 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:39 [bot.ocr] INFO  name: raw='KOIVU' matched='KOIVU'
-2026-03-18 18:54:39 [bot.scan] INFO    B1 — KOIVU (2/3)
-2026-03-18 18:54:39 [bot.nav] INFO  slot 4 captured (name='KOIVU'), advancing…
-2026-03-18 18:54:40 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:41 [bot.ocr] INFO  name: raw='J85' matched='JC85'
-2026-03-18 18:54:41 [bot.ocr] INFO  ocr: CNN → '2187h' (conf=0.80) = 2187
-2026-03-18 18:54:41 [bot.scan] INFO    B1 — JC85 (1/3)
-2026-03-18 18:54:41 [bot.nav] INFO  slot 5 captured (name='JC85'), advancing…
-2026-03-18 18:54:41 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:43 [bot.ocr] INFO  name: raw='ONKELRENE666' matched='ONKELRENE666'
-2026-03-18 18:54:43 [bot.scan] INFO    B1 — ONKELRENE666 (1/3)
-2026-03-18 18:54:43 [bot.nav] INFO  slot 6 captured (name='ONKELRENE666'), advancing…
-2026-03-18 18:54:43 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:45 [bot.ocr] INFO  name: raw='ONKELRENE666' matched='ONKELRENE666'
-2026-03-18 18:54:45 [bot.scan] INFO    B1 — ONKELRENE666 (2/3)
-2026-03-18 18:54:45 [bot.nav] INFO  slot 7 captured (name='ONKELRENE666'), advancing…
-2026-03-18 18:54:45 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:47 [bot.ocr] INFO  name: raw='PATRICK' matched='PATRICK'
-2026-03-18 18:54:47 [bot.scan] INFO    B1 — PATRICK (1/3)
-2026-03-18 18:54:47 [bot.nav] INFO  slot 8 captured (name='PATRICK'), advancing…
-2026-03-18 18:54:47 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:49 [bot.ocr] INFO  name: raw='PATRICK' matched='PATRICK'
-2026-03-18 18:54:49 [bot.scan] INFO    B1 — PATRICK (2/3)
-2026-03-18 18:54:49 [bot.nav] INFO  slot 9 captured (name='PATRICK'), advancing…
-2026-03-18 18:54:49 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:53 [bot.nav] WARNING  Center changed but full region diff=0.2 — likely animation noise, not a real advance
-2026-03-18 18:54:53 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:55 [bot.ocr] INFO  name: raw='TIY' matched='TIGY'
-2026-03-18 18:54:55 [bot.scan] INFO    B1 — TIGY (2/3)
-2026-03-18 18:54:55 [bot.nav] INFO  slot 10 matches slot 1 name ('TIGY'), fingerprint diff=0.5
-2026-03-18 18:54:55 [bot.nav] INFO  wrap at slot 10: 'TIGY' fp_diff=0.5
-2026-03-18 18:54:56 [bot.nav] INFO  Building complete: 10 slots visited (wrap at slot 10: 'TIGY' fp_diff=0.5)
-2026-03-18 18:54:56 [bot.scan] INFO  B1: visited=10 captured=10
-2026-03-18 18:54:56 [bot.scan] INFO  Building 2/6…
-2026-03-18 18:54:57 [bot.ocr] INFO  name: raw='SLOMO' matched='SLOMO'
-2026-03-18 18:54:58 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2004088' → 2004088
-2026-03-18 18:54:58 [bot.ocr] DEBUG  slot_atk: Tesseract raw='614161' → 614161
-2026-03-18 18:54:58 [bot.scan] INFO    B2 — SLOMO (1/3)
-2026-03-18 18:54:58 [bot.nav] INFO  slot 1 ref: name='SLOMO'
-2026-03-18 18:54:58 [bot.nav] INFO  slot 1 captured (name='SLOMO'), advancing…
-2026-03-18 18:54:58 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:54:59 [bot.ocr] INFO  name: raw='SLOMO' matched='SLOMO'
-2026-03-18 18:55:00 [bot.scan] INFO    B2 — SLOMO (2/3)
-2026-03-18 18:55:00 [bot.nav] INFO  slot 2 matches slot 1 name ('SLOMO'), fingerprint diff=10.1
-2026-03-18 18:55:00 [bot.nav] INFO  same name but different car (fp_diff=10.1) — continuing
-2026-03-18 18:55:00 [bot.nav] INFO  slot 2 captured (name='SLOMO'), advancing…
-2026-03-18 18:55:00 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:01 [bot.ocr] INFO  name: raw='SLOMO' matched='SLOMO'
-2026-03-18 18:55:02 [bot.ocr] INFO  ocr: CNN → '2' (conf=0.85) = 2
-2026-03-18 18:55:02 [bot.scan] WARNING  B2 slot 3: ATK=2 rejected (too low, likely OCR error)
-2026-03-18 18:55:02 [bot.scan] INFO    B2 — SLOMO (3/3)
-2026-03-18 18:55:02 [bot.nav] INFO  slot 3 matches slot 1 name ('SLOMO'), fingerprint diff=11.9
-2026-03-18 18:55:02 [bot.nav] INFO  same name but different car (fp_diff=11.9) — continuing
-2026-03-18 18:55:02 [bot.nav] INFO  slot 3 captured (name='SLOMO'), advancing…
-2026-03-18 18:55:02 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:03 [bot.ocr] INFO  name: raw='JOEBOOMBANG' matched='JOEBOOMBANG'
-2026-03-18 18:55:04 [bot.scan] INFO    B2 — JOEBOOMBANG (2/3)
-2026-03-18 18:55:04 [bot.nav] INFO  slot 4 captured (name='JOEBOOMBANG'), advancing…
-2026-03-18 18:55:04 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:05 [bot.ocr] INFO  name: raw='STEFAN' matched='STEFAN'
-2026-03-18 18:55:06 [bot.scan] INFO    B2 — STEFAN (1/3)
-2026-03-18 18:55:06 [bot.nav] INFO  slot 5 captured (name='STEFAN'), advancing…
-2026-03-18 18:55:06 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:07 [bot.ocr] INFO  name: raw='TACN' matched='TACN'
-2026-03-18 18:55:08 [bot.scan] INFO    B2 — TACN (1/3)
-2026-03-18 18:55:08 [bot.nav] INFO  slot 6 captured (name='TACN'), advancing…
-2026-03-18 18:55:08 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:09 [bot.ocr] INFO  name: raw='TACN' matched='TACN'
-2026-03-18 18:55:09 [bot.ocr] INFO  ocr: CNN → '2' (conf=0.85) = 2
-2026-03-18 18:55:09 [bot.scan] WARNING  B2 slot 7: ATK=2 rejected (too low, likely OCR error)
-2026-03-18 18:55:09 [bot.scan] INFO    B2 — TACN (2/3)
-2026-03-18 18:55:10 [bot.nav] INFO  slot 7 captured (name='TACN'), advancing…
-2026-03-18 18:55:10 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:11 [bot.ocr] INFO  name: raw='STEFAN' matched='STEFAN'
-2026-03-18 18:55:11 [bot.ocr] INFO  ocr: CNN → '2' (conf=0.85) = 2
-2026-03-18 18:55:11 [bot.scan] WARNING  B2 slot 8: ATK=2 rejected (too low, likely OCR error)
-2026-03-18 18:55:11 [bot.scan] INFO    B2 — STEFAN (2/3)
-2026-03-18 18:55:12 [bot.nav] INFO  slot 8 captured (name='STEFAN'), advancing…
-2026-03-18 18:55:12 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:13 [bot.ocr] INFO  name: raw='MUSCHI' matched='MUSCHI'
-2026-03-18 18:55:13 [bot.ocr] INFO  ocr: CNN → '2' (conf=0.85) = 2
-2026-03-18 18:55:13 [bot.scan] WARNING  B2 slot 9: ATK=2 rejected (too low, likely OCR error)
-2026-03-18 18:55:13 [bot.scan] INFO    B2 — MUSCHI (1/3)
-2026-03-18 18:55:13 [bot.nav] INFO  slot 9 captured (name='MUSCHI'), advancing…
-2026-03-18 18:55:14 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:15 [bot.ocr] INFO  name: raw='MUSCHI' matched='MUSCHI'
-2026-03-18 18:55:15 [bot.ocr] INFO  ocr: CNN → '2' (conf=0.85) = 2
-2026-03-18 18:55:15 [bot.scan] WARNING  B2 slot 10: ATK=2 rejected (too low, likely OCR error)
-2026-03-18 18:55:15 [bot.scan] INFO    B2 — MUSCHI (2/3)
-2026-03-18 18:55:15 [bot.nav] INFO  slot 10 captured (name='MUSCHI'), advancing…
-2026-03-18 18:55:15 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:17 [bot.name_model] INFO  Loaded model: 23 classes
-2026-03-18 18:55:17 [bot.ocr] INFO  name: ML model → 'LIPTON' (conf=0.999)
-2026-03-18 18:55:17 [bot.scan] INFO    B2 — LIPTON (1/3)
-2026-03-18 18:55:17 [bot.nav] INFO  slot 11 captured (name='LIPTON'), advancing…
-2026-03-18 18:55:17 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:19 [bot.ocr] INFO  name: raw='SLOMO' matched='SLOMO'
-2026-03-18 18:55:19 [bot.scan] WARNING  B2: SLOMO has 4 cars in this building (max 3) — wrap detection may have failed
-2026-03-18 18:55:19 [bot.scan] INFO    B2 — SLOMO (4/3)
-2026-03-18 18:55:19 [bot.nav] INFO  slot 12 matches slot 1 name ('SLOMO'), fingerprint diff=0.0
-2026-03-18 18:55:19 [bot.nav] INFO  wrap at slot 12: 'SLOMO' fp_diff=0.0
-2026-03-18 18:55:20 [bot.nav] INFO  Building complete: 12 slots visited (wrap at slot 12: 'SLOMO' fp_diff=0.0)
-2026-03-18 18:55:20 [bot.scan] INFO  B2: visited=12 captured=12
-2026-03-18 18:55:20 [bot.scan] INFO  Building 3/6…
-2026-03-18 18:55:21 [bot.ocr] INFO  name: raw='JOEBOOMBANG' matched='JOEBOOMBANG'
-2026-03-18 18:55:22 [bot.ocr] DEBUG  slot_hp: Tesseract raw='274588' → 274588
-2026-03-18 18:55:22 [bot.ocr] DEBUG  slot_atk: Tesseract raw='550830' → 550830
-2026-03-18 18:55:22 [bot.scan] INFO    B3 — JOEBOOMBANG (3/3)
-2026-03-18 18:55:22 [bot.nav] INFO  slot 1 ref: name='JOEBOOMBANG'
-2026-03-18 18:55:22 [bot.nav] INFO  slot 1 captured (name='JOEBOOMBANG'), advancing…
-2026-03-18 18:55:22 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:23 [bot.ocr] INFO  name: raw='MUSCHI' matched='MUSCHI'
-2026-03-18 18:55:24 [bot.scan] INFO    B3 — MUSCHI (3/3)
-2026-03-18 18:55:24 [bot.nav] INFO  slot 2 captured (name='MUSCHI'), advancing…
-2026-03-18 18:55:24 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:25 [bot.ocr] INFO  name: raw='DARDAR' matched='DARDAR'
-2026-03-18 18:55:26 [bot.scan] INFO    B3 — DARDAR (1/3)
-2026-03-18 18:55:26 [bot.nav] INFO  slot 3 captured (name='DARDAR'), advancing…
-2026-03-18 18:55:26 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:27 [bot.ocr] INFO  name: raw='DREADZ' matched='DREADZ'
-2026-03-18 18:55:28 [bot.scan] INFO    B3 — DREADZ (1/3)
-2026-03-18 18:55:28 [bot.nav] INFO  slot 4 captured (name='DREADZ'), advancing…
-2026-03-18 18:55:28 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:29 [bot.ocr] INFO  name: raw='DARDAR' matched='DARDAR'
-2026-03-18 18:55:30 [bot.scan] WARNING  B3 slot 5: ATK=1 rejected (too low, likely OCR error)
-2026-03-18 18:55:30 [bot.scan] INFO    B3 — DARDAR (2/3)
-2026-03-18 18:55:30 [bot.nav] INFO  slot 5 captured (name='DARDAR'), advancing…
-2026-03-18 18:55:30 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:31 [bot.ocr] INFO  name: ML model → 'PIYO' (conf=0.878)
-2026-03-18 18:55:32 [bot.scan] INFO    B3 — PIYO (1/3)
-2026-03-18 18:55:32 [bot.nav] INFO  slot 6 captured (name='PIYO'), advancing…
-2026-03-18 18:55:32 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:33 [bot.ocr] INFO  name: ML model → 'PIYO' (conf=0.878)
-2026-03-18 18:55:34 [bot.scan] INFO    B3 — PIYO (2/3)
-2026-03-18 18:55:34 [bot.nav] INFO  slot 7 captured (name='PIYO'), advancing…
-2026-03-18 18:55:34 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:35 [bot.ocr] INFO  name: ML model → 'PIYO' (conf=0.878)
-2026-03-18 18:55:36 [bot.scan] WARNING  B3 slot 8: HP=121 rejected (too low, likely OCR error)
-2026-03-18 18:55:36 [bot.scan] INFO    B3 — PIYO (3/3)
-2026-03-18 18:55:36 [bot.nav] INFO  slot 8 captured (name='PIYO'), advancing…
-2026-03-18 18:55:36 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:37 [bot.ocr] INFO  name: raw='MUSHROOM' matched='MUSHROOM'
-2026-03-18 18:55:38 [bot.scan] INFO    B3 — MUSHROOM (1/3)
-2026-03-18 18:55:38 [bot.nav] INFO  slot 9 captured (name='MUSHROOM'), advancing…
-2026-03-18 18:55:38 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:39 [bot.ocr] INFO  name: raw='TACN' matched='TACN'
-2026-03-18 18:55:40 [bot.scan] INFO    B3 — TACN (3/3)
-2026-03-18 18:55:40 [bot.nav] INFO  slot 10 captured (name='TACN'), advancing…
-2026-03-18 18:55:40 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:41 [bot.ocr] INFO  name: raw='STEFAN' matched='STEFAN'
-2026-03-18 18:55:42 [bot.scan] INFO    B3 — STEFAN (3/3)
-2026-03-18 18:55:42 [bot.nav] INFO  slot 11 captured (name='STEFAN'), advancing…
-2026-03-18 18:55:42 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:43 [bot.ocr] INFO  name: raw='JOEBOOMBANG' matched='JOEBOOMBANG'
-2026-03-18 18:55:44 [bot.scan] INFO    B3 — JOEBOOMBANG (4/3)
-2026-03-18 18:55:44 [bot.nav] INFO  slot 12 matches slot 1 name ('JOEBOOMBANG'), fingerprint diff=0.0
-2026-03-18 18:55:44 [bot.nav] INFO  wrap at slot 12: 'JOEBOOMBANG' fp_diff=0.0
-2026-03-18 18:55:44 [bot.nav] INFO  Building complete: 12 slots visited (wrap at slot 12: 'JOEBOOMBANG' fp_diff=0.0)
-2026-03-18 18:55:44 [bot.scan] INFO  B3: visited=12 captured=12
-2026-03-18 18:55:44 [bot.scan] INFO  Building 4/6…
-2026-03-18 18:55:46 [bot.ocr] INFO  name: raw='EVILJAYSEN' matched='EVILJAYSEN'
-2026-03-18 18:55:46 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2043165' → 2043165
-2026-03-18 18:55:47 [bot.ocr] DEBUG  slot_atk: Tesseract raw='' → 0
-2026-03-18 18:55:50 [bot.easyocr_engine] INFO  Loading ASCII reader (en)… this may take a moment
-2026-03-18 18:55:52 [bot.easyocr_engine] INFO  ASCII reader ready
-2026-03-18 18:55:52 [bot.ocr] INFO  slot_atk: EasyOCR fallback: 6845 (conf=0.87)
-2026-03-18 18:55:52 [bot.scan] INFO    B4 — EVILJAYSEN (1/3)
-2026-03-18 18:55:52 [bot.nav] INFO  slot 1 ref: name='EVILJAYSEN'
-2026-03-18 18:55:52 [bot.nav] INFO  slot 1 captured (name='EVILJAYSEN'), advancing…
-2026-03-18 18:55:52 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:53 [bot.ocr] INFO  name: raw='JAYSEN' matched='JAYSEN'
-2026-03-18 18:55:54 [bot.scan] INFO    B4 — JAYSEN (1/3)
-2026-03-18 18:55:54 [bot.nav] INFO  slot 2 captured (name='JAYSEN'), advancing…
-2026-03-18 18:55:54 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:55 [bot.ocr] INFO  name: raw='EVILJAYSEN' matched='EVILJAYSEN'
-2026-03-18 18:55:55 [bot.ocr] INFO  ocr: CNN → '2813' (conf=0.82) = 2813
-2026-03-18 18:55:55 [bot.scan] INFO    B4 — EVILJAYSEN (2/3)
-2026-03-18 18:55:56 [bot.nav] INFO  slot 3 matches slot 1 name ('EVILJAYSEN'), fingerprint diff=11.0
-2026-03-18 18:55:56 [bot.nav] INFO  same name but different car (fp_diff=11.0) — continuing
-2026-03-18 18:55:56 [bot.nav] INFO  slot 3 captured (name='EVILJAYSEN'), advancing…
-2026-03-18 18:55:56 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:57 [bot.ocr] INFO  name: raw='J85' matched='JC85'
-2026-03-18 18:55:57 [bot.scan] INFO    B4 — JC85 (2/3)
-2026-03-18 18:55:57 [bot.nav] INFO  slot 4 captured (name='JC85'), advancing…
-2026-03-18 18:55:58 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:55:59 [bot.ocr] INFO  name: ML model → 'LIPTON' (conf=0.999)
-2026-03-18 18:55:59 [bot.scan] INFO    B4 — LIPTON (2/3)
-2026-03-18 18:56:00 [bot.nav] INFO  slot 5 captured (name='LIPTON'), advancing…
-2026-03-18 18:56:00 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:00 [bot.nav] WARNING  Center changed but full region diff=0.0 — likely animation noise, not a real advance
-2026-03-18 18:56:00 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:01 [bot.ocr] INFO  name: raw='MUSHROOM' matched='MUSHROOM'
-2026-03-18 18:56:02 [bot.scan] INFO    B4 — MUSHROOM (2/3)
-2026-03-18 18:56:02 [bot.nav] INFO  slot 6 captured (name='MUSHROOM'), advancing…
-2026-03-18 18:56:02 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:03 [bot.ocr] INFO  name: raw='J85' matched='JC85'
-2026-03-18 18:56:04 [bot.scan] INFO    B4 — JC85 (3/3)
-2026-03-18 18:56:04 [bot.nav] INFO  slot 7 captured (name='JC85'), advancing…
-2026-03-18 18:56:04 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:05 [bot.ocr] INFO  name: raw='JAYSEN' matched='JAYSEN'
-2026-03-18 18:56:06 [bot.scan] INFO    B4 — JAYSEN (2/3)
-2026-03-18 18:56:06 [bot.nav] INFO  slot 8 captured (name='JAYSEN'), advancing…
-2026-03-18 18:56:06 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:07 [bot.ocr] INFO  name: raw='BEEVEN' matched='BEEVEN'
-2026-03-18 18:56:08 [bot.scan] INFO    B4 — BEEVEN (1/3)
-2026-03-18 18:56:08 [bot.nav] INFO  slot 9 captured (name='BEEVEN'), advancing…
-2026-03-18 18:56:08 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:10 [bot.ocr] INFO  name: raw='DREADZ' matched='DREADZ'
-2026-03-18 18:56:10 [bot.scan] INFO    B4 — DREADZ (2/3)
-2026-03-18 18:56:10 [bot.nav] INFO  slot 10 captured (name='DREADZ'), advancing…
-2026-03-18 18:56:11 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:12 [bot.ocr] INFO  name: raw='JAYSEN' matched='JAYSEN'
-2026-03-18 18:56:12 [bot.scan] INFO    B4 — JAYSEN (3/3)
-2026-03-18 18:56:12 [bot.nav] INFO  slot 11 captured (name='JAYSEN'), advancing…
-2026-03-18 18:56:13 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:14 [bot.ocr] INFO  name: raw='NOT HEY' matched='NOT HEY'
-2026-03-18 18:56:14 [bot.scan] INFO    B4 — NOT HEY (1/3)
-2026-03-18 18:56:14 [bot.nav] INFO  slot 12 captured (name='NOT HEY'), advancing…
-2026-03-18 18:56:15 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:16 [bot.ocr] INFO  name: raw='NOT HEY' matched='NOT HEY'
-2026-03-18 18:56:16 [bot.scan] INFO    B4 — NOT HEY (2/3)
-2026-03-18 18:56:16 [bot.nav] INFO  slot 13 captured (name='NOT HEY'), advancing…
-2026-03-18 18:56:17 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:18 [bot.ocr] INFO  name: raw='EVILJAYSEN' matched='EVILJAYSEN'
-2026-03-18 18:56:18 [bot.scan] INFO    B4 — EVILJAYSEN (3/3)
-2026-03-18 18:56:18 [bot.nav] INFO  slot 14 matches slot 1 name ('EVILJAYSEN'), fingerprint diff=0.1
-2026-03-18 18:56:18 [bot.nav] INFO  wrap at slot 14: 'EVILJAYSEN' fp_diff=0.1
-2026-03-18 18:56:19 [bot.nav] INFO  Building complete: 14 slots visited (wrap at slot 14: 'EVILJAYSEN' fp_diff=0.1)
-2026-03-18 18:56:19 [bot.scan] INFO  B4: visited=14 captured=14
-2026-03-18 18:56:19 [bot.scan] INFO  Building 5/6…
-2026-03-18 18:56:21 [bot.ocr] INFO  name: raw='PATRICK' matched='PATRICK'
-2026-03-18 18:56:21 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2204455' → 2204455
-2026-03-18 18:56:21 [bot.ocr] DEBUG  slot_atk: Tesseract raw='' → 0
-2026-03-18 18:56:21 [bot.ocr] DEBUG  slot_atk: EasyOCR low-conf: 46319 (conf=0.26) — skipped
-2026-03-18 18:56:21 [bot.scan] INFO    B5 — PATRICK (3/3)
-2026-03-18 18:56:21 [bot.nav] INFO  slot 1 ref: name='PATRICK'
-2026-03-18 18:56:21 [bot.nav] INFO  slot 1 captured (name='PATRICK'), advancing…
-2026-03-18 18:56:22 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:23 [bot.ocr] INFO  name: raw='KOIVU' matched='KOIVU'
-2026-03-18 18:56:23 [bot.scan] INFO    B5 — KOIVU (3/3)
-2026-03-18 18:56:23 [bot.nav] INFO  slot 2 captured (name='KOIVU'), advancing…
-2026-03-18 18:56:23 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:25 [bot.ocr] INFO  name: raw='EVILJAYSEN' matched='EVILJAYSEN'
-2026-03-18 18:56:25 [bot.scan] INFO    B5 — EVILJAYSEN (4/3)
-2026-03-18 18:56:25 [bot.nav] INFO  slot 3 captured (name='EVILJAYSEN'), advancing…
-2026-03-18 18:56:25 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:27 [bot.ocr] DEBUG  name: ML model low-conf: '4YOPHBIKALUAK' (conf=0.399 < 0.85)
-2026-03-18 18:56:28 [bot.ocr] INFO  name: CJK raw='__} YOPHbI KAILIAK'
-2026-03-18 18:56:28 [bot.ocr] INFO  name: raw='__} YOPHbI KAILIAK' matched='4YOPHBIKALUAK'
-2026-03-18 18:56:28 [bot.scan] INFO    B5 — 4YOPHBIKALUAK (1/3)
-2026-03-18 18:56:28 [bot.nav] INFO  slot 4 captured (name='4YOPHBIKALUAK'), advancing…
-2026-03-18 18:56:28 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:30 [bot.ocr] DEBUG  name: ML model low-conf: '4YOPHBIKALUAK' (conf=0.399 < 0.85)
-2026-03-18 18:56:31 [bot.ocr] INFO  name: CJK raw='__} YOPHbI KAILIAK'
-2026-03-18 18:56:31 [bot.ocr] INFO  name: raw='__} YOPHbI KAILIAK' matched='4YOPHBIKALUAK'
-2026-03-18 18:56:31 [bot.scan] INFO    B5 — 4YOPHBIKALUAK (2/3)
-2026-03-18 18:56:31 [bot.nav] INFO  slot 5 captured (name='4YOPHBIKALUAK'), advancing…
-2026-03-18 18:56:31 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:33 [bot.ocr] INFO  name: ML model → 'LIPTON' (conf=0.999)
-2026-03-18 18:56:33 [bot.scan] INFO    B5 — LIPTON (3/3)
-2026-03-18 18:56:33 [bot.nav] INFO  slot 6 captured (name='LIPTON'), advancing…
-2026-03-18 18:56:33 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:35 [bot.ocr] INFO  name: raw='TIY' matched='TIGY'
-2026-03-18 18:56:35 [bot.scan] INFO    B5 — TIGY (3/3)
-2026-03-18 18:56:35 [bot.nav] INFO  slot 7 captured (name='TIGY'), advancing…
-2026-03-18 18:56:35 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:37 [bot.ocr] INFO  name: raw='TIY' matched='TIGY'
-2026-03-18 18:56:37 [bot.scan] INFO    B5 — TIGY (4/3)
-2026-03-18 18:56:37 [bot.nav] INFO  slot 8 captured (name='TIGY'), advancing…
-2026-03-18 18:56:37 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:38 [bot.ocr] INFO  name: raw='ONKELRENE666' matched='ONKELRENE666'
-2026-03-18 18:56:39 [bot.scan] INFO    B5 — ONKELRENE666 (3/3)
-2026-03-18 18:56:39 [bot.nav] INFO  slot 9 captured (name='ONKELRENE666'), advancing…
-2026-03-18 18:56:39 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:40 [bot.ocr] INFO  name: raw='PATRICK' matched='PATRICK'
-2026-03-18 18:56:41 [bot.scan] INFO    B5 — PATRICK (4/3)
-2026-03-18 18:56:41 [bot.nav] INFO  slot 10 matches slot 1 name ('PATRICK'), fingerprint diff=0.2
-2026-03-18 18:56:41 [bot.nav] INFO  wrap at slot 10: 'PATRICK' fp_diff=0.2
-2026-03-18 18:56:41 [bot.nav] INFO  Building complete: 10 slots visited (wrap at slot 10: 'PATRICK' fp_diff=0.2)
-2026-03-18 18:56:41 [bot.scan] INFO  B5: visited=10 captured=10
-2026-03-18 18:56:42 [bot.scan] INFO  Building 6/6…
-2026-03-18 18:56:43 [bot.ocr] INFO  name: raw='DARDAR' matched='DARDAR'
-2026-03-18 18:56:43 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2844783' → 2844783
-2026-03-18 18:56:44 [bot.ocr] DEBUG  slot_atk: Tesseract raw='7273' → 7273
-2026-03-18 18:56:44 [bot.scan] INFO    B6 — DARDAR (3/3)
-2026-03-18 18:56:44 [bot.nav] INFO  slot 1 ref: name='DARDAR'
-2026-03-18 18:56:44 [bot.nav] INFO  slot 1 captured (name='DARDAR'), advancing…
-2026-03-18 18:56:44 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:45 [bot.ocr] INFO  name: raw='CAP' matched='CAP'
-2026-03-18 18:56:46 [bot.scan] INFO    B6 — CAP (1/3)
-2026-03-18 18:56:46 [bot.nav] INFO  slot 2 captured (name='CAP'), advancing…
-2026-03-18 18:56:46 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:47 [bot.ocr] INFO  name: raw='CAP' matched='CAP'
-2026-03-18 18:56:47 [bot.ocr] INFO  ocr: CNN → '28118183' (conf=0.81) = 28118183
-2026-03-18 18:56:47 [bot.scan] INFO    B6 — CAP (2/3)
-2026-03-18 18:56:48 [bot.nav] INFO  slot 3 captured (name='CAP'), advancing…
-2026-03-18 18:56:48 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:49 [bot.ocr] INFO  name: raw='CAP' matched='CAP'
-2026-03-18 18:56:49 [bot.scan] INFO    B6 — CAP (3/3)
-2026-03-18 18:56:49 [bot.nav] INFO  slot 4 captured (name='CAP'), advancing…
-2026-03-18 18:56:50 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:51 [bot.ocr] INFO  name: raw='BEEVEN' matched='BEEVEN'
-2026-03-18 18:56:51 [bot.scan] INFO    B6 — BEEVEN (2/3)
-2026-03-18 18:56:51 [bot.nav] INFO  slot 5 captured (name='BEEVEN'), advancing…
-2026-03-18 18:56:52 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:53 [bot.ocr] INFO  name: raw='BEEVEN' matched='BEEVEN'
-2026-03-18 18:56:53 [bot.scan] INFO    B6 — BEEVEN (3/3)
-2026-03-18 18:56:53 [bot.nav] INFO  slot 6 captured (name='BEEVEN'), advancing…
-2026-03-18 18:56:53 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:55 [bot.ocr] INFO  name: raw='ASABIITOSBAA' matched='ASABIITOSBAA'
-2026-03-18 18:56:55 [bot.scan] INFO    B6 — ASABIITOSBAA (1/3)
-2026-03-18 18:56:55 [bot.nav] INFO  slot 7 captured (name='ASABIITOSBAA'), advancing…
-2026-03-18 18:56:55 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:57 [bot.ocr] INFO  name: raw='DREADZ' matched='DREADZ'
-2026-03-18 18:56:57 [bot.scan] INFO    B6 — DREADZ (3/3)
-2026-03-18 18:56:57 [bot.nav] INFO  slot 8 captured (name='DREADZ'), advancing…
-2026-03-18 18:56:57 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:56:59 [bot.ocr] INFO  name: raw='ASABIITOSBAA' matched='ASABIITOSBAA'
-2026-03-18 18:56:59 [bot.scan] INFO    B6 — ASABIITOSBAA (2/3)
-2026-03-18 18:56:59 [bot.nav] INFO  slot 9 captured (name='ASABIITOSBAA'), advancing…
-2026-03-18 18:56:59 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:57:01 [bot.ocr] INFO  name: raw='MUSHROOM' matched='MUSHROOM'
-2026-03-18 18:57:01 [bot.scan] INFO    B6 — MUSHROOM (3/3)
-2026-03-18 18:57:01 [bot.nav] INFO  slot 10 captured (name='MUSHROOM'), advancing…
-2026-03-18 18:57:01 [bot.nav] DEBUG  Next button found at (1588, 579) (attempt 1)
-2026-03-18 18:57:02 [bot.ocr] INFO  name: raw='DARDAR' matched='DARDAR'
-2026-03-18 18:57:03 [bot.scan] INFO    B6 — DARDAR (4/3)
-2026-03-18 18:57:03 [bot.nav] INFO  slot 11 matches slot 1 name ('DARDAR'), fingerprint diff=0.1
-2026-03-18 18:57:03 [bot.nav] INFO  wrap at slot 11: 'DARDAR' fp_diff=0.1
-2026-03-18 18:57:03 [bot.nav] INFO  Building complete: 11 slots visited (wrap at slot 11: 'DARDAR' fp_diff=0.1)
-2026-03-18 18:57:03 [bot.scan] INFO  B6: visited=11 captured=11
-2026-03-18 18:57:04 [bot.scan] INFO  Capturing scores…
-2026-03-18 18:57:04 [bot.scan] INFO  timer CNN → '1011001' (conf=0.72)
-2026-03-18 18:57:04 [bot.scan] INFO  timer raw='1011001' → h=0 m=59
-2026-03-18 18:57:05 [bot.ocr] INFO  opp_points: CNN → '3827' (conf=0.81) = 3827
-2026-03-18 18:57:05 [bot.ocr] DEBUG  opp_bonus: Tesseract raw='' → 0
-2026-03-18 18:57:05 [bot.ocr] DEBUG  team_points: Tesseract raw='143424' → 143424
-2026-03-18 18:57:05 [bot.ocr] DEBUG  max_points: Tesseract raw='145000' → 145000
-2026-03-18 18:57:05 [bot.ocr] DEBUG  team_bonus: Tesseract raw='' → 0
-2026-03-18 18:57:05 [bot.ocr] DEBUG  opp_bonus: retry PSM 8: raw='' → 0
-2026-03-18 18:57:05 [bot.ocr] DEBUG  team_bonus: retry PSM 8: raw='' → 0
-2026-03-18 18:57:06 [bot.ocr] INFO  team_bonus: EasyOCR fallback: 123 (conf=0.88)
-2026-03-18 18:57:06 [bot.scan] INFO  raw scores: team_bonus=123 opp_bonus=0 team_points=143424 opp_points=3827 max_points=145000
-2026-03-18 18:57:06 [bot.scan] INFO  Done in 2m38s
-2026-03-18 18:57:18 [bot.scan] INFO  Report generated:
+2026-03-19 08:54:20 [bot.config] INFO  Reloaded config.json
+2026-03-19 08:54:20 [bot.window] INFO  Window: 'BlueStacks App Player'  (1275,30)  1257×707  scale=(0.6547,0.6546)
+2026-03-19 08:54:20 [bot.ocr] INFO  name_matcher: loaded 0 templates from disk
+2026-03-19 08:54:20 [bot.scan] INFO  Building 1/6…
+2026-03-19 08:54:20 [bot.scan] INFO  Building 2/6…
+2026-03-19 08:54:21 [bot.scan] INFO  Building 3/6…
+2026-03-19 08:54:21 [bot.scan] INFO  Building 4/6…
+2026-03-19 08:54:21 [bot.scan] INFO  Building 5/6…
+2026-03-19 08:54:22 [bot.ocr] INFO  name: ML model → 'AIRBORNES4' (conf=0.974)
+2026-03-19 08:54:23 [bot.ocr] DEBUG  slot_hp: Tesseract raw='277073' → 277073
+2026-03-19 08:54:23 [bot.ocr] DEBUG  slot_atk: Tesseract raw='8554' → 8554
+2026-03-19 08:54:23 [bot.scan] INFO    B5 — AIRBORNES4 (1/3)
+2026-03-19 08:54:23 [bot.nav] INFO  slot 1 ref: name='AIRBORNES4'
+2026-03-19 08:54:23 [bot.nav] INFO  slot 1 captured (name='AIRBORNES4'), advancing…
+2026-03-19 08:54:23 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:54:24 [bot.ocr] DEBUG  name: ML model low-conf: 'TIGY' (conf=0.756 < 0.85)
+2026-03-19 08:54:24 [bot.ocr] INFO  name: raw='TIGY' matched='TIGY'
+2026-03-19 08:54:25 [bot.ocr] INFO  ocr: CNN → '2504158' (conf=0.83) = 2504158
+2026-03-19 08:54:25 [bot.scan] INFO    B5 — TIGY (1/3)
+2026-03-19 08:54:25 [bot.nav] INFO  slot 2 captured (name='TIGY'), advancing…
+2026-03-19 08:54:25 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:54:26 [bot.ocr] INFO  name: ML model → 'LIPTON' (conf=0.999)
+2026-03-19 08:54:26 [bot.ocr] INFO  ocr: CNN → '640116044' (conf=0.83) = 640116044
+2026-03-19 08:54:27 [bot.scan] INFO    B5 — LIPTON (1/3)
+2026-03-19 08:54:27 [bot.nav] INFO  slot 3 captured (name='LIPTON'), advancing…
+2026-03-19 08:54:27 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:54:28 [bot.ocr] INFO  name: ML model → 'AIRBORNES4' (conf=0.991)
+2026-03-19 08:54:29 [bot.scan] INFO    B5 — AIRBORNES4 (2/3)
+2026-03-19 08:54:29 [bot.nav] INFO  slot 4 matches slot 1 name ('AIRBORNES4'), fingerprint diff=15.3
+2026-03-19 08:54:29 [bot.nav] INFO  same name but different car (fp_diff=15.3) — continuing
+2026-03-19 08:54:29 [bot.nav] INFO  slot 4 captured (name='AIRBORNES4'), advancing…
+2026-03-19 08:54:29 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:54:30 [bot.ocr] DEBUG  name: ML model low-conf: 'TIGY' (conf=0.756 < 0.85)
+2026-03-19 08:54:30 [bot.ocr] INFO  name: raw='TIGY' matched='TIGY'
+2026-03-19 08:54:31 [bot.ocr] INFO  ocr: CNN → '2435073h' (conf=0.81) = 2435073
+2026-03-19 08:54:31 [bot.scan] INFO    B5 — TIGY (2/3)
+2026-03-19 08:54:31 [bot.nav] INFO  slot 5 captured (name='TIGY'), advancing…
+2026-03-19 08:54:31 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:54:32 [bot.ocr] INFO  name: ML model → 'AIRBORNES4' (conf=0.991)
+2026-03-19 08:54:33 [bot.scan] INFO    B5 — AIRBORNES4 (3/3)
+2026-03-19 08:54:33 [bot.nav] INFO  slot 6 matches slot 1 name ('AIRBORNES4'), fingerprint diff=14.3
+2026-03-19 08:54:33 [bot.nav] INFO  same name but different car (fp_diff=14.3) — continuing
+2026-03-19 08:54:33 [bot.nav] INFO  slot 6 captured (name='AIRBORNES4'), advancing…
+2026-03-19 08:54:33 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:54:34 [bot.ocr] INFO  name: ML model → '4YOPHBIKALUAK' (conf=0.967)
+2026-03-19 08:54:34 [bot.ocr] INFO  name: first attempt returned '4YOPHBIKALUAK' (unmatched) — retrying after 200ms
+2026-03-19 08:54:35 [bot.ocr] INFO  name: ML model → '4YOPHBIKALUAK' (conf=0.967)
+2026-03-19 08:54:58 [bot.config] INFO  Saved correction: '4YOPHBIKALUAK' → 'YOPHBI KAWAK'
+2026-03-19 08:55:05 [bot.ocr] INFO  name: correction dialog → 'YOPHBI KAWAK'
+2026-03-19 08:55:06 [bot.scan] INFO    B5 — YOPHBI KAWAK (1/3)
+2026-03-19 08:55:06 [bot.nav] INFO  slot 7 captured (name='YOPHBI KAWAK'), advancing…
+2026-03-19 08:55:06 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:55:07 [bot.ocr] INFO  name: ML model → 'SLOMO' (conf=0.998)
+2026-03-19 08:55:08 [bot.scan] INFO    B5 — SLOMO (1/3)
+2026-03-19 08:55:08 [bot.nav] INFO  slot 8 captured (name='SLOMO'), advancing…
+2026-03-19 08:55:08 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:55:09 [bot.ocr] DEBUG  name: ML model low-conf: 'SAKETOBA' (conf=0.840 < 0.85)
+2026-03-19 08:55:11 [bot.ocr] INFO  name: CJK raw='수'
+2026-03-19 08:55:11 [bot.ocr] INFO  name: EasyOCR: '駐とば' (conf=0.31)
+2026-03-19 08:55:11 [bot.ocr] INFO  name: raw='SAKETOBA' matched='SAKETOBA'
+2026-03-19 08:55:12 [bot.scan] INFO    B5 — SAKETOBA (1/3)
+2026-03-19 08:55:12 [bot.nav] INFO  slot 9 captured (name='SAKETOBA'), advancing…
+2026-03-19 08:55:12 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:55:13 [bot.ocr] INFO  name: ML model → 'AIRBORNES4' (conf=0.974)
+2026-03-19 08:55:14 [bot.scan] WARNING  B5: AIRBORNES4 has 4 cars in this building (max 3) — wrap detection may have failed
+2026-03-19 08:55:14 [bot.scan] INFO    B5 — AIRBORNES4 (4/3)
+2026-03-19 08:55:14 [bot.nav] INFO  slot 10 matches slot 1 name ('AIRBORNES4'), fingerprint diff=16.1
+2026-03-19 08:55:14 [bot.nav] INFO  same name but different car (fp_diff=16.1) — continuing
+2026-03-19 08:55:14 [bot.nav] INFO  slot 10 captured (name='AIRBORNES4'), advancing…
+2026-03-19 08:55:14 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:55:15 [bot.ocr] INFO  name: ML model → 'ONKELRENE666' (conf=1.000)
+2026-03-19 08:55:16 [bot.scan] INFO    B5 — ONKELRENE666 (1/3)
+2026-03-19 08:55:16 [bot.nav] INFO  slot 11 captured (name='ONKELRENE666'), advancing…
+2026-03-19 08:55:17 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:55:17 [bot.ocr] INFO  name: ML model → 'MUSHROOM' (conf=0.956)
+2026-03-19 08:55:18 [bot.scan] INFO    B5 — MUSHROOM (1/3)
+2026-03-19 08:55:18 [bot.nav] INFO  slot 12 captured (name='MUSHROOM'), advancing…
+2026-03-19 08:55:19 [bot.nav] DEBUG  Next button found at (1582, 581) (attempt 1)
+2026-03-19 08:55:19 [bot.ocr] INFO  name: ML model → 'AIRBORNES4' (conf=0.974)
+2026-03-19 08:55:20 [bot.scan] WARNING  B5: AIRBORNES4 has 5 cars in this building (max 3) — wrap detection may have failed
+2026-03-19 08:55:20 [bot.scan] INFO    B5 — AIRBORNES4 (5/3)
+2026-03-19 08:55:20 [bot.nav] INFO  slot 13 matches slot 1 name ('AIRBORNES4'), fingerprint diff=0.0
+2026-03-19 08:55:20 [bot.nav] INFO  wrap at slot 13: 'AIRBORNES4' fp_diff=0.0
+2026-03-19 08:55:20 [bot.scan] DEBUG  undid wrap slot: removed d:\OneDrive\WhatsUpBotV4\builds\AIRBORNES4\AIRBORNES4_5.PNG count for AIRBORNES4
+2026-03-19 08:55:21 [bot.nav] INFO  Building complete: 12 slots visited (wrap at slot 13: 'AIRBORNES4' fp_diff=0.0)
+2026-03-19 08:55:21 [bot.scan] INFO  B5: visited=12 captured=12
+2026-03-19 08:55:21 [bot.scan] INFO  Building 6/6…
+2026-03-19 08:55:21 [bot.scan] INFO  OCR'ing 1 build screenshots (live OCR missed)…
+2026-03-19 08:55:22 [bot.scan] INFO  build_history updated from builds/
+2026-03-19 08:55:22 [bot.scan] INFO  Capturing scores…
+2026-03-19 08:55:23 [bot.scan] INFO  timer CNN → '10hhh' (conf=0.83)
+2026-03-19 08:55:23 [bot.scan] INFO  timer raw='10hhh' → h=10 m=0
+2026-03-19 08:55:24 [bot.ocr] DEBUG  opp_bonus: Tesseract raw='' → 0
+2026-03-19 08:55:24 [bot.ocr] DEBUG  max_points: Tesseract raw='145000' → 145000
+2026-03-19 08:55:24 [bot.ocr] DEBUG  opp_points: Tesseract raw='53367' → 53367
+2026-03-19 08:55:24 [bot.ocr] DEBUG  team_bonus: Tesseract raw='' → 0
+2026-03-19 08:55:24 [bot.ocr] DEBUG  team_points: Tesseract raw='8370' → 8370
+2026-03-19 08:55:24 [bot.ocr] DEBUG  opp_bonus: retry PSM 8: raw='' → 0
+2026-03-19 08:55:24 [bot.ocr] DEBUG  team_bonus: retry PSM 8: raw='' → 0
+2026-03-19 08:55:25 [bot.ocr] INFO  opp_bonus: EasyOCR fallback: 57 (conf=1.00)
+2026-03-19 08:55:25 [bot.ocr] INFO  team_bonus: EasyOCR fallback: 15 (conf=1.00)
+2026-03-19 08:55:25 [bot.scan] INFO  raw scores: team_bonus=15 opp_bonus=57 team_points=8370 opp_points=53367 max_points=145000
+2026-03-19 08:55:25 [bot.scan] INFO  Done in 1m4s
+2026-03-19 08:55:31 [bot.scan] INFO  Report generated:
 ```ex
-⚔️  Opponent: POLPETTA MINI
-🟢 Team:     143,424 (+123)  🔴 Opponent: 3,827 (+0)
-⏳ Time Left: 00H 59m  |  📊 Projected: 145,023 / 145,000
+⚔️  Opponent: SHMONEY
+🔴 Team:     8,370 (+15)  🟢 Opponent: 53,367 (+57)
+⏳ Time Left: 10H 00m  |  📊 Projected: 17,370 / 145,000
 ```
-🕐 Current Time: <t:1773885426:t>
-✅ WIN — team instants: <t:1773886206:t>
+🕐 Current Time: <t:1773935725:t>
 ```ex
-⏱️  Instant in: 00H 13m (13m) (bonus: +123)
-  TIME       PLAYER          BLDGS ST
--------------------------------------
-🟢 18:57 (3) AIRBORNES4      —     DEF
-🟢 20:57 (1) NOT HEY         4,4   DEF
-🟢 09:57 (3) ROBINHOOD       —     DEF
-🟢 10:57 (3) SAKETOBA        —     DEF
-💤 03:57 (1) 4YOPHBIKALUAK   5,5   DEF
-💤 04:57 (1) ASABIITOSBAA    6,6   DEF
-🤖 Total: 69/75 bots placed```
-📈 **Momentum:** Team +143/min [steady] | Opp -0/min [steady]
+  TIME       PLAYER         BLDGS ST
+------------------------------------
+🟢 18:55 (3) ASABIITOSBAA   —     DEF
+🟢 10:55 (3) BEEVEN         —     DEF
+🟢 16:55 (3) CAP            —     DEF
+🟢 08:55 (3) EVILJAYSEN     —     DEF
+🟢 08:55 (3) JAYSEN         —     DEF
+🟢 10:55 (3) JC85           —     DEF
+🟢 16:55 (3) JOEBOOMBANG    —     DEF
+🟢 17:55 (3) KOIVU          —     DEF
+🟢 16:55 (3) MUSCHI         —     DEF
+🟢 10:55 (3) NOT HEY        —     DEF
+🟢 16:55 (2) ONKELRENE666   5     DEF
+🟢 16:55 (3) PATRICK        —     DEF
+🟢 17:55 (2) SLOMO          5     DEF
+🟢 17:55 (3) STEFAN         —     DEF
+🟢 17:55 (1) TIGY           5,5   DEF
+🟢 17:55 (2) YOPHBI KAWAK   5     DEF
+💤 23:55 (3) DARDAR         —     DEF
+💤 02:55 (3) DREADZ         —     DEF
+💤 00:55 (2) LIPTON         5     DEF
+💤 00:55 (2) MUSHROOM       5     DEF
+💤 00:55 (3) PIYO           —     DEF
+💤 23:55 (3) ROBINHOOD      —     DEF
+💤 00:55 (2) SAKETOBA       5     DEF
+💤 00:55 (3) TACN           —     DEF
+🤖 Total: 12/75 bots placed```
+📈 **Momentum:** Team +13/min [steady] | Opp -296/min [steady]
 
 ```
 BUILDING STRENGTH (averages)
 BLDG   AVG STR   AVG HP  AVG ATK SLOTS  ALERT
 --------------------------------------------------
-B1        2.3M     1.9M     463K    10  ⚠ WEAK
-B2        7.4M     7.1M     281K    12  
-B3       78.6M    78.1M     533K    12  
-B4       69.1M    68.2M     841K    14  
-B5       20.2M    19.8M     386K    10  
-B6        5.3M     5.0M     354K    11  
+B5      138.0M   135.3M     2.7M    12  ⚠ WEAK
+B1           —        —        —     0  🔴 EMPTY
+B2           —        —        —     0  🔴 EMPTY
+B3           —        —        —     0  🔴 EMPTY
+B4           —        —        —     0  🔴 EMPTY
+B6           —        —        —     0  🔴 EMPTY
 ```
 
 ```
 TOP PLAYERS
-#   PLAYER          AVG STR   AVG HP  AVG ATK CARS    CHG
-------------------------------------------------------
-1   JAYSEN           310.7M   310.3M     469K 3    +921.2M
-2   MUSCHI           308.2M   308.2M      17K 3    +916.5M
-3   4YOPHBIKALUAK     46.3M    46.0M     304K 2    +88.8M
-4   EVILJAYSEN        26.0M    24.1M     1.8M 4    +93.8M
-5   SLOMO             12.7M    12.3M     479K 4    +42.2M
-6   CAP               11.3M    10.7M     592K 3    +24.1M
-7   TACN               9.2M     8.9M     236K 3    +18.1M
-8   MUSHROOM           4.6M     4.3M     346K 3     +5.4M
-9   ASABIITOSBAA       4.5M     4.3M     221K 2     +4.3M
-10  DREADZ             3.1M     2.7M     399K 3     -364K
+#   PLAYER         TOT STR   TOT HP  TOT ATK CARS    CHG
+-----------------------------------------------------
+1   MUSHROOM         12.8M    10.1M     2.6M 3     -1.1M
+2   ONKELRENE666     11.3M     9.1M     2.2M 3     +3.1M
+3   EVILJAYSEN       11.1M     9.1M     2.1M 3    -90.7M
+4   SLOMO            11.1M     8.2M     2.9M 3     +2.4M
+5   JAYSEN           11.0M     9.0M     2.0M 3    -921.2M
+6   LIPTON           10.8M     8.9M     1.9M 3     +2.2M
+7   SAKETOBA         10.2M     7.6M     2.6M 3     +4.9M
+8   CAP               9.9M     8.3M     1.6M 3    -24.1M
+9   DARDAR            9.8M     8.6M     1.3M 3     -100K
+10  JC85              8.8M     7.4M     1.3M 3     +831K
 ```
 
-2026-03-18 18:57:18 [bot.history] INFO  DB ready: d:\OneDrive\WhatsUpBotV4\history.db
-2026-03-18 18:57:18 [bot.history] INFO  Saved scan #27: 69 slots
-2026-03-18 18:57:19 [bot.scan] INFO  Saved stats for 12 players to DB
-2026-03-18 18:57:19 [bot.scan] INFO  Player stats saved: 12 players (3 cars each)
-2026-03-18 18:57:19 [bot.scan] INFO  Training name model…
-2026-03-18 18:57:21 [bot.name_model] INFO  Training: 25 players, 5370 samples, 50 epochs
-2026-03-18 18:57:21 [bot.name_model] DEBUG    4YOPHBIKALUAK: 115 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    AIRBORNES4: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    ASABIITOSBAA: 40 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    BEEVEN: 140 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    CAP: 60 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    DARDAR: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    DREADZ: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    EVILJAYSEN: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    JAYSEN: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    JC85: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    JOEBOOMBANG: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    KOIVU: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    LIPTON: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    MUSCHI: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    MUSHROOM: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    NOT HEY: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    ONKELRENE666: 175 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    PATRICK: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    PIYO: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    ROBINHOOD: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    SAKETOBA: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    SLOMO: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    STEFAN: 185 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    TACN: 250 samples
-2026-03-18 18:57:21 [bot.name_model] DEBUG    TIGY: 155 samples
-2026-03-18 18:57:41 [bot.name_model] DEBUG    Epoch 1/50: loss=2.9275 val_acc=0.223
-2026-03-18 18:57:56 [bot.history] INFO  DB ready: d:\OneDrive\WhatsUpBotV4\history.db
-2026-03-18 19:00:18 [bot.name_model] DEBUG    Epoch 10/50: loss=0.5742 val_acc=0.741
-2026-03-18 19:04:08 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 19:04:08 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:04:08 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:04:08 [bot.config] INFO  Reloaded config.json
-2026-03-18 19:04:08 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:04:08 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 19:04:08 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 19:04:08 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 19:04:08 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 19:04:08 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 19:04:08 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:04:08 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:04:08 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:04:08 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 19:06:02 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:06:02 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:06:02 [bot.config] INFO  Reloaded config.json
-2026-03-18 19:06:02 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:06:02 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 19:06:02 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 19:06:02 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 19:06:02 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 19:06:02 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 19:06:02 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:06:02 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:06:02 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:06:02 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 19:09:56 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:09:56 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:09:56 [bot.config] INFO  Reloaded config.json
-2026-03-18 19:09:56 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:09:56 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 19:09:56 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 19:09:56 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 19:09:56 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 19:09:56 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 19:09:56 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:09:56 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:09:56 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:09:56 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 19:55:03 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:55:03 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:55:03 [bot.config] INFO  Reloaded config.json
-2026-03-18 19:55:03 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:55:03 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 19:55:03 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 19:55:03 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 19:55:03 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 19:55:03 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 19:55:03 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:55:03 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:03 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:55:03 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 19:55:21 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:55:21 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:55:21 [bot.config] INFO  Reloaded config.json
-2026-03-18 19:55:21 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 19:55:21 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 19:55:21 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 19:55:21 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 19:55:21 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 19:55:21 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 19:55:21 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 19:55:21 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 19:55:21 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 19:55:21 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 20:01:30 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:01:30 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:01:30 [bot.config] INFO  Reloaded config.json
-2026-03-18 20:01:30 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:01:30 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 20:01:30 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 20:01:30 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 20:01:30 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 20:01:30 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 20:01:30 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:01:30 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:01:30 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:01:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 20:06:22 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:06:22 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:06:22 [bot.config] INFO  Reloaded config.json
-2026-03-18 20:06:22 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:06:22 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 20:06:22 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 20:06:22 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 20:06:22 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 20:06:22 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 20:06:22 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:06:22 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:22 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:06:22 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 20:06:43 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:06:43 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:06:43 [bot.config] INFO  Reloaded config.json
-2026-03-18 20:06:43 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:06:43 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 20:06:43 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 20:06:43 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 20:06:43 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 20:06:43 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 20:06:43 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:06:43 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:06:43 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:06:43 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 20:14:15 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:14:15 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:14:15 [bot.config] INFO  Reloaded config.json
-2026-03-18 20:14:15 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:14:15 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 20:14:15 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 20:14:15 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 20:14:15 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 20:14:15 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 20:14:15 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:14:15 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:14:15 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:14:15 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:20 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 20:21:59 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:21:59 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:21:59 [bot.config] INFO  Reloaded config.json
-2026-03-18 20:21:59 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:21:59 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 20:21:59 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 20:21:59 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 20:21:59 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 20:21:59 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 20:21:59 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:21:59 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:21:59 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:21:59 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 20:23:10 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:23:10 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:23:10 [bot.config] INFO  Reloaded config.json
-2026-03-18 20:23:10 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 20:23:10 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 20:23:10 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 20:23:10 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 20:23:10 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 20:23:10 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 20:23:10 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 20:23:10 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 20:23:10 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 20:23:10 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 22:18:30 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 22:18:30 [bot.config] INFO  Reloaded config.json
-2026-03-18 22:18:30 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:30 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 22:18:30 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 22:18:30 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 22:18:30 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 22:18:30 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 22:18:30 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 22:18:30 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 22:18:30 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 22:18:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:30 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:30 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 22:18:30 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:31 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 22:18:31 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 22:18:31 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:31 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 22:18:31 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:31 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 22:18:31 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:31 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 22:18:55 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 22:18:55 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 22:18:55 [bot.config] INFO  Reloaded config.json
-2026-03-18 22:18:55 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 22:18:55 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 22:18:55 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 22:18:55 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 22:18:55 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 22:18:55 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 22:18:55 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 22:18:55 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 22:18:55 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:18:55 [bot.ocr] INFO  Tesseract configured.
-2026-03-18 22:45:11 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 22:45:11 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 22:45:12 [bot.config] INFO  Reloaded config.json
-2026-03-18 22:45:12 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-18 22:45:12 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-18 22:45:12 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  New war #1 vs BEARS
-2026-03-18 22:45:12 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-18 22:45:12 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-18 22:45:12 [bot.history] INFO  New war #2 vs BETA
-2026-03-18 22:45:12 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  New war #1 vs FOXES
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-18 22:45:12 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-18 22:45:12 [bot.history] INFO  DB ready: :memory:
-2026-03-18 22:45:12 [bot.ocr] INFO  Tesseract configured.
-2026-03-19 00:08:40 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-19 00:08:40 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-19 00:08:41 [bot.config] INFO  Reloaded config.json
-2026-03-19 00:08:41 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-19 00:08:41 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-19 00:08:41 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  New war #1 vs BEARS
-2026-03-19 00:08:41 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-19 00:08:41 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-19 00:08:41 [bot.history] INFO  New war #2 vs BETA
-2026-03-19 00:08:41 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  New war #1 vs FOXES
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  New war #1 vs FOXES
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-19 00:08:41 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-19 00:08:41 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:08:41 [bot.ocr] INFO  Tesseract configured.
-2026-03-19 00:11:47 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-19 00:11:47 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-19 00:11:47 [bot.config] INFO  Reloaded config.json
-2026-03-19 00:11:47 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #1: 2 slots
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  New war #1 vs WOLVES
-2026-03-19 00:11:47 [bot.history] INFO  War #1 closed: win (50000-30000)
-2026-03-19 00:11:47 [bot.history] INFO  New war #2 vs WOLVES
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  New war #1 vs BEARS
-2026-03-19 00:11:47 [bot.history] INFO  War #1 closed: loss (20000-40000)
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  New war #1 vs ALPHA
-2026-03-19 00:11:47 [bot.history] INFO  War #1 closed: win (0-0)
-2026-03-19 00:11:47 [bot.history] INFO  New war #2 vs BETA
-2026-03-19 00:11:47 [bot.history] INFO  War #2 closed: loss (0-0)
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  New war #1 vs FOXES
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  New war #1 vs FOXES
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #1: 0 slots
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #2: 0 slots
-2026-03-19 00:11:47 [bot.history] INFO  Saved scan #3: 0 slots
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.history] INFO  New war #1 vs HAWKS
-2026-03-19 00:11:47 [bot.history] INFO  DB ready: :memory:
-2026-03-19 00:11:47 [bot.ocr] INFO  Tesseract configured.
+2026-03-19 08:55:31 [bot.history] INFO  DB ready: d:\OneDrive\WhatsUpBotV4\history.db
+2026-03-19 08:55:31 [bot.history] INFO  Saved scan #30: 12 slots
+2026-03-19 08:55:31 [bot.scan] DEBUG  No players with 3 cars + valid HP — stats not saved
+2026-03-19 08:55:31 [bot.scan] INFO  Training name model…
+2026-03-19 08:55:34 [bot.name_model] INFO  Training: 25 players, 5305 samples, 50 epochs
+2026-03-19 08:55:34 [bot.name_model] DEBUG    AIRBORNES4: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    ASABIITOSBAA: 40 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    BEEVEN: 140 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    CAP: 60 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    DARDAR: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    DREADZ: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    EVILJAYSEN: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    JAYSEN: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    JC85: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    JOEBOOMBANG: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    KOIVU: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    LIPTON: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    MUSCHI: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    MUSHROOM: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    NOT HEY: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    ONKELRENE666: 190 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    PATRICK: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    PIYO: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    ROBINHOOD: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    SAKETOBA: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    SLOMO: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    STEFAN: 190 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    TACN: 250 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    TIGY: 165 samples
+2026-03-19 08:55:34 [bot.name_model] DEBUG    YOPHBI KAWAK: 20 samples
+2026-03-19 08:55:40 [bot.history] INFO  DB ready: d:\OneDrive\WhatsUpBotV4\history.db
+2026-03-19 08:55:59 [bot.name_model] DEBUG    Epoch 1/50: loss=2.8594 val_acc=0.174
+2026-03-19 08:56:33 [bot.name_model] DEBUG    Epoch 10/50: loss=0.6466 val_acc=0.840
+2026-03-19 09:06:49 [bot.config] DEBUG  config.json unchanged — skipping reload
+2026-03-19 09:06:49 [bot.config] DEBUG  config.json unchanged — skipping reload
+2026-03-19 09:06:49 [bot.config] INFO  Reloaded config.json
+2026-03-19 09:06:49 [bot.config] DEBUG  config.json unchanged — skipping reload
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #1: 2 slots
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #1: 2 slots
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #2: 0 slots
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #3: 0 slots
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  New war #1 vs WOLVES
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  New war #1 vs WOLVES
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  New war #1 vs WOLVES
+2026-03-19 09:06:49 [bot.history] INFO  War #1 closed: win (50000-30000)
+2026-03-19 09:06:49 [bot.history] INFO  New war #2 vs WOLVES
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  New war #1 vs BEARS
+2026-03-19 09:06:49 [bot.history] INFO  War #1 closed: loss (20000-40000)
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  New war #1 vs ALPHA
+2026-03-19 09:06:49 [bot.history] INFO  War #1 closed: win (0-0)
+2026-03-19 09:06:49 [bot.history] INFO  New war #2 vs BETA
+2026-03-19 09:06:49 [bot.history] INFO  War #2 closed: loss (0-0)
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  New war #1 vs FOXES
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  New war #1 vs FOXES
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #2: 0 slots
+2026-03-19 09:06:49 [bot.history] INFO  Saved scan #3: 0 slots
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  New war #1 vs HAWKS
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.history] INFO  New war #1 vs HAWKS
+2026-03-19 09:06:49 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:06:49 [bot.ocr] INFO  Tesseract configured.
+2026-03-19 09:26:02 [bot.config] DEBUG  config.json unchanged — skipping reload
+2026-03-19 09:26:02 [bot.config] DEBUG  config.json unchanged — skipping reload
+2026-03-19 09:26:02 [bot.config] INFO  Reloaded config.json
+2026-03-19 09:26:02 [bot.config] DEBUG  config.json unchanged — skipping reload
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #1: 2 slots
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #1: 2 slots
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #2: 0 slots
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #3: 0 slots
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  New war #1 vs WOLVES
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  New war #1 vs WOLVES
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  New war #1 vs WOLVES
+2026-03-19 09:26:02 [bot.history] INFO  War #1 closed: win (50000-30000)
+2026-03-19 09:26:02 [bot.history] INFO  New war #2 vs WOLVES
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  New war #1 vs BEARS
+2026-03-19 09:26:02 [bot.history] INFO  War #1 closed: loss (20000-40000)
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  New war #1 vs ALPHA
+2026-03-19 09:26:02 [bot.history] INFO  War #1 closed: win (0-0)
+2026-03-19 09:26:02 [bot.history] INFO  New war #2 vs BETA
+2026-03-19 09:26:02 [bot.history] INFO  War #2 closed: loss (0-0)
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  New war #1 vs FOXES
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  New war #1 vs FOXES
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #1: 0 slots
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #2: 0 slots
+2026-03-19 09:26:02 [bot.history] INFO  Saved scan #3: 0 slots
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  New war #1 vs HAWKS
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.history] INFO  New war #1 vs HAWKS
+2026-03-19 09:26:02 [bot.history] INFO  DB ready: :memory:
+2026-03-19 09:26:02 [bot.ocr] INFO  Tesseract configured.

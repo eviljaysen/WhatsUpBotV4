@@ -28,6 +28,7 @@ from bot.config import (
     IMAGES_DIR, BUILDS_DIR, BUILD_HISTORY_DIR, SCANS_DIR,
     player_timezones, _KNOWN_NAMES,
     BOT_SLOTS_TOTAL, CFG,
+    MAX_HP_PER_CAR, MAX_ATK_PER_CAR, MAX_PLAYER_TOTAL, MIN_STAT_VALUE,
     reload_config, get_logger
 )
 
@@ -328,21 +329,22 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                 hp_raw = locate_number(win.hud("slot_hp"),
                                        converter=convert_dark_text,
                                        debug_name="slot_hp" if slot == 1 else None,
-                                       minfilter=0)
+                                       minfilter=0, field="slot_hp")
                 atk_raw = locate_number(win.hud("slot_atk"),
                                         converter=convert_dark_text,
                                         debug_name="slot_atk" if slot == 1 else None,
-                                        minfilter=0)
-                # Sanity: reject values < 1000 — no car in the game has HP or ATK
-                # that low. Values like "2" or "28" are CNN/OCR garbage.
-                hp  = hp_raw  if hp_raw  >= 1000 else 0
-                atk = atk_raw if atk_raw >= 1000 else 0
+                                        minfilter=0, field="slot_atk")
+                # Sanity: reject values outside valid range.
+                # Too low (<1000): CNN/OCR garbage like "2" or "28".
+                # Too high (>MAX): OCR concatenation artifacts like "99999999".
+                hp  = hp_raw  if MIN_STAT_VALUE <= hp_raw <= MAX_HP_PER_CAR  else 0
+                atk = atk_raw if MIN_STAT_VALUE <= atk_raw <= MAX_ATK_PER_CAR else 0
                 if hp_raw > 0 and hp == 0:
-                    _log.warning("B%d slot %d: HP=%d rejected (too low, likely OCR error)",
-                                 _bnum, slot, hp_raw)
+                    _log.warning("B%d slot %d: HP=%d rejected (outside %d–%d)",
+                                 _bnum, slot, hp_raw, MIN_STAT_VALUE, MAX_HP_PER_CAR)
                 if atk_raw > 0 and atk == 0:
-                    _log.warning("B%d slot %d: ATK=%d rejected (too low, likely OCR error)",
-                                 _bnum, slot, atk_raw)
+                    _log.warning("B%d slot %d: ATK=%d rejected (outside %d–%d)",
+                                 _bnum, slot, atk_raw, MIN_STAT_VALUE, MAX_ATK_PER_CAR)
             except Exception as e:
                 _log.error("B%d: HP/ATK OCR failed: %s", _bnum, e)
 
@@ -465,9 +467,9 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                 except Exception as e:
                     _log.error("build OCR error for %s: %s", slot.player, e)
                     hp, atk = 0, 0
-                # Apply same minimum threshold as live OCR
-                hp  = hp  if hp  >= 1000 else 0
-                atk = atk if atk >= 1000 else 0
+                # Apply same bounds as live OCR
+                hp  = hp  if MIN_STAT_VALUE <= hp  <= MAX_HP_PER_CAR  else 0
+                atk = atk if MIN_STAT_VALUE <= atk <= MAX_ATK_PER_CAR else 0
                 if slot.hp == 0:
                     slot.hp = hp
                 if slot.atk == 0:
@@ -781,6 +783,12 @@ def _save_scan_to_db(ctx, meta: dict):
         ts = int(time.time())
         for player, slots in player_slots.items():
             if len(slots) == 3 and all(s.hp > 0 for s in slots):
+                total = sum(s.hp + s.atk for s in slots)
+                if total > MAX_PLAYER_TOTAL:
+                    _log.warning("Player %s total strength %d exceeds max %d "
+                                 "— skipping DB save (likely OCR garbage)",
+                                 player, total, MAX_PLAYER_TOTAL)
+                    continue
                 save_player_stats(scan_id, ts, player, slots)
                 saved += 1
 

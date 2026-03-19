@@ -78,7 +78,8 @@ def _prepare_for_ocr(img, converter, upscale: int = 1, pad: int = 10,
 
 
 def locate_number(region, converter=None, ocr_config=_NUMBERS_OCR,
-                  debug_name=None, upscale: int = 1, minfilter: int = 3) -> int:
+                  debug_name=None, upscale: int = 1, minfilter: int = 3,
+                  field: str = '') -> int:
     """Screenshot a region, OCR it, and return the integer value.
 
     Args:
@@ -88,6 +89,7 @@ def locate_number(region, converter=None, ocr_config=_NUMBERS_OCR,
         debug_name: if set, saves raw + conv debug images to images/
         upscale: integer upscale factor before OCR
         minfilter: MinFilter kernel size (0 = skip)
+        field: field type for CNN class masking (e.g. 'slot_hp', 'timer')
     """
     from bot.vision import convert_dark_text  # avoid circular at module level
     shot = pyautogui.screenshot(region=region)
@@ -105,7 +107,7 @@ def locate_number(region, converter=None, ocr_config=_NUMBERS_OCR,
     try:
         from bot.ocr_model import is_model_ready, predict_text
         if is_model_ready():
-            ml_text, ml_conf = predict_text(processed, field=debug_name or "")
+            ml_text, ml_conf = predict_text(processed, field=field or debug_name or "")
             if ml_text and ml_conf >= 0.8:
                 ml_val = _digits(ml_text)
                 if ml_val > 0:

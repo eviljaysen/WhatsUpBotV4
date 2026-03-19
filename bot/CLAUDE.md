@@ -220,13 +220,13 @@ No OCR, no image processing — pure click/wait/detect.
 
 **Key constants:**
 
-- `WRAP_FP_THRESHOLD = 5` — fingerprint diff below which = same car (wrap)
-- `SLOT_SETTLE_TIME = 0.20` — seconds to wait for new slot to render
+- `WRAP_FP_THRESHOLD = 20` — fingerprint diff below which = same car (wrap)
+- `SLOT_SETTLE_TIME = 0.15` — seconds to wait for new slot to render
 - `ADVANCE_POLL_INTERVAL = 0.04` — 40ms poll interval for frame change detection
 
 **Navigation flow (team and enemy use same flow):**
 
-```
+```text
 map screen
   → click building icon (_enter_building)
     → lobby screen (DEFEND / ATTACK choice)
