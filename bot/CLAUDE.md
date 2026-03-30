@@ -18,7 +18,6 @@
 - `_NAME_UPPER_MAP: dict` — uppercase name → canonical name
 - `_OCR_CORRECTIONS: dict` — raw OCR string → corrected player name
 - `NAME_MATCH_CUTOFF`, `BOT_SLOTS_TOTAL`, `SLEEP_START/END` — scalar settings
-- `_CJK_NAMES: bool` — whether CJK OCR path is active
 - `_ENEMY_BLDGS_CFG: dict` — building number → [x, y] baseline coords
 - `BASE_DIR`, `IMAGES_DIR`, `BUILDS_DIR`, `BUILD_HISTORY_DIR`, `SCANS_DIR`, `NAME_TMPL_DIR`, `DB_PATH` — paths
 - `save_ocr_correction(raw: str, corrected: str)` — persist correction to config.json
@@ -350,7 +349,7 @@ scouting data to SQLite.
   - Returns `[(player, building, reason), ...]` — strongest unplaced → weakest buildings
 - `get_momentum(snapshots) -> dict` — velocity, acceleration, trend per team
 - `format_building_summary(analysis, alert_thresholds) -> str` — compact table with avg stats + alerts
-- `format_top_players(limit=10) -> str` — ranked player table from build_history/ (total strength, delta vs DB)
+- `format_top_players() -> str` — all players ranked table from build_history/ (total strength, delta vs DB)
 - `format_momentum(momentum) -> str` — one-line "Team +N/min [trend] | Opp +N/min [trend]"
 
 ---

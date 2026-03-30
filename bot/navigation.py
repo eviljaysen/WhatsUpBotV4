@@ -35,7 +35,7 @@ NEXT_BTN_WHITE_THRESH   = 240    # min channel value for "white" pixel
 NEXT_BTN_MAX_ATTEMPTS   = 60     # poll attempts to find Next button
 ADVANCE_MAX_POLLS       = 60     # poll attempts for frame change after click
 ADVANCE_POLL_INTERVAL   = 0.04   # seconds between frame-change polls
-WRAP_FP_THRESHOLD       = 20     # fingerprint diff below which = same car (wrap)
+WRAP_FP_THRESHOLD       = 5      # fingerprint diff below which = same car (wrap)
 
 SLOT_SETTLE_TIME        = 0.15   # seconds to wait for new slot to render
 SCREEN_TRANSITION_TIMEOUT = 8.0  # seconds max for lobby transitions
@@ -190,7 +190,7 @@ def _advance_slot(win, build_region) -> bool:
 
     # Verify full region actually changed — center crop can be tricked by
     # transient animation overlays that appear/disappear without advancing
-    time.sleep(0.05)
+    time.sleep(0.1)
     post_full = np.asarray(pyautogui.screenshot(region=build_region))
     full_diff = np.mean(np.abs(post_full.astype(np.int32) - pre_full.astype(np.int32)))
     if full_diff < 3.0:
@@ -251,7 +251,7 @@ def _cycle_slots(win, ctx, on_slot, advance_fn, build_region,
     (values differ by 50%+ between reads of the same slot due to CNN
     returning garbage like "2" or wildly different digits). The 32×32
     grayscale fingerprint reliably distinguishes different cars from
-    the same player (diff 0–1 for same car vs 30+ for different cars).
+    the same player (diff 0–2 for same car vs 12–30+ for different cars).
 
     Other end conditions:
         - ESC held

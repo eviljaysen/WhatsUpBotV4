@@ -30,9 +30,10 @@ from bot.config import BASE_DIR, get_logger
 _log = get_logger("ocr_model")
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-OCR_TRAIN_DIR = os.path.join(BASE_DIR, "training_data", "ocr")
-MODEL_PATH = os.path.join(BASE_DIR, "training_data", "ocr_char_model.pth")
-CLASSES_PATH = os.path.join(BASE_DIR, "training_data", "ocr_char_classes.json")
+OCR_TRAIN_DIR     = os.path.join(BASE_DIR, "training_data", "ocr")
+MODEL_PATH        = os.path.join(BASE_DIR, "training_data", "ocr_char_model.pth")
+CLASSES_PATH      = os.path.join(BASE_DIR, "training_data", "ocr_char_classes.json")
+_TRAIN_COUNT_PATH = os.path.join(BASE_DIR, "training_data", "ocr_train_count.json")
 
 # ── Character image dimensions ────────────────────────────────────────────────
 CHAR_W, CHAR_H = 20, 32
@@ -42,7 +43,16 @@ _model = None
 _classes = None
 _device = None
 _model_lock = threading.Lock()
-_last_train_count = 0  # total raw samples at last training
+
+# Load persisted train count — survives app restarts so needs_training() stays accurate
+def _load_train_count() -> int:
+    try:
+        with open(_TRAIN_COUNT_PATH, "r") as f:
+            return int(json.load(f).get("count", 0))
+    except Exception:
+        return 0
+
+_last_train_count = _load_train_count()
 
 
 # ── Character segmentation ────────────────────────────────────────────────────
@@ -560,6 +570,12 @@ def train_model(epochs: int = 0, lr: float = 0.001) -> dict:
         _classes = None
         stats = get_training_stats()
         _last_train_count = stats["total_samples"]
+    # Persist count to disk so needs_training() stays accurate across app restarts
+    try:
+        with open(_TRAIN_COUNT_PATH, "w") as f:
+            json.dump({"count": _last_train_count}, f)
+    except Exception as e:
+        _log.warning("Could not persist train count: %s", e)
 
     # Final accuracy
     model.eval()

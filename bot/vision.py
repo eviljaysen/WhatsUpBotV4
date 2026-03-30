@@ -57,6 +57,28 @@ def convert_dark_text(image, threshold=170) -> Img.Image:
     return Img.fromarray(out)
 
 
+def erase_stat_icons(image) -> Img.Image:
+    """Blank out heart ♥ and sword ⚔ icon pixels before stat OCR.
+
+    Replaces colored icon pixels with white so they don't contaminate digit
+    reads. Targets the specific colors used by the game:
+      - Heart: red  (R≥180, G<100, B<100)
+      - Sword: blue/teal (B≥140, R<130, G≥80)
+
+    Returns a new RGB PIL Image with icon pixels set to white (255,255,255).
+    Safe to call on any image — non-matching pixels are unchanged.
+    """
+    arr = np.asarray(image.convert("RGB"), dtype=np.uint8).copy()
+    R, G, B = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]
+
+    heart_mask = (R >= 180) & (G < 100) & (B < 100)
+    sword_mask = (B >= 140) & (R < 130) & (G >= 80)
+    icon_mask  = heart_mask | sword_mask
+
+    arr[icon_mask] = 255
+    return Img.fromarray(arr)
+
+
 def convert_badge_text(image) -> Img.Image:
     """Extract white +NNN text from a colored bonus badge.
 

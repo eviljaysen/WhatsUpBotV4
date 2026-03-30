@@ -73,6 +73,7 @@ def _tz_offset(tz_str: str) -> int:
         sign = -1 if '-' in tz_str else 1
         return sign * int(re.sub(r'[^0-9]', '', tz_str))
     except Exception:
+        _log.debug("_tz_offset: invalid timezone string %r — defaulting to 0", tz_str)
         return 0
 
 
@@ -218,7 +219,7 @@ def build_report(ctx, scores: dict, h: int, m: int, avail_only: bool = False) ->
     bldg_summary = format_building_summary(analysis, alert_thresholds)
 
     # Top players from build_history (stable 3-car record)
-    top_players_text = format_top_players(limit=10)
+    top_players_text = format_top_players()
 
     # Score momentum (requires war trajectory from DB)
     momentum_text = ""
@@ -239,7 +240,7 @@ def build_report(ctx, scores: dict, h: int, m: int, avail_only: bool = False) ->
     if bldg_summary:
         infos += f"\n```\nBUILDING STRENGTH (averages)\n{bldg_summary}\n```\n"
     if top_players_text:
-        infos += f"\n```\nTOP PLAYERS\n{top_players_text}\n```\n"
+        infos += f"\n```\nALL PLAYERS\n{top_players_text}\n```\n"
 
     meta = dict(
         instant=instant, opponent=opponent,

@@ -246,15 +246,12 @@ def format_building_summary(analysis: dict, alert_thresholds: dict = None) -> st
 
 
 
-def format_top_players(limit: int = 10) -> str:
-    """Format top players ranked by total strength from build_history/.
+def format_top_players() -> str:
+    """Format all players ranked by total strength from build_history/.
 
     Reads HP/ATK from build_history/ screenshots (stable 3-car record per
     player, updated after each scan). Uses mtime-based OCR cache for speed.
     Compares against SQLite player_stats for change deltas.
-
-    Args:
-        limit: max players to show (default 10)
 
     Returns:
         Formatted string table, or empty string if no data.
@@ -266,7 +263,7 @@ def format_top_players(limit: int = 10) -> str:
     if not stats:
         return ""
 
-    ranked = stats[:limit]
+    ranked = stats  # all players
 
     # Load previous stats from DB for delta column (skip garbage values)
     prev_stats = {}

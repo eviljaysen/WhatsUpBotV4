@@ -28,9 +28,10 @@ from bot.config import BASE_DIR, CFG, get_logger
 _log = get_logger("name_model")
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-NAME_TRAIN_DIR = os.path.join(BASE_DIR, "training_data", "names")
-MODEL_PATH = os.path.join(BASE_DIR, "training_data", "name_model.pth")
-CLASSES_PATH = os.path.join(BASE_DIR, "training_data", "name_classes.json")
+NAME_TRAIN_DIR  = os.path.join(BASE_DIR, "training_data", "names")
+MODEL_PATH      = os.path.join(BASE_DIR, "training_data", "name_model.pth")
+CLASSES_PATH    = os.path.join(BASE_DIR, "training_data", "name_classes.json")
+_TRAIN_COUNT_PATH = os.path.join(BASE_DIR, "training_data", "name_train_count.json")
 
 # ── Image dimensions for the CNN ──────────────────────────────────────────────
 IMG_W, IMG_H = 160, 40  # same as template thumbnails
@@ -40,7 +41,16 @@ _model = None
 _classes = None
 _device = None
 _model_lock = threading.Lock()  # protects _model/_classes between scan + train threads
-_last_train_count = 0   # total RAW samples at last training — skip if unchanged
+
+# Load persisted train count — survives app restarts so needs_training() stays accurate
+def _load_train_count() -> int:
+    try:
+        with open(_TRAIN_COUNT_PATH, "r") as f:
+            return int(json.load(f).get("count", 0))
+    except Exception:
+        return 0
+
+_last_train_count = _load_train_count()
 
 
 def _ensure_dirs():
@@ -385,6 +395,12 @@ def train_model(epochs: int = 0, lr: float = 0.001,
         _classes = None
         stats = get_training_stats()
         _last_train_count = sum(stats.values())
+    # Persist count to disk so needs_training() stays accurate across app restarts
+    try:
+        with open(_TRAIN_COUNT_PATH, "w") as f:
+            json.dump({"count": _last_train_count}, f)
+    except Exception as e:
+        _log.warning("Could not persist train count: %s", e)
 
     # Final training accuracy
     model.eval()

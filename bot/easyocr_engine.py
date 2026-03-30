@@ -8,6 +8,8 @@ All public functions degrade gracefully when easyocr is not installed —
 they return empty results so callers never need to check availability first.
 """
 
+import threading
+
 import numpy as np
 from PIL import Image as Img
 
@@ -19,6 +21,7 @@ _log = get_logger("easyocr_engine")
 _reader_ascii = None
 _reader_cjk = None
 _available = None  # None = not checked yet
+_reader_lock = threading.Lock()  # prevents concurrent initialisation in ThreadPoolExecutor
 
 
 def is_available() -> bool:
@@ -56,18 +59,19 @@ def _get_reader(cjk: bool = False):
 
     gpu = CFG.get("easyocr_gpu", False)
 
-    if cjk:
-        if _reader_cjk is None:
-            _log.info("Loading CJK reader (ja+en)… this may take a moment")
-            _reader_cjk = easyocr.Reader(['ja', 'en'], gpu=gpu, verbose=False)
-            _log.info("CJK reader ready")
-        return _reader_cjk
-    else:
-        if _reader_ascii is None:
-            _log.info("Loading ASCII reader (en)… this may take a moment")
-            _reader_ascii = easyocr.Reader(['en'], gpu=gpu, verbose=False)
-            _log.info("ASCII reader ready")
-        return _reader_ascii
+    with _reader_lock:
+        if cjk:
+            if _reader_cjk is None:
+                _log.info("Loading CJK reader (ja+en)… this may take a moment")
+                _reader_cjk = easyocr.Reader(['ja', 'en'], gpu=gpu, verbose=False)
+                _log.info("CJK reader ready")
+            return _reader_cjk
+        else:
+            if _reader_ascii is None:
+                _log.info("Loading ASCII reader (en)… this may take a moment")
+                _reader_ascii = easyocr.Reader(['en'], gpu=gpu, verbose=False)
+                _log.info("ASCII reader ready")
+            return _reader_ascii
 
 
 def read_text(image, cjk: bool = False, allowlist: str = None,

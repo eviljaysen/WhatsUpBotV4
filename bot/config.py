@@ -111,9 +111,9 @@ _NAME_UPPER_MAP:  dict = {}
 _ENEMY_BLDGS_CFG: dict = {}
 
 # OCR sanity bounds — set by _derive(), importable by other modules
-MAX_HP_PER_CAR:   int = 6_000_000
-MAX_ATK_PER_CAR:  int = 4_000_000
-MAX_PLAYER_TOTAL: int = 20_000_000
+MAX_HP_PER_CAR:   int = 8_000_000
+MAX_ATK_PER_CAR:  int = 8_000_000
+MAX_PLAYER_TOTAL: int = 16_000_000
 MIN_STAT_VALUE:   int = 1000
 
 
@@ -127,7 +127,7 @@ def _derive(cfg: dict):
     """
     global GAME_WINDOW_TITLE, CONTENT_OFFSET_X, CONTENT_OFFSET_Y
     global NAME_MATCH_CUTOFF, BOT_SLOTS_TOTAL
-    global SLEEP_START, SLEEP_END, _CJK_NAMES
+    global SLEEP_START, SLEEP_END
     global DISCORD_WEBHOOK_URL, SCAN_INTERVAL_MINUTES
 
     # Scalars — reassigned (use CFG.get() in other modules for live value)
@@ -138,7 +138,6 @@ def _derive(cfg: dict):
     SLEEP_END            = cfg.get("sleep_end",             8)
     NAME_MATCH_CUTOFF    = cfg.get("name_match_cutoff",     0.80)
     BOT_SLOTS_TOTAL      = cfg.get("bot_slots_total",       75)
-    _CJK_NAMES           = cfg.get("cjk_names",             False)
     DISCORD_WEBHOOK_URL  = cfg.get("discord_webhook_url",   "")
     SCAN_INTERVAL_MINUTES= cfg.get("scan_interval_minutes", 0)
 
@@ -146,9 +145,9 @@ def _derive(cfg: dict):
     # Per-car: no single car should exceed these values.
     # Per-player: total across all cars (max 3) should not exceed these.
     global MAX_HP_PER_CAR, MAX_ATK_PER_CAR, MAX_PLAYER_TOTAL, MIN_STAT_VALUE
-    MAX_HP_PER_CAR     = cfg.get("max_hp_per_car",      6_000_000)
-    MAX_ATK_PER_CAR    = cfg.get("max_atk_per_car",     4_000_000)
-    MAX_PLAYER_TOTAL   = cfg.get("max_player_total",   20_000_000)
+    MAX_HP_PER_CAR     = cfg.get("max_hp_per_car",      8_000_000)
+    MAX_ATK_PER_CAR    = cfg.get("max_atk_per_car",     8_000_000)
+    MAX_PLAYER_TOTAL   = cfg.get("max_player_total",   16_000_000)
     MIN_STAT_VALUE     = cfg.get("min_stat_value",           1000)
 
     # Mutable containers — mutate in-place so imported refs stay valid

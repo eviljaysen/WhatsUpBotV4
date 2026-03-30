@@ -35,7 +35,11 @@ from bot.config import (
 _log = get_logger("scan")
 from bot.window import detect_window
 from bot.templates import get_tpl, _TEAM_BUILDINGS_BL, _HUD
-from bot.vision import convert_dark_text, convert_white_text, convert_badge_text
+from bot.vision import convert_dark_text, convert_white_text, convert_badge_text, erase_stat_icons
+
+def _convert_stat(image):
+    """Erase icon colors then apply dark-text binarization for slot HP/ATK."""
+    return convert_dark_text(erase_stat_icons(image))
 from bot.ocr import (
     NameMatcher, ocr_player_name, _ocr_enemy_name,
     locate_number, _ocr,
@@ -108,11 +112,15 @@ class ScanContext:
             players_dict={p: 0 for p in player_timezones},
         )
         # Wrap correction_cb so it carries a reference to ctx.
-        # The dialog on the main thread reads _ctx to signal the result.
+        # The dialog on the main thread reads _ctx to signal the result back.
+        # We attach _ctx to BOTH _wrapped and the original callable so that
+        # _show_correction_dialog (which only has self._correction_cb, i.e. the
+        # original lambda) can find the context via getattr(cb, '_ctx', None).
         if correction_cb is not None:
             original = correction_cb
             def _wrapped(raw, _ctx=ctx, _orig=original):
-                _wrapped._ctx = _ctx      # accessible by the dialog
+                _wrapped._ctx = _ctx   # accessible from _wrapped
+                _orig._ctx    = _ctx   # accessible from original lambda in dialog
                 _orig(raw)
             _wrapped._ctx = None
             ctx.correction_cb = _wrapped
@@ -196,10 +204,14 @@ def capture_slot_stats(win, ctx, build_path: str = '') -> tuple:
     # Fallback: HUD region OCR if build OCR returned nothing
     if hp == 0 and atk == 0:
         try:
-            hp  = locate_number(win.hud("slot_hp"),  converter=convert_dark_text,
-                                debug_name="slot_hp")
-            atk = locate_number(win.hud("slot_atk"), converter=convert_dark_text,
-                                debug_name="slot_atk")
+            hp  = locate_number(win.hud("slot_hp"),  converter=_convert_stat,
+                                debug_name="slot_hp",
+                                valid_range=(MIN_STAT_VALUE, MAX_HP_PER_CAR),
+                                use_cnn=False)
+            atk = locate_number(win.hud("slot_atk"), converter=_convert_stat,
+                                debug_name="slot_atk",
+                                valid_range=(MIN_STAT_VALUE, MAX_ATK_PER_CAR),
+                                use_cnn=False)
         except Exception as e:
             _log.error("HUD OCR failed: %s", e)
 
@@ -213,13 +225,47 @@ def capture_slot_stats(win, ctx, build_path: str = '') -> tuple:
 
 
 # ── Build history management ──────────────────────────────────────────────────
+def _img_hash(path: str) -> np.ndarray:
+    """Mean-hash of image: 8×8 grayscale, returns 64-bit boolean array."""
+    from PIL import Image as _Img
+    img = _Img.open(path).convert("L").resize((8, 8), _Img.LANCZOS)
+    arr = np.asarray(img, dtype=np.uint8)
+    return arr > arr.mean()
+
+
+def _hash_distance(a: np.ndarray, b: np.ndarray) -> int:
+    """Hamming distance between two hash arrays (0 = identical)."""
+    return int(np.sum(a != b))
+
+
+def _deduplicate_pngs(paths: list, threshold: int = 5) -> list:
+    """Return paths with near-duplicate images removed (keeps first occurrence).
+
+    Two images are considered duplicates when their mean-hash Hamming distance
+    is <= threshold (0–64 scale; ≤5 is visually identical).
+    """
+    kept = []
+    hashes = []
+    for p in paths:
+        try:
+            h = _img_hash(p)
+        except Exception:
+            kept.append(p)
+            continue
+        if any(_hash_distance(h, prev) <= threshold for prev in hashes):
+            _log.info("build_history: skipping duplicate image %s", os.path.basename(p))
+            continue
+        kept.append(p)
+        hashes.append(h)
+    return kept
+
+
 def _update_build_history(ctx):
-    """Copy up to 3 screenshots per player from builds/ to build_history/.
+    """Copy up to 3 unique screenshots per player from builds/ to build_history/.
 
     build_history/ is a stable record of each player's 3 cars.
-    Only overwrites slots that have new data — if a player has only 2 cars
-    in this scan, the 3rd from a previous scan is preserved.
-    Extra files beyond 3 are removed.
+    Duplicate images (same car captured twice) are filtered out via perceptual
+    hashing before copying. Extra files beyond 3 are removed.
     """
     if not os.path.isdir(BUILDS_DIR):
         return
@@ -229,32 +275,35 @@ def _update_build_history(ctx):
         src = os.path.join(BUILDS_DIR, player_dir)
         if not os.path.isdir(src):
             continue
-        # Skip directories for unknown/garbage OCR names
         if player_dir not in known:
             _log.debug("build_history: skipping unknown player %r", player_dir)
             continue
 
-        pngs = sorted(f for f in os.listdir(src) if f.upper().endswith('.PNG'))
+        pngs = sorted(
+            os.path.join(src, f) for f in os.listdir(src) if f.upper().endswith('.PNG')
+        )
         if not pngs:
             continue
+
+        unique = _deduplicate_pngs(pngs)
+        if len(unique) < len(pngs):
+            _log.info("build_history: %s — %d/%d unique cars after dedup",
+                      player_dir, len(unique), len(pngs))
 
         dst = os.path.join(BUILD_HISTORY_DIR, player_dir)
         os.makedirs(dst, exist_ok=True)
 
-        # Copy first 3 screenshots as {PLAYER}_1.PNG, _2.PNG, _3.PNG
-        for i, fname in enumerate(pngs[:3], 1):
-            src_path = os.path.join(src, fname)
+        for i, src_path in enumerate(unique[:3], 1):
             dst_path = os.path.join(dst, f"{player_dir}_{i}.PNG")
             shutil.copy2(src_path, dst_path)
 
-        # Remove extras beyond 3 in history
+        # Remove extras beyond the number of unique cars copied
         for fname in sorted(os.listdir(dst)):
             if not fname.upper().endswith('.PNG'):
                 continue
-            # Keep _1, _2, _3 only
             stem = fname.rsplit('.', 1)[0]
             suffix = stem.rsplit('_', 1)[-1]
-            if suffix.isdigit() and int(suffix) > 3:
+            if suffix.isdigit() and int(suffix) > len(unique[:3]):
                 os.remove(os.path.join(dst, fname))
 
     _log.info("build_history updated from builds/")
@@ -326,25 +375,18 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             # Read HP/ATK from the info card NOW (needed for wrap detection)
             hp = atk = 0
             try:
-                hp_raw = locate_number(win.hud("slot_hp"),
-                                       converter=convert_dark_text,
-                                       debug_name="slot_hp" if slot == 1 else None,
-                                       minfilter=0, field="slot_hp")
-                atk_raw = locate_number(win.hud("slot_atk"),
-                                        converter=convert_dark_text,
-                                        debug_name="slot_atk" if slot == 1 else None,
-                                        minfilter=0, field="slot_atk")
-                # Sanity: reject values outside valid range.
-                # Too low (<1000): CNN/OCR garbage like "2" or "28".
-                # Too high (>MAX): OCR concatenation artifacts like "99999999".
-                hp  = hp_raw  if MIN_STAT_VALUE <= hp_raw <= MAX_HP_PER_CAR  else 0
-                atk = atk_raw if MIN_STAT_VALUE <= atk_raw <= MAX_ATK_PER_CAR else 0
-                if hp_raw > 0 and hp == 0:
-                    _log.warning("B%d slot %d: HP=%d rejected (outside %d–%d)",
-                                 _bnum, slot, hp_raw, MIN_STAT_VALUE, MAX_HP_PER_CAR)
-                if atk_raw > 0 and atk == 0:
-                    _log.warning("B%d slot %d: ATK=%d rejected (outside %d–%d)",
-                                 _bnum, slot, atk_raw, MIN_STAT_VALUE, MAX_ATK_PER_CAR)
+                hp = locate_number(win.hud("slot_hp"),
+                                   converter=_convert_stat,
+                                   debug_name="slot_hp" if slot == 1 else None,
+                                   minfilter=0, field="slot_hp",
+                                   valid_range=(MIN_STAT_VALUE, MAX_HP_PER_CAR),
+                                   use_cnn=False)
+                atk = locate_number(win.hud("slot_atk"),
+                                    converter=_convert_stat,
+                                    debug_name="slot_atk" if slot == 1 else None,
+                                    minfilter=0, field="slot_atk",
+                                    valid_range=(MIN_STAT_VALUE, MAX_ATK_PER_CAR),
+                                    use_cnn=False)
             except Exception as e:
                 _log.error("B%d: HP/ATK OCR failed: %s", _bnum, e)
 
@@ -539,6 +581,14 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                         "--oem 1 --psm 13 -c tessedit_char_whitelist=0123456789hm "]:
             raw = _ocr(padded, config=cfg_str).strip()
             if any(c.isdigit() for c in raw):
+                # Apply same garbage rejection as CNN path
+                digits_only = re.sub(r'[^0-9]', '', raw)
+                if digits_only and len(set(digits_only)) == 1 and len(digits_only) > 2:
+                    _log.warning("timer Tesseract → '%s' rejected (all-same-digit)", raw)
+                    continue
+                if len(digits_only) > 4:
+                    _log.warning("timer Tesseract → '%s' rejected (too many digits)", raw)
+                    continue
                 timer_raw = raw.strip("m\n ")
                 _log.info("timer Tesseract → '%s'", timer_raw)
                 break
@@ -556,8 +606,12 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
     _log.info("timer raw='%s' → h=%d m=%d", timer_raw, h, m)
     if h == 0 and m == 0:
         _log.warning("Timer OCR failed — raw: '%s'", timer_raw)
+    # Sanity: CK wars max 24h, minutes max 59
+    if h > 24 or m > 59:
+        _log.warning("Timer h=%d m=%d outside valid range — rejected", h, m)
+        h = m = 0
 
-    # Auto-save timer training sample
+    # Auto-save timer training sample (only valid values)
     if (h > 0 or m > 0) and shot:
         from bot.ocr import _save_ocr_training_sample
         _save_ocr_training_sample("timer", shot, timer_up or shot, h * 100 + m)
@@ -594,26 +648,33 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
     except Exception as e:
         _log.error("OCR model pre-load failed: %s", e)
 
+    # Score OCR uses valid_range to reject garbage before training data is saved.
+    # Max bounds: max_points ≤ 500K, scores ≤ 500K, bonuses ≤ 400.
     with ThreadPoolExecutor(max_workers=5) as ex:
         f_max = ex.submit(locate_number,
                           win.hud("max_points"), convert_white_text,
                           "--oem 1 --psm 7 -c tessedit_char_whitelist=0123456789",
-                          "max_points", 2)
+                          "max_points", 2,
+                          valid_range=(1000, 500000), use_cnn=False)
         f_op  = ex.submit(locate_number, win.hud("opp_points"),
-                          convert_dark_text, _NUMBERS_OCR, "opp_points", 2, 0)
+                          convert_dark_text, _NUMBERS_OCR, "opp_points", 2, 0,
+                          valid_range=(0, 500000))
         f_ob  = ex.submit(locate_number, win.hud("opp_bonus"),
                           convert_badge_text,
-                          _BONUS_OCR, "opp_bonus", 3, 0)
+                          _BONUS_OCR, "opp_bonus", 3, 0,
+                          valid_range=(0, 400))
         f_tp  = ex.submit(locate_number, win.hud("team_points"),
-                          convert_dark_text, _NUMBERS_OCR, "team_points", 2, 0)
+                          convert_dark_text, _NUMBERS_OCR, "team_points", 2, 0,
+                          valid_range=(0, 500000))
         f_tb  = ex.submit(locate_number, win.hud("team_bonus"),
                           convert_badge_text,
-                          _BONUS_OCR, "team_bonus", 3, 0)
-        max_points  = f_max.result(timeout=15)
-        opp_points  = f_op.result(timeout=15)
-        opp_bonus   = f_ob.result(timeout=15)
-        team_points = f_tp.result(timeout=15)
-        team_bonus  = f_tb.result(timeout=15)
+                          _BONUS_OCR, "team_bonus", 3, 0,
+                          valid_range=(0, 400))
+        max_points  = f_max.result(timeout=30)
+        opp_points  = f_op.result(timeout=30)
+        opp_bonus   = f_ob.result(timeout=30)
+        team_points = f_tp.result(timeout=30)
+        team_bonus  = f_tb.result(timeout=30)
 
     max_points = (max_points + 500) // 1000 * 1000
 
@@ -621,15 +682,20 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
               "opp_points=%d max_points=%d",
               team_bonus, opp_bonus, team_points, opp_points, max_points)
 
-    # Sanity warnings — log suspicious values but don't silently alter them
+    # Sanity: clamp scores to max_points (OCR can hallucinate extra digits)
+    if max_points > 0:
+        if team_points > max_points:
+            _log.warning("team_points=%d exceeds max_points=%d — clamped",
+                         team_points, max_points)
+            team_points = max_points
+        if opp_points > max_points:
+            _log.warning("opp_points=%d exceeds max_points=%d — clamped",
+                         opp_points, max_points)
+            opp_points = max_points
     if team_bonus > 400:
         _log.warning("team_bonus=%d looks too high — check debug_team_bonus_raw.PNG", team_bonus)
     if opp_bonus > 400:
         _log.warning("opp_bonus=%d looks too high — check debug_opp_bonus_raw.PNG", opp_bonus)
-    if team_points > 145000:
-        _log.warning("team_points=%d looks too high — check debug_team_points_raw.PNG", team_points)
-    if opp_points > 145000:
-        _log.warning("opp_points=%d looks too high — check debug_opp_points_raw.PNG", opp_points)
     if max_points == 0:
         _log.warning("max_points OCR failed — check debug_max_points_raw.PNG")
 

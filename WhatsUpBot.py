@@ -176,7 +176,10 @@ class App:
 
     # ── Thread helpers ─────────────────────────────────────────────────────────
     def _ui(self, fn):
-        self.root.after(0, fn)
+        try:
+            self.root.after(0, fn)
+        except Exception:
+            pass  # root destroyed while scan thread was still running — ignore
 
     def _set_buttons(self, enabled: bool):
         state = tk.NORMAL if enabled else tk.DISABLED
