@@ -190,7 +190,7 @@ def _advance_slot(win, build_region) -> bool:
 
     # Verify full region actually changed — center crop can be tricked by
     # transient animation overlays that appear/disappear without advancing
-    time.sleep(0.1)
+    time.sleep(0.2)
     post_full = np.asarray(pyautogui.screenshot(region=build_region))
     full_diff = np.mean(np.abs(post_full.astype(np.int32) - pre_full.astype(np.int32)))
     if full_diff < 3.0:
@@ -318,6 +318,22 @@ def _cycle_slots(win, ctx, on_slot, advance_fn, build_region,
             else:
                 _log.info("same name but different car (fp_diff=%.1f) "
                           "— continuing", fp_diff)
+
+        # ── Overrun guard ─────────────────────────────────────────────
+        # If on_slot reports a player has appeared 4+ times in this building
+        # (physically impossible — max is 3), the wrap was missed, most likely
+        # because the slot-1 player was misidentified when they cycled back.
+        # Force-wrap immediately to avoid scanning a second full loop.
+        if slot_info and slot_info.get('overrun'):
+            fp_diff = _fingerprint_diff(cur_fp, slot_1_fp) if slot_1_fp is not None else 999
+            exit_reason = (f"overrun wrap at slot {slot}: {cur_name!r} "
+                           f"bldg_count>3 fp_diff={fp_diff:.1f}")
+            _log.warning("Wrap detection missed (name mismatch likely); "
+                         "forcing exit: %s", exit_reason)
+            if on_wrap:
+                on_wrap(slot_info)
+            slot -= 1
+            break
 
         if slot_info:
             _log.info("slot %d captured (name=%r), advancing…", slot, slot_info['name'])

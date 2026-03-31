@@ -252,7 +252,8 @@ class TestFormatTopPlayers:
         with patch("bot.report.get_player_stats_from_builds", return_value=[]):
             assert format_top_players() == ""
 
-    def test_limit(self):
+    def test_all_players_shown(self):
+        """format_top_players shows all players (no limit)."""
         mock_stats = [
             {"player": f"P{i}", "total_hp": 1000 * i, "total_atk": 500,
              "total_str": 1000 * i + 500, "cars_found": 1,
@@ -262,11 +263,11 @@ class TestFormatTopPlayers:
         ]
         from unittest.mock import patch
         with patch("bot.report.get_player_stats_from_builds", return_value=mock_stats):
-            text = format_top_players(limit=5)
+            text = format_top_players()
         data_lines = [l for l in text.split("\n")
                       if l.strip() and not l.startswith("-")
                       and not l.startswith("#") and "PLAYER" not in l]
-        assert len(data_lines) == 5
+        assert len(data_lines) == 14   # all 14 players shown
 
 
 class TestFormatMomentum:

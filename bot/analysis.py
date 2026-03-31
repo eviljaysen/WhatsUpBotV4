@@ -284,13 +284,23 @@ def format_top_players() -> str:
 
     for i, d in enumerate(ranked, 1):
         name = d["player"]
-        # Compute delta vs DB history
+        # Compute delta vs DB history and classify the change:
+        #   ≥5% increase  on full 3-car set → ⚡ possible toolbox buff
+        #   >120% increase on full 3-car set → ⚠ likely OCR error (exceeds max buff)
+        #   any decrease                    → shown as negative delta only
         delta_str = ""
+        flag = ""
         prev = prev_stats.get(name)
-        if prev is not None:
+        if prev is not None and prev > 0:
             diff = d["total_str"] - prev
+            pct = diff / prev          # signed: positive = increase
             if diff > 0:
                 delta_str = f"+{_fmt_stat(diff)}"
+                if d["cars_found"] == 3:
+                    if pct > 1.20:
+                        flag = "⚠"    # above max toolbox cap — suspect OCR
+                    elif pct >= 0.05:
+                        flag = "⚡"   # within toolbox buff range
             elif diff < 0:
                 delta_str = f"-{_fmt_stat(abs(diff))}"
         lines.append(
@@ -299,7 +309,7 @@ def format_top_players() -> str:
             f"{_fmt_stat(d['total_hp']):>8} "
             f"{_fmt_stat(d['total_atk']):>8} "
             f"{d['cars_found']}    "
-            f"{delta_str:>6}"
+            f"{delta_str:>6} {flag}"
         )
 
     return "\n".join(lines)

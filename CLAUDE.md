@@ -1,4 +1,4 @@
-# WhatsUpBot v5.0 — Claude Code & AI Agent Guide
+# WhatsUpBot v5.1 — Claude Code & AI Agent Guide
 
 > This file is loaded automatically by Claude Code. Read it before every task.
 > It contains the full project contract: architecture, conventions, invariants, and anti-patterns.
@@ -124,7 +124,10 @@ class ScanContext:
     correction_cb:     callable        # fn(raw) → triggers dialog on main thread
     slot_results:      list            # list[SlotData]
     players_dict:      dict            # player → slots placed count
-    ml_model_ready:    object = None   # None = unchecked, bool after first check
+    ml_model_ready:         object = None   # None = unchecked, bool after first check
+    stat_correction_cb:     object = None   # callable(field, player, raw, conv, val)
+    stat_correction_event:  object = None   # threading.Event
+    stat_correction_result: list   = None   # [int | None]
 ```
 
 ---
@@ -175,9 +178,7 @@ pos = (480, 843)                # raw baseline — won't work at non-1920 resolu
     "bot_slots_total":       75,
     "sleep_start":           21,
     "sleep_end":             8,
-    "cjk_names":             false,
     "tmpl_threshold":        0.40,
-    "cjk_match_cutoff":      0.65,
     "max_enemy_slots":       14,
     "discord_webhook_url":   "",
     "scan_interval_minutes": 0,
@@ -218,10 +219,9 @@ build_card.PNG → crop bottom 14% → dark-text binarize → gap detection → 
 2. **CNN classifier** — `name_model.predict_name()`, fast ~5ms when model is trained
 3. **ASCII Tesseract PSM 7** — `_NAME_OCR` config, corrections applied
 4. **ASCII Tesseract PSM 8** — single-word mode, corrections applied
-5. **CJK Tesseract** — `_NAME_OCR_CJK`, Otsu binarize, `_resolve_cjk()` cleanup
-6. **EasyOCR fallback** — handles complex scripts, slower
-7. **Low-cutoff fuzzy match** — last-resort matching at reduced threshold
-8. **Correction dialog** — user resolves, saves to config + template
+5. **EasyOCR fallback** — handles complex scripts (CJK handled via `ocr_corrections`), slower
+6. **Low-cutoff fuzzy match** — last-resort matching at reduced threshold
+7. **Correction dialog** — user resolves, saves to config + template
 
 On every successful name match (any method), a training sample is auto-saved via
 `name_model.save_training_sample()` for future CNN training.
@@ -347,7 +347,7 @@ _log = get_logger("module_name")   # returns logging.getLogger("bot.module_name"
 
 ## ML Training Data
 
-```
+```text
 training_data/
 ├── names/                  ← name-region screenshots, one dir per player
 │   ├── JAYSEN/             ← {timestamp}.png files (cap: 50 per player)
@@ -385,7 +385,7 @@ Slot cycling ends when the view wraps back to slot 1. Two detection criteria
 garbage values like "2" (rejected to 0) or wildly different readings like 2813 vs 6845
 for the same slot. This caused buildings to loop 3–5x before wrapping (B3: 45 slots,
 B4: 51 slots). The fingerprint comparison reliably distinguishes different cars
-(diff 0–1 for same car vs 30+ for different cars).
+(diff 0–2 for same car vs 12–30+ for different cars).
 
 Same name alone is NOT a wrap (a player can have up to 3 cars per building).
 Other end conditions: ESC held, lobby visible, advance_fn failure after retry, stuck
@@ -393,7 +393,7 @@ detection (frame unchanged), max_slots reached.
 
 Key constants (tuned empirically):
 
-- `WRAP_FP_THRESHOLD = 20` — fingerprint diff below which = same car
+- `WRAP_FP_THRESHOLD = 5` — fingerprint diff below which = same car
 - `SLOT_SETTLE_TIME = 0.15` — wait for new slot to fully render before comparison
 
 ---
@@ -513,15 +513,23 @@ _last_train_count = n                  # must be inside `with _model_lock:`
 | OCR model pre-load (deadlock fix) | scan.py | ✅ v5.0 |
 | Wrap detection confirmation | navigation.py | ✅ v5.0 |
 | Smart retrain skip | scan.py | ✅ v5.0 |
+| Wrap threshold tuned (5) + icon erasure | navigation.py, vision.py | ✅ v5.1 |
+| use_cnn=False for slot reads + max_points | scan.py, ocr.py | ✅ v5.1 |
+| Persist train count to disk (no restart retrain) | name_model.py, ocr_model.py | ✅ v5.1 |
+| Stat correction dialog + OCR training feedback | WhatsUpBot.py, scan.py, ocr.py | ✅ v5.1 |
+| Duplicate build image detection (perceptual hash) | scan.py | ✅ v5.1 |
+| CJK Tesseract deprecated (EasyOCR + corrections) | ocr.py, scan.py | ✅ v5.1 |
+| All players in report (no limit) | analysis.py, report.py | ✅ v5.1 |
+| HUD region tuning (team_points, opp_points, slot_atk) | templates.py | ✅ v5.1 |
 | Macro recorder | TBD | 🔲 planned |
 
 ---
 
 ## Testing Strategy
 
-```
+```text
 tests/
-├── test_ocr.py          # _resolve_cjk, _digits
+├── test_ocr.py          # _digits, locate_number helpers
 ├── test_report.py       # parse_timer, _fmt_stat, _fmt_hm, _tz_offset
 ├── test_vision.py       # convert_to_bw, convert_dark_text, convert_badge_text
 ├── test_history.py      # SQLite history, war tracking, score snapshots, opponent roster

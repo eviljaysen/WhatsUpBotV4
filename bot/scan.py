@@ -94,10 +94,13 @@ class ScanContext:
     correction_cb:     object           # callable(str) | None
     slot_results:      list             # [SlotData]
     players_dict:      dict             # player → slots placed
-    ml_model_ready:    object = None    # None = unchecked, bool after first check
+    ml_model_ready:         object = None   # None = unchecked, bool after first check
+    stat_correction_cb:     object = None   # callable(field, player, raw, conv, val)
+    stat_correction_event:  object = None   # threading.Event
+    stat_correction_result: object = None   # [int | None]
 
     @classmethod
-    def create(cls, win, cfg, status_cb, correction_cb=None):
+    def create(cls, win, cfg, status_cb, correction_cb=None, stat_correction_cb=None):
         ctx = cls(
             win=win,
             cfg=cfg,
@@ -110,6 +113,8 @@ class ScanContext:
             correction_cb=correction_cb,
             slot_results=[],
             players_dict={p: 0 for p in player_timezones},
+            stat_correction_event=threading.Event(),
+            stat_correction_result=[None],
         )
         # Wrap correction_cb so it carries a reference to ctx.
         # The dialog on the main thread reads _ctx to signal the result back.
@@ -124,6 +129,15 @@ class ScanContext:
                 _orig(raw)
             _wrapped._ctx = None
             ctx.correction_cb = _wrapped
+        # Same pattern for stat correction callback.
+        if stat_correction_cb is not None:
+            original_s = stat_correction_cb
+            def _stat_wrapped(*args, _ctx=ctx, _orig=original_s):
+                _stat_wrapped._ctx = _ctx
+                _orig._ctx         = _ctx
+                _orig(*args)
+            _stat_wrapped._ctx = None
+            ctx.stat_correction_cb = _stat_wrapped
         return ctx
 
     def status(self, msg: str):
@@ -309,13 +323,54 @@ def _update_build_history(ctx):
     _log.info("build_history updated from builds/")
 
 
+# ── Stat correction helpers ────────────────────────────────────────────────────
+def _ask_stat_correction(ctx, field: str, player: str,
+                          raw_path: str, conv_path, raw_val: int):
+    """Block scan thread, fire stat correction dialog, return corrected int or None."""
+    if ctx.stat_correction_cb is None:
+        return None
+    ctx.stat_correction_event.clear()
+    ctx.stat_correction_result[0] = None
+    ctx.stat_correction_cb(field, player, raw_path, conv_path, raw_val)
+    ctx.stat_correction_event.wait(timeout=60)
+    return ctx.stat_correction_result[0]
+
+
+def _correct_live_stat(ctx, field: str, player: str, val: int) -> int:
+    """If val == 0 and correction available, prompt user and save training sample.
+
+    Only fires for known players (unknown slots are not worth training on).
+    Returns corrected value or original val.
+    """
+    if val != 0 or ctx.stat_correction_cb is None:
+        return val
+    raw_path  = os.path.join(IMAGES_DIR, f"debug_{field}_raw.PNG")
+    conv_path = os.path.join(IMAGES_DIR, f"debug_{field}_conv.PNG")
+    corrected = _ask_stat_correction(ctx, field, player, raw_path, conv_path, 0)
+    if not corrected:
+        return 0
+    _log.info("%s: user correction %s = %d", player, field, corrected)
+    try:
+        from PIL import Image as _Img
+        from bot.ocr import save_stat_correction_sample
+        raw_img  = _Img.open(raw_path)
+        conv_img = _Img.open(conv_path)
+        save_stat_correction_sample(field, raw_img, conv_img, corrected)
+    except Exception as e:
+        _log.warning("Failed to save %s training sample: %s", field, e)
+    return corrected
+
+
 # ── Team Scan ──────────────────────────────────────────────────────────────────
-def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple:
+def run_team_scan(status_cb=None, correction_cb=None, stat_correction_cb=None,
+                  avail_only=False) -> tuple:
     """Full team scan: player builds + scores + instant times.
 
     Args:
         status_cb: callable(str) for progress updates to UI
-        correction_cb: callable(str) that triggers the correction dialog on main thread
+        correction_cb: callable(str) that triggers the name correction dialog
+        stat_correction_cb: callable(field, player, raw_path, conv_path, val)
+            triggers the stat correction dialog on main thread
 
     Returns:
         (report_string, metadata_dict)
@@ -327,7 +382,7 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
     win = detect_window()
     get_tpl().refresh(win)
 
-    ctx = ScanContext.create(win, cfg, status_cb, correction_cb)
+    ctx = ScanContext.create(win, cfg, status_cb, correction_cb, stat_correction_cb)
     start_time = time.time()
 
     # ── Slot scan ─────────────────────────────────────────────────────────────
@@ -372,26 +427,30 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                 _log.error("B%d: Name OCR crashed: %s", _bnum, e, exc_info=True)
                 player = ""
 
+            # Determine if this is a known player (needed before HP/ATK block)
+            known = bool(player) and player in player_timezones
+
             # Read HP/ATK from the info card NOW (needed for wrap detection)
             hp = atk = 0
             try:
                 hp = locate_number(win.hud("slot_hp"),
                                    converter=_convert_stat,
-                                   debug_name="slot_hp" if slot == 1 else None,
+                                   debug_name="slot_hp",
                                    minfilter=0, field="slot_hp",
                                    valid_range=(MIN_STAT_VALUE, MAX_HP_PER_CAR),
                                    use_cnn=False)
                 atk = locate_number(win.hud("slot_atk"),
                                     converter=_convert_stat,
-                                    debug_name="slot_atk" if slot == 1 else None,
+                                    debug_name="slot_atk",
                                     minfilter=0, field="slot_atk",
                                     valid_range=(MIN_STAT_VALUE, MAX_ATK_PER_CAR),
                                     use_cnn=False)
+                # Prompt user to correct any failed live stat reads (known players only)
+                if known:
+                    hp  = _correct_live_stat(ctx, "slot_hp",  player, hp)
+                    atk = _correct_live_stat(ctx, "slot_atk", player, atk)
             except Exception as e:
                 _log.error("B%d: HP/ATK OCR failed: %s", _bnum, e)
-
-            # Determine if this is a known player
-            known = bool(player) and player in player_timezones
 
             if not known:
                 if player:
@@ -451,8 +510,13 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                 _log.debug("B%d: skipping artifacts for unknown player %r",
                            _bnum, player)
 
-            # Return slot info dict for wrap detection (always, even unknown)
-            return {'name': player, 'hp': hp, 'atk': atk}
+            # Return slot info dict for wrap detection (always, even unknown).
+            # 'overrun' signals _cycle_slots to force-wrap immediately — a player
+            # appearing 4+ times in one building is physically impossible and means
+            # we have already looped past the wrap point (likely due to name
+            # misidentification suppressing the fingerprint check on the first pass).
+            return {'name': player, 'hp': hp, 'atk': atk,
+                    'overrun': bldg_count > 3}
 
         def _undo_wrap(info, _bnum=bnum):
             """Undo the wrap slot — on_slot already saved data for it."""
@@ -481,7 +545,32 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
             _log.warning("B%d: captured %d slots — abnormally high, "
                          "wrap detection likely failed (expected ≤15)",
                          bnum, captured)
+
         _move_lobby(win, ctx)
+
+    # ── Global deduplication (max 3 cars per player across all buildings) ────
+    # A player can have at most 3 cars deployed total on the map (e.g. 1 in B1,
+    # 1 in B4, 1 in B5). If wrap detection failed in any building, a player may
+    # appear more than 3 times in slot_results. Keep the first 3 occurrences
+    # (in scan order); remove and delete screenshots for any beyond that.
+    seen_global: dict = {}
+    to_remove = []
+    for s in ctx.slot_results:
+        count = seen_global.get(s.player, 0) + 1
+        seen_global[s.player] = count
+        if count > 3:
+            to_remove.append(s)
+    if to_remove:
+        _log.warning("Post-scan dedup: removing %d duplicate slot(s) "
+                     "(wrap detection failure): %s",
+                     len(to_remove),
+                     [(s.player, s.building) for s in to_remove])
+        for s in to_remove:
+            ctx.slot_results.remove(s)
+            ctx.players_dict[s.player] = max(
+                0, ctx.players_dict.get(s.player, 1) - 1)
+            if os.path.isfile(s.screenshot):
+                os.remove(s.screenshot)
 
     # ── Parallel build OCR (HP/ATK from saved screenshots) ───────────────────
     # OCR slots where live HUD reading failed for either HP or ATK.
@@ -516,6 +605,49 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
                     slot.hp = hp
                 if slot.atk == 0:
                     slot.atk = atk
+
+    # ── Build OCR correction prompts (any remaining zeros) ───────────────────
+    if ctx.stat_correction_cb:
+        from bot.ocr import get_build_stat_images, save_stat_correction_sample
+        for slot in ctx.slot_results:
+            if not slot.screenshot:
+                continue
+            if slot.hp != 0 and slot.atk != 0:
+                continue
+            hp_raw, hp_conv, atk_raw, atk_conv = get_build_stat_images(slot.screenshot)
+            for field, attr, raw_img, conv_img in [
+                ("slot_hp",  "hp",  hp_raw,  hp_conv),
+                ("slot_atk", "atk", atk_raw, atk_conv),
+            ]:
+                if getattr(slot, attr) != 0:
+                    continue
+                # Save extracted region to temp files for the dialog to display
+                tmp_raw  = os.path.join(IMAGES_DIR, f"debug_build_{attr}_raw.PNG")
+                tmp_conv = os.path.join(IMAGES_DIR, f"debug_build_{attr}_conv.PNG")
+                raw_path  = slot.screenshot   # fallback: show full card
+                conv_path = None
+                try:
+                    if raw_img is not None:
+                        raw_img.save(tmp_raw)
+                        raw_path = tmp_raw
+                    if conv_img is not None:
+                        conv_img.save(tmp_conv)
+                        conv_path = tmp_conv
+                except Exception:
+                    pass
+                corrected = _ask_stat_correction(
+                    ctx, field, slot.player, raw_path, conv_path, 0)
+                if corrected:
+                    setattr(slot, attr, corrected)
+                    _log.info("build OCR correction: %s %s = %d",
+                              slot.player, attr, corrected)
+                    try:
+                        if raw_img is not None and conv_img is not None:
+                            save_stat_correction_sample(
+                                field, raw_img, conv_img, corrected)
+                    except Exception as e:
+                        _log.warning("Failed to save %s build training sample: %s",
+                                     attr, e)
 
     # ── Update build_history (stable 3-car record per player) ───────────────
     _update_build_history(ctx)
@@ -649,23 +781,23 @@ def run_team_scan(status_cb=None, correction_cb=None, avail_only=False) -> tuple
         _log.error("OCR model pre-load failed: %s", e)
 
     # Score OCR uses valid_range to reject garbage before training data is saved.
-    # Max bounds: max_points ≤ 500K, scores ≤ 500K, bonuses ≤ 400.
+    # Max bounds: scores ≤ 2M (game has exceeded 500K), bonuses ≤ 400.
     with ThreadPoolExecutor(max_workers=5) as ex:
         f_max = ex.submit(locate_number,
                           win.hud("max_points"), convert_white_text,
                           "--oem 1 --psm 7 -c tessedit_char_whitelist=0123456789",
                           "max_points", 2,
-                          valid_range=(1000, 500000), use_cnn=False)
+                          valid_range=(1000, 2000000), use_cnn=False)
         f_op  = ex.submit(locate_number, win.hud("opp_points"),
                           convert_dark_text, _NUMBERS_OCR, "opp_points", 2, 0,
-                          valid_range=(0, 500000))
+                          valid_range=(0, 2000000))
         f_ob  = ex.submit(locate_number, win.hud("opp_bonus"),
                           convert_badge_text,
                           _BONUS_OCR, "opp_bonus", 3, 0,
                           valid_range=(0, 400))
         f_tp  = ex.submit(locate_number, win.hud("team_points"),
                           convert_dark_text, _NUMBERS_OCR, "team_points", 2, 0,
-                          valid_range=(0, 500000))
+                          valid_range=(0, 2000000))
         f_tb  = ex.submit(locate_number, win.hud("team_bonus"),
                           convert_badge_text,
                           _BONUS_OCR, "team_bonus", 3, 0,
@@ -845,6 +977,10 @@ def _save_scan_to_db(ctx, meta: dict):
         for s in ctx.slot_results:
             player_slots[s.player].append(s)
 
+        # Load previous totals for >20% change detection
+        from bot.history import get_latest_player_stats
+        prev_totals = {r["player"]: r["total_str"] for r in get_latest_player_stats()}
+
         saved = 0
         ts = int(time.time())
         for player, slots in player_slots.items():
@@ -855,6 +991,28 @@ def _save_scan_to_db(ctx, meta: dict):
                                  "— skipping DB save (likely OCR garbage)",
                                  player, total, MAX_PLAYER_TOTAL)
                     continue
+                prev = prev_totals.get(player)
+                if prev and prev > 0:
+                    signed_pct = (total - prev) / prev
+                    per_car = [(s.hp, s.atk) for s in slots]
+                    per_car_str = ", ".join(
+                        f"HP={hp:,} ATK={atk:,}" for hp, atk in per_car)
+                    if signed_pct > 1.20:
+                        # Above toolbox max (120% boost = 2.2× base) — OCR error
+                        _log.warning(
+                            "Player %s strength jumped %.0f%% (%s → %s) "
+                            "— exceeds toolbox max, likely OCR error. Per car: %s",
+                            player, signed_pct * 100,
+                            f"{prev:,}", f"{total:,}", per_car_str,
+                        )
+                    elif signed_pct >= 0.05:
+                        # 5–120% increase — within toolbox buff range
+                        _log.info(
+                            "Player %s strength +%.0f%% (%s → %s) "
+                            "— possible toolbox buff. Per car: %s",
+                            player, signed_pct * 100,
+                            f"{prev:,}", f"{total:,}", per_car_str,
+                        )
                 save_player_stats(scan_id, ts, player, slots)
                 saved += 1
 
@@ -933,26 +1091,17 @@ def run_enemy_scan(building_num: int, status_cb=None) -> str:
 
     opp_shot = pyautogui.screenshot(region=win.hud("opponent"))
     opp_shot.save(os.path.join(IMAGES_DIR, "debug_opponent_raw.PNG"))
-    from bot.ocr import _prepare_for_ocr, _NAME_OCR_CJK, _resolve_cjk
+    from bot.ocr import _prepare_for_ocr
     opp_proc = _prepare_for_ocr(opp_shot, convert_dark_text, upscale=2, minfilter=0)
     opp_proc.save(os.path.join(IMAGES_DIR, "debug_opponent_conv.PNG"))
     opponent_raw = _ocr(opp_proc, config='--oem 1 --psm 7').strip()
     if not opponent_raw:
         opponent_raw = _ocr(opp_proc, config='--oem 1 --psm 8').strip()
-    # CJK fallback — if ASCII OCR returned nothing useful
-    if not opponent_raw or len(re.sub(r'[^A-Za-z0-9]', '', opponent_raw)) < 2:
-        cjk_raw = _ocr(opp_proc, config=_NAME_OCR_CJK).strip()
-        if cjk_raw:
-            resolved = _resolve_cjk(cjk_raw)
-            _log.info("opponent CJK: raw=%r → %r", cjk_raw, resolved)
-            if resolved:
-                opponent_raw = resolved
     # EasyOCR fallback
     if not opponent_raw or len(re.sub(r'[^A-Za-z0-9]', '', opponent_raw)) < 2:
         try:
             from bot.easyocr_engine import read_name as _easy_read_name
-            use_cjk = cfg.get("cjk_names", False)
-            easy_opp, easy_conf = _easy_read_name(opp_shot, cjk=use_cjk)
+            easy_opp, easy_conf = _easy_read_name(opp_shot, cjk=False)
             if easy_opp and easy_conf > 0.3:
                 _log.info("opponent EasyOCR: '%s' (conf=%.2f)", easy_opp, easy_conf)
                 opponent_raw = easy_opp

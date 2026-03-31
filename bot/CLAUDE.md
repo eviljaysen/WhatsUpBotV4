@@ -119,9 +119,10 @@ CJK support, name template matching.
 - `_prep_name_image(shot) -> PIL.Image` — 3× upscale + B&W + MinFilter + pad
 - `_read_name(proc, cfg) -> str` — OCR + ASCII normalise + corrections
 - `_name_match(text) -> list` — fuzzy match against known names
-- `_resolve_cjk(raw_cjk) -> str` — strip garbage, exact + fuzzy correction lookup
 - `ocr_player_name(card, ctx) -> str` — full multi-pass name pipeline
 - `ocr_build_stats(image_path) -> (hp, atk)` — gap-based HP/ATK extraction from build card images
+- `save_stat_correction_sample(field, raw_img, conv_img, value)` — persist user-corrected stat as training sample
+- `get_build_stat_images(image_path) -> (hp_raw, hp_conv, atk_raw, atk_conv)` — extract stat regions for correction dialog
 - `_ocr_enemy_name(win) -> str` — enemy car panel name OCR
 - `class NameMatcher` — manages name templates (load/save/match)
   - Per-scan instance in ScanContext (not global)
@@ -219,7 +220,7 @@ No OCR, no image processing — pure click/wait/detect.
 
 **Key constants:**
 
-- `WRAP_FP_THRESHOLD = 20` — fingerprint diff below which = same car (wrap)
+- `WRAP_FP_THRESHOLD = 5` — fingerprint diff below which = same car (0–2 same, 12–30+ different)
 - `SLOT_SETTLE_TIME = 0.15` — seconds to wait for new slot to render
 - `ADVANCE_POLL_INTERVAL = 0.04` — 40ms poll interval for frame change detection
 
@@ -414,9 +415,12 @@ class ScanContext:
     correction_event:  threading.Event  # signals correction dialog completed
     correction_result: list             # [str|None] — result from dialog
     correction_cb:     callable         # fn(raw) → triggers dialog on main thread
-    slot_results:      list             # [SlotData] — accumulates during scan
-    players_dict:      dict             # player → slot count placed this scan
-    ml_model_ready:    object = None    # None = unchecked, bool after first check
+    slot_results:           list             # [SlotData] — accumulates during scan
+    players_dict:           dict             # player → slot count placed this scan
+    ml_model_ready:         object = None    # None = unchecked, bool after first check
+    stat_correction_cb:     object = None    # callable(field, player, raw, conv, val)
+    stat_correction_event:  object = None    # threading.Event — signals dialog complete
+    stat_correction_result: list   = None    # [int|None] — corrected value from dialog
 ```
 
 ---

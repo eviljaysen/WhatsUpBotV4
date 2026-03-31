@@ -338,12 +338,18 @@ def get_player_stats_from_builds(directory: str = None) -> list:
             cached = cache.get(cache_key)
             if cached and cached.get("mtime") == mtime:
                 hp, atk = cached["hp"], cached["atk"]
+                # Invalidate entries with previously-cached garbage values so they
+                # get re-OCR'd (e.g. old 72M+ values cached before range was tightened)
+                if (0 < hp > MAX_HP_PER_CAR) or (0 < atk > MAX_ATK_PER_CAR):
+                    del cache[cache_key]
+                    dirty = True
+                    hp, atk = ocr_build_stats(img_path)
             else:
                 hp, atk = ocr_build_stats(img_path)
-                cache[cache_key] = {"mtime": mtime, "hp": hp, "atk": atk}
-                dirty = True
 
-            # Per-car sanity bounds — reject garbage OCR values
+            # Per-car sanity bounds — reject garbage OCR values.
+            # Don't cache out-of-range results: retry on each scan so that a
+            # corrected image (new mtime) gets a clean read next time.
             if hp < MIN_STAT_VALUE or hp > MAX_HP_PER_CAR:
                 if hp > 0:
                     _log.warning("Stats: %s HP=%d rejected (outside %d–%d)",
@@ -354,6 +360,11 @@ def get_player_stats_from_builds(directory: str = None) -> list:
                     _log.warning("Stats: %s ATK=%d rejected (outside %d–%d)",
                                  cache_key, atk, MIN_STAT_VALUE, MAX_ATK_PER_CAR)
                 atk = 0
+            # Only cache plausible values — skip caching so garbage forces re-OCR
+            if (hp == 0 or MIN_STAT_VALUE <= hp <= MAX_HP_PER_CAR) and \
+               (atk == 0 or MIN_STAT_VALUE <= atk <= MAX_ATK_PER_CAR):
+                cache[cache_key] = {"mtime": mtime, "hp": hp, "atk": atk}
+                dirty = True
             car_stats.append((hp, atk))
 
         while len(car_stats) < 3:

@@ -1,4 +1,864 @@
-2026-03-29 20:38:32 [bot.config] DEBUG  config.json unchanged — skipping reload
-2026-03-29 20:38:32 [bot.window] INFO  Window: 'BlueStacks App Player'  (1281,33)  1246×701  scale=(0.6490,0.6491)
-2026-03-29 20:38:32 [bot.ocr] INFO  name_matcher: loaded 0 templates from disk
-2026-03-29 20:38:32 [bot.scan] INFO  Building 1/6…
+2026-03-30 21:34:06 [bot.config] DEBUG  config.json unchanged — skipping reload
+2026-03-30 21:34:06 [bot.window] INFO  Window: 'BlueStacks App Player'  (1281,33)  1246×701  scale=(0.6490,0.6491)
+2026-03-30 21:34:06 [bot.ocr] INFO  name_matcher: loaded 0 templates from disk
+2026-03-30 21:34:06 [bot.scan] INFO  Building 1/6…
+2026-03-30 21:34:18 [bot.name_model] INFO  Loaded model: 25 classes
+2026-03-30 21:34:18 [bot.ocr] INFO  name: ML model → 'KOIVU' (conf=0.995)
+2026-03-30 21:34:18 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1770644' → 1770644
+2026-03-30 21:34:18 [bot.ocr] DEBUG  slot_atk: Tesseract raw='481659' → 481659
+2026-03-30 21:34:18 [bot.scan] INFO    B1 — KOIVU (1/3)
+2026-03-30 21:34:19 [bot.nav] INFO  slot 1 ref: name='KOIVU'
+2026-03-30 21:34:19 [bot.nav] INFO  slot 1 captured (name='KOIVU'), advancing…
+2026-03-30 21:34:19 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:19 [bot.ocr] INFO  name: ML model → 'KOIVU' (conf=0.995)
+2026-03-30 21:34:20 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1697516' → 1697516
+2026-03-30 21:34:20 [bot.ocr] DEBUG  slot_atk: Tesseract raw='459748' → 459748
+2026-03-30 21:34:20 [bot.scan] INFO    B1 — KOIVU (2/3)
+2026-03-30 21:34:20 [bot.nav] INFO  slot 2 matches slot 1 name ('KOIVU'), fingerprint diff=9.2
+2026-03-30 21:34:20 [bot.nav] INFO  same name but different car (fp_diff=9.2) — continuing
+2026-03-30 21:34:20 [bot.nav] INFO  slot 2 captured (name='KOIVU'), advancing…
+2026-03-30 21:34:20 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:25 [bot.nav] WARNING  Frame did not change after clicking
+2026-03-30 21:34:26 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:26 [bot.ocr] INFO  name: ML model → 'DREADZ' (conf=1.000)
+2026-03-30 21:34:27 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2307845' → 2307845
+2026-03-30 21:34:27 [bot.ocr] DEBUG  slot_atk: Tesseract raw='671978' → 671978
+2026-03-30 21:34:27 [bot.scan] INFO    B1 — DREADZ (1/3)
+2026-03-30 21:34:27 [bot.nav] INFO  slot 3 captured (name='DREADZ'), advancing…
+2026-03-30 21:34:27 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:28 [bot.ocr] INFO  name: ML model → 'LIPTON' (conf=1.000)
+2026-03-30 21:34:28 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2434651' → 2434651
+2026-03-30 21:34:28 [bot.ocr] DEBUG  slot_atk: Tesseract raw='727993' → 727993
+2026-03-30 21:34:28 [bot.scan] INFO    B1 — LIPTON (1/3)
+2026-03-30 21:34:28 [bot.nav] INFO  slot 4 captured (name='LIPTON'), advancing…
+2026-03-30 21:34:29 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:29 [bot.ocr] INFO  name: ML model → 'MUSHROOM' (conf=0.981)
+2026-03-30 21:34:30 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2301620' → 2301620
+2026-03-30 21:34:30 [bot.ocr] DEBUG  slot_atk: Tesseract raw='465357' → 465357
+2026-03-30 21:34:30 [bot.scan] INFO    B1 — MUSHROOM (1/3)
+2026-03-30 21:34:30 [bot.nav] INFO  slot 5 captured (name='MUSHROOM'), advancing…
+2026-03-30 21:34:30 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:35 [bot.nav] WARNING  Frame did not change after clicking
+2026-03-30 21:34:36 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:36 [bot.ocr] INFO  name: ML model → 'ROBINHOOD' (conf=0.993)
+2026-03-30 21:34:36 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2283092' → 2283092
+2026-03-30 21:34:37 [bot.ocr] DEBUG  slot_atk: Tesseract raw='727993' → 727993
+2026-03-30 21:34:37 [bot.scan] INFO    B1 — ROBINHOOD (1/3)
+2026-03-30 21:34:37 [bot.nav] INFO  slot 6 captured (name='ROBINHOOD'), advancing…
+2026-03-30 21:34:37 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:38 [bot.ocr] INFO  name: ML model → 'ROBINHOOD' (conf=0.993)
+2026-03-30 21:34:38 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1849993' → 1849993
+2026-03-30 21:34:38 [bot.ocr] DEBUG  slot_atk: Tesseract raw='277944' → 277944
+2026-03-30 21:34:38 [bot.scan] INFO    B1 — ROBINHOOD (2/3)
+2026-03-30 21:34:38 [bot.nav] INFO  slot 7 captured (name='ROBINHOOD'), advancing…
+2026-03-30 21:34:39 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:39 [bot.ocr] INFO  name: ML model → 'ROBINHOOD' (conf=0.993)
+2026-03-30 21:34:39 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1698392' → 1698392
+2026-03-30 21:34:40 [bot.ocr] DEBUG  slot_atk: Tesseract raw='482975' → 482975
+2026-03-30 21:34:40 [bot.scan] INFO    B1 — ROBINHOOD (3/3)
+2026-03-30 21:34:40 [bot.nav] INFO  slot 8 captured (name='ROBINHOOD'), advancing…
+2026-03-30 21:34:40 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:41 [bot.ocr] DEBUG  name: ML model low-conf: 'MUSCHI' (conf=0.706 < 0.85)
+2026-03-30 21:34:41 [bot.ocr] INFO  name: raw='MUSCHI' matched='MUSCHI'
+2026-03-30 21:34:41 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1943142' → 1943142
+2026-03-30 21:34:41 [bot.ocr] DEBUG  slot_atk: Tesseract raw='519905' → 519905
+2026-03-30 21:34:41 [bot.scan] INFO    B1 — MUSCHI (1/3)
+2026-03-30 21:34:41 [bot.nav] INFO  slot 9 captured (name='MUSCHI'), advancing…
+2026-03-30 21:34:42 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:42 [bot.ocr] DEBUG  name: ML model low-conf: 'MUSCHI' (conf=0.706 < 0.85)
+2026-03-30 21:34:43 [bot.ocr] INFO  name: raw='MUSCHI' matched='MUSCHI'
+2026-03-30 21:34:43 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1948789' → 1948789
+2026-03-30 21:34:43 [bot.ocr] DEBUG  slot_atk: Tesseract raw='477316' → 477316
+2026-03-30 21:34:43 [bot.scan] INFO    B1 — MUSCHI (2/3)
+2026-03-30 21:34:43 [bot.nav] INFO  slot 10 captured (name='MUSCHI'), advancing…
+2026-03-30 21:34:43 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:44 [bot.ocr] DEBUG  name: ML model low-conf: 'PIYO' (conf=0.563 < 0.85)
+2026-03-30 21:34:44 [bot.ocr] INFO  name: raw='PIYO' matched='PIYO'
+2026-03-30 21:34:44 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2699277' → 2699277
+2026-03-30 21:34:44 [bot.ocr] DEBUG  slot_atk: Tesseract raw='713786' → 713786
+2026-03-30 21:34:44 [bot.scan] INFO    B1 — PIYO (1/3)
+2026-03-30 21:34:45 [bot.nav] INFO  slot 11 captured (name='PIYO'), advancing…
+2026-03-30 21:34:45 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:46 [bot.ocr] INFO  name: ML model → 'KOIVU' (conf=0.995)
+2026-03-30 21:34:46 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1770644' → 1770644
+2026-03-30 21:34:46 [bot.ocr] DEBUG  slot_atk: Tesseract raw='481659' → 481659
+2026-03-30 21:34:46 [bot.scan] INFO    B1 — KOIVU (3/3)
+2026-03-30 21:34:46 [bot.nav] INFO  slot 12 matches slot 1 name ('KOIVU'), fingerprint diff=0.0
+2026-03-30 21:34:46 [bot.nav] INFO  wrap at slot 12: 'KOIVU' fp_diff=0.0
+2026-03-30 21:34:46 [bot.scan] DEBUG  undid wrap slot: removed d:\OneDrive\WhatsUpBotV4\builds\KOIVU\KOIVU_3.PNG count for KOIVU
+2026-03-30 21:34:46 [bot.nav] INFO  Building complete: 11 slots visited (wrap at slot 12: 'KOIVU' fp_diff=0.0)
+2026-03-30 21:34:46 [bot.scan] INFO  B1: visited=11 captured=11
+2026-03-30 21:34:47 [bot.scan] INFO  Building 2/6…
+2026-03-30 21:34:48 [bot.ocr] INFO  name: ML model → 'KOIVU' (conf=0.995)
+2026-03-30 21:34:49 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1856585' → 1856585
+2026-03-30 21:34:49 [bot.ocr] DEBUG  slot_atk: Tesseract raw='937340' → 937340
+2026-03-30 21:34:49 [bot.scan] INFO    B2 — KOIVU (3/3)
+2026-03-30 21:34:49 [bot.nav] INFO  slot 1 ref: name='KOIVU'
+2026-03-30 21:34:49 [bot.nav] INFO  slot 1 captured (name='KOIVU'), advancing…
+2026-03-30 21:34:49 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:50 [bot.ocr] INFO  name: ML model → 'ONKELRENE666' (conf=0.998)
+2026-03-30 21:34:50 [bot.ocr] DEBUG  slot_hp: Tesseract raw='3136394' → 3136394
+2026-03-30 21:34:50 [bot.ocr] DEBUG  slot_atk: Tesseract raw='788437' → 788437
+2026-03-30 21:34:50 [bot.scan] INFO    B2 — ONKELRENE666 (1/3)
+2026-03-30 21:34:50 [bot.nav] INFO  slot 2 captured (name='ONKELRENE666'), advancing…
+2026-03-30 21:34:50 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:51 [bot.ocr] DEBUG  name: ML model low-conf: 'AIRBORNES4' (conf=0.617 < 0.85)
+2026-03-30 21:34:51 [bot.ocr] INFO  name: raw='ASABIITOSBAA' matched='ASABIITOSBAA'
+2026-03-30 21:34:52 [bot.ocr] DEBUG  slot_hp: Tesseract raw='679275' → 679275
+2026-03-30 21:34:52 [bot.ocr] DEBUG  slot_atk: Tesseract raw='202818' → 202818
+2026-03-30 21:34:52 [bot.scan] INFO    B2 — ASABIITOSBAA (1/3)
+2026-03-30 21:34:52 [bot.nav] INFO  slot 3 captured (name='ASABIITOSBAA'), advancing…
+2026-03-30 21:34:52 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:53 [bot.ocr] INFO  name: ML model → 'BEEVEN' (conf=0.997)
+2026-03-30 21:34:53 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2083538' → 2083538
+2026-03-30 21:34:53 [bot.ocr] DEBUG  slot_atk: Tesseract raw='567063' → 567063
+2026-03-30 21:34:53 [bot.scan] INFO    B2 — BEEVEN (1/3)
+2026-03-30 21:34:53 [bot.nav] INFO  slot 4 captured (name='BEEVEN'), advancing…
+2026-03-30 21:34:54 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:54 [bot.ocr] INFO  name: ML model → 'BEEVEN' (conf=0.997)
+2026-03-30 21:34:55 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1353765' → 1353765
+2026-03-30 21:34:55 [bot.ocr] DEBUG  slot_atk: Tesseract raw='499549' → 499549
+2026-03-30 21:34:55 [bot.scan] INFO    B2 — BEEVEN (2/3)
+2026-03-30 21:34:55 [bot.nav] INFO  slot 5 captured (name='BEEVEN'), advancing…
+2026-03-30 21:34:55 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:56 [bot.ocr] INFO  name: ML model → 'BEEVEN' (conf=0.997)
+2026-03-30 21:34:56 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1742779' → 1742779
+2026-03-30 21:34:56 [bot.ocr] DEBUG  slot_atk: Tesseract raw='386196' → 386196
+2026-03-30 21:34:56 [bot.scan] INFO    B2 — BEEVEN (3/3)
+2026-03-30 21:34:56 [bot.nav] INFO  slot 6 captured (name='BEEVEN'), advancing…
+2026-03-30 21:34:57 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:57 [bot.ocr] INFO  name: ML model → 'ONKELRENE666' (conf=0.998)
+2026-03-30 21:34:58 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2036455' → 2036455
+2026-03-30 21:34:58 [bot.ocr] DEBUG  slot_atk: Tesseract raw='529467' → 529467
+2026-03-30 21:34:58 [bot.scan] INFO    B2 — ONKELRENE666 (2/3)
+2026-03-30 21:34:58 [bot.nav] INFO  slot 7 captured (name='ONKELRENE666'), advancing…
+2026-03-30 21:34:58 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:34:59 [bot.ocr] INFO  name: ML model → 'TACN' (conf=0.875)
+2026-03-30 21:34:59 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2453618' → 2453618
+2026-03-30 21:34:59 [bot.ocr] DEBUG  slot_atk: Tesseract raw='713786' → 713786
+2026-03-30 21:34:59 [bot.scan] INFO    B2 — TACN (1/3)
+2026-03-30 21:34:59 [bot.nav] INFO  slot 8 captured (name='TACN'), advancing…
+2026-03-30 21:34:59 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:00 [bot.ocr] INFO  name: ML model → 'TACN' (conf=0.875)
+2026-03-30 21:35:01 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2411017' → 2411017
+2026-03-30 21:35:01 [bot.ocr] DEBUG  slot_atk: Tesseract raw='937996' → 937996
+2026-03-30 21:35:01 [bot.scan] INFO    B2 — TACN (2/3)
+2026-03-30 21:35:01 [bot.nav] INFO  slot 9 captured (name='TACN'), advancing…
+2026-03-30 21:35:01 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:02 [bot.ocr] INFO  name: ML model → 'MUSHROOM' (conf=0.981)
+2026-03-30 21:35:02 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1169289' → 1169289
+2026-03-30 21:35:02 [bot.ocr] DEBUG  slot_atk: Tesseract raw='405193' → 405193
+2026-03-30 21:35:02 [bot.scan] INFO    B2 — MUSHROOM (2/3)
+2026-03-30 21:35:02 [bot.nav] INFO  slot 10 captured (name='MUSHROOM'), advancing…
+2026-03-30 21:35:02 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:03 [bot.ocr] DEBUG  name: ML model low-conf: 'PIYO' (conf=0.563 < 0.85)
+2026-03-30 21:35:03 [bot.ocr] INFO  name: raw='PIYO' matched='PIYO'
+2026-03-30 21:35:04 [bot.ocr] DEBUG  slot_hp: Tesseract raw='3138241' → 3138241
+2026-03-30 21:35:04 [bot.ocr] DEBUG  slot_atk: Tesseract raw='665341' → 665341
+2026-03-30 21:35:04 [bot.scan] INFO    B2 — PIYO (2/3)
+2026-03-30 21:35:04 [bot.nav] INFO  slot 11 captured (name='PIYO'), advancing…
+2026-03-30 21:35:04 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:05 [bot.ocr] INFO  name: ML model → 'KOIVU' (conf=0.995)
+2026-03-30 21:35:05 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1856585' → 1856585
+2026-03-30 21:35:05 [bot.ocr] DEBUG  slot_atk: Tesseract raw='937340' → 937340
+2026-03-30 21:35:05 [bot.scan] INFO    B2 — KOIVU (4/3)
+2026-03-30 21:35:06 [bot.nav] INFO  slot 12 matches slot 1 name ('KOIVU'), fingerprint diff=0.2
+2026-03-30 21:35:06 [bot.nav] INFO  wrap at slot 12: 'KOIVU' fp_diff=0.2
+2026-03-30 21:35:06 [bot.scan] DEBUG  undid wrap slot: removed d:\OneDrive\WhatsUpBotV4\builds\KOIVU\KOIVU_4.PNG count for KOIVU
+2026-03-30 21:35:06 [bot.nav] INFO  Building complete: 11 slots visited (wrap at slot 12: 'KOIVU' fp_diff=0.2)
+2026-03-30 21:35:06 [bot.scan] INFO  B2: visited=11 captured=11
+2026-03-30 21:35:06 [bot.scan] INFO  Building 3/6…
+2026-03-30 21:35:08 [bot.ocr] DEBUG  name: ML model low-conf: 'EVILJAYSEN' (conf=0.819 < 0.85)
+2026-03-30 21:35:08 [bot.ocr] INFO  name: raw='EVILJAYSEN' matched='EVILJAYSEN'
+2026-03-30 21:35:08 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2999315' → 2999315
+2026-03-30 21:35:08 [bot.ocr] DEBUG  slot_atk: Tesseract raw='713786' → 713786
+2026-03-30 21:35:08 [bot.scan] INFO    B3 — EVILJAYSEN (1/3)
+2026-03-30 21:35:09 [bot.nav] INFO  slot 1 ref: name='EVILJAYSEN'
+2026-03-30 21:35:09 [bot.nav] INFO  slot 1 captured (name='EVILJAYSEN'), advancing…
+2026-03-30 21:35:09 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:09 [bot.ocr] INFO  name: ML model → 'PATRICK' (conf=0.992)
+2026-03-30 21:35:10 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2929439' → 2929439
+2026-03-30 21:35:10 [bot.ocr] DEBUG  slot_atk: Tesseract raw='665341' → 665341
+2026-03-30 21:35:10 [bot.scan] INFO    B3 — PATRICK (1/3)
+2026-03-30 21:35:10 [bot.nav] INFO  slot 2 captured (name='PATRICK'), advancing…
+2026-03-30 21:35:10 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:11 [bot.ocr] INFO  name: ML model → 'JOEBOOMBANG' (conf=0.945)
+2026-03-30 21:35:11 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2308637' → 2308637
+2026-03-30 21:35:11 [bot.ocr] DEBUG  slot_atk: Tesseract raw='576057' → 576057
+2026-03-30 21:35:11 [bot.scan] INFO    B3 — JOEBOOMBANG (1/3)
+2026-03-30 21:35:11 [bot.nav] INFO  slot 3 captured (name='JOEBOOMBANG'), advancing…
+2026-03-30 21:35:12 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:12 [bot.ocr] INFO  name: ML model → 'STEFAN' (conf=0.999)
+2026-03-30 21:35:13 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2074235' → 2074235
+2026-03-30 21:35:13 [bot.ocr] DEBUG  slot_atk: Tesseract raw='903041' → 903041
+2026-03-30 21:35:13 [bot.scan] INFO    B3 — STEFAN (1/3)
+2026-03-30 21:35:13 [bot.nav] INFO  slot 4 captured (name='STEFAN'), advancing…
+2026-03-30 21:35:13 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:14 [bot.ocr] INFO  name: ML model → 'DREADZ' (conf=1.000)
+2026-03-30 21:35:14 [bot.ocr] DEBUG  slot_hp: Tesseract raw='3665513' → 3665513
+2026-03-30 21:35:14 [bot.ocr] DEBUG  slot_atk: Tesseract raw='515450' → 515450
+2026-03-30 21:35:14 [bot.scan] INFO    B3 — DREADZ (2/3)
+2026-03-30 21:35:14 [bot.nav] INFO  slot 5 captured (name='DREADZ'), advancing…
+2026-03-30 21:35:15 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:15 [bot.ocr] DEBUG  name: ML model low-conf: 'SAKETOBA' (conf=0.678 < 0.85)
+2026-03-30 21:35:15 [bot.ocr] INFO  name: raw='PIYO' matched='PIYO'
+2026-03-30 21:35:16 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1891647' → 1891647
+2026-03-30 21:35:16 [bot.ocr] DEBUG  slot_atk: Tesseract raw='578826' → 578826
+2026-03-30 21:35:16 [bot.scan] INFO    B3 — PIYO (3/3)
+2026-03-30 21:35:16 [bot.nav] INFO  slot 6 captured (name='PIYO'), advancing…
+2026-03-30 21:35:16 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:17 [bot.ocr] INFO  name: ML model → 'JC85' (conf=0.994)
+2026-03-30 21:35:17 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1369054' → 1369054
+2026-03-30 21:35:17 [bot.ocr] DEBUG  slot_atk: Tesseract raw='658890' → 658890
+2026-03-30 21:35:17 [bot.scan] INFO    B3 — JC85 (1/3)
+2026-03-30 21:35:17 [bot.nav] INFO  slot 7 captured (name='JC85'), advancing…
+2026-03-30 21:35:17 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:18 [bot.ocr] INFO  name: ML model → 'DREADZ' (conf=1.000)
+2026-03-30 21:35:18 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2267423' → 2267423
+2026-03-30 21:35:19 [bot.ocr] DEBUG  slot_atk: Tesseract raw='590719' → 590719
+2026-03-30 21:35:19 [bot.scan] INFO    B3 — DREADZ (3/3)
+2026-03-30 21:35:19 [bot.nav] INFO  slot 8 captured (name='DREADZ'), advancing…
+2026-03-30 21:35:19 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:20 [bot.ocr] INFO  name: ML model → 'PATRICK' (conf=0.992)
+2026-03-30 21:35:20 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2371294' → 2371294
+2026-03-30 21:35:20 [bot.ocr] DEBUG  slot_atk: Tesseract raw='688377' → 688377
+2026-03-30 21:35:20 [bot.scan] INFO    B3 — PATRICK (2/3)
+2026-03-30 21:35:20 [bot.nav] INFO  slot 9 captured (name='PATRICK'), advancing…
+2026-03-30 21:35:21 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:21 [bot.ocr] INFO  name: ML model → 'YOPHBI KAWAK' (conf=0.917)
+2026-03-30 21:35:21 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1489892' → 1489892
+2026-03-30 21:35:22 [bot.ocr] DEBUG  slot_atk: Tesseract raw='397446' → 397446
+2026-03-30 21:35:22 [bot.scan] INFO    B3 — YOPHBI KAWAK (1/3)
+2026-03-30 21:35:22 [bot.nav] INFO  slot 10 captured (name='YOPHBI KAWAK'), advancing…
+2026-03-30 21:35:22 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:23 [bot.ocr] INFO  name: ML model → 'PATRICK' (conf=0.992)
+2026-03-30 21:35:23 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2204455' → 2204455
+2026-03-30 21:35:23 [bot.ocr] DEBUG  slot_atk: Tesseract raw='446319' → 446319
+2026-03-30 21:35:23 [bot.scan] INFO    B3 — PATRICK (3/3)
+2026-03-30 21:35:23 [bot.nav] INFO  slot 11 captured (name='PATRICK'), advancing…
+2026-03-30 21:35:23 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:24 [bot.ocr] INFO  name: ML model → 'NOT HEY' (conf=1.000)
+2026-03-30 21:35:24 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2249412' → 2249412
+2026-03-30 21:35:25 [bot.ocr] DEBUG  slot_atk: Tesseract raw='686044' → 686044
+2026-03-30 21:35:25 [bot.scan] INFO    B3 — NOT HEY (1/3)
+2026-03-30 21:35:25 [bot.nav] INFO  slot 12 captured (name='NOT HEY'), advancing…
+2026-03-30 21:35:25 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:30 [bot.nav] WARNING  Frame did not change after clicking
+2026-03-30 21:35:31 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:31 [bot.ocr] INFO  name: ML model → 'PATRICK' (conf=0.992)
+2026-03-30 21:35:32 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2929439' → 2929439
+2026-03-30 21:35:32 [bot.ocr] DEBUG  slot_atk: Tesseract raw='665341' → 665341
+2026-03-30 21:35:32 [bot.scan] WARNING  B3: PATRICK has 4 cars in this building (max 3) — wrap detection may have failed
+2026-03-30 21:35:32 [bot.scan] INFO    B3 — PATRICK (4/3)
+2026-03-30 21:35:32 [bot.nav] WARNING  Wrap detection missed (name mismatch likely); forcing exit: overrun wrap at slot 13: 'PATRICK' bldg_count>3 fp_diff=13.2
+2026-03-30 21:35:32 [bot.scan] DEBUG  undid wrap slot: removed d:\OneDrive\WhatsUpBotV4\builds\PATRICK\PATRICK_4.PNG count for PATRICK
+2026-03-30 21:35:32 [bot.nav] INFO  Building complete: 12 slots visited (overrun wrap at slot 13: 'PATRICK' bldg_count>3 fp_diff=13.2)
+2026-03-30 21:35:32 [bot.scan] INFO  B3: visited=12 captured=12
+2026-03-30 21:35:32 [bot.scan] INFO  Building 4/6…
+2026-03-30 21:35:34 [bot.ocr] DEBUG  name: ML model low-conf: 'JAYSEN' (conf=0.544 < 0.85)
+2026-03-30 21:35:34 [bot.ocr] INFO  name: raw='JJAYSEN' matched='JAYSEN'
+2026-03-30 21:35:35 [bot.ocr] DEBUG  slot_hp: Tesseract raw='3402259' → 3402259
+2026-03-30 21:35:35 [bot.ocr] DEBUG  slot_atk: Tesseract raw='665986' → 665986
+2026-03-30 21:35:35 [bot.scan] INFO    B4 — JAYSEN (1/3)
+2026-03-30 21:35:35 [bot.nav] INFO  slot 1 ref: name='JAYSEN'
+2026-03-30 21:35:35 [bot.nav] INFO  slot 1 captured (name='JAYSEN'), advancing…
+2026-03-30 21:35:35 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:36 [bot.ocr] DEBUG  name: ML model low-conf: 'JAYSEN' (conf=0.544 < 0.85)
+2026-03-30 21:35:36 [bot.ocr] INFO  name: raw='JJAYSEN' matched='JAYSEN'
+2026-03-30 21:35:36 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2752310' → 2752310
+2026-03-30 21:35:36 [bot.ocr] DEBUG  slot_atk: Tesseract raw='484448' → 484448
+2026-03-30 21:35:36 [bot.scan] INFO    B4 — JAYSEN (2/3)
+2026-03-30 21:35:36 [bot.nav] INFO  slot 2 matches slot 1 name ('JAYSEN'), fingerprint diff=12.9
+2026-03-30 21:35:36 [bot.nav] INFO  same name but different car (fp_diff=12.9) — continuing
+2026-03-30 21:35:36 [bot.nav] INFO  slot 2 captured (name='JAYSEN'), advancing…
+2026-03-30 21:35:37 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:37 [bot.ocr] DEBUG  name: ML model low-conf: 'JAYSEN' (conf=0.544 < 0.85)
+2026-03-30 21:35:37 [bot.ocr] INFO  name: raw='JJAYSEN' matched='JAYSEN'
+2026-03-30 21:35:38 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2897629' → 2897629
+2026-03-30 21:35:38 [bot.ocr] DEBUG  slot_atk: Tesseract raw='713786' → 713786
+2026-03-30 21:35:38 [bot.scan] INFO    B4 — JAYSEN (3/3)
+2026-03-30 21:35:38 [bot.nav] INFO  slot 3 matches slot 1 name ('JAYSEN'), fingerprint diff=13.5
+2026-03-30 21:35:38 [bot.nav] INFO  same name but different car (fp_diff=13.5) — continuing
+2026-03-30 21:35:38 [bot.nav] INFO  slot 3 captured (name='JAYSEN'), advancing…
+2026-03-30 21:35:38 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:39 [bot.ocr] DEBUG  name: ML model low-conf: 'EVILJAYSEN' (conf=0.819 < 0.85)
+2026-03-30 21:35:39 [bot.ocr] INFO  name: raw='EVILJAYSEN' matched='EVILJAYSEN'
+2026-03-30 21:35:39 [bot.ocr] DEBUG  slot_hp: Tesseract raw='3435338' → 3435338
+2026-03-30 21:35:39 [bot.ocr] DEBUG  slot_atk: Tesseract raw='670185' → 670185
+2026-03-30 21:35:39 [bot.scan] INFO    B4 — EVILJAYSEN (2/3)
+2026-03-30 21:35:40 [bot.nav] INFO  slot 4 captured (name='EVILJAYSEN'), advancing…
+2026-03-30 21:35:40 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:40 [bot.ocr] DEBUG  name: ML model low-conf: 'EVILJAYSEN' (conf=0.819 < 0.85)
+2026-03-30 21:35:41 [bot.ocr] INFO  name: raw='EVILJAYSEN' matched='EVILJAYSEN'
+2026-03-30 21:35:41 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2847944' → 2847944
+2026-03-30 21:35:41 [bot.ocr] DEBUG  slot_atk: Tesseract raw='484448' → 484448
+2026-03-30 21:35:41 [bot.scan] INFO    B4 — EVILJAYSEN (3/3)
+2026-03-30 21:35:41 [bot.nav] INFO  slot 5 captured (name='EVILJAYSEN'), advancing…
+2026-03-30 21:35:41 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:42 [bot.ocr] DEBUG  name: ML model low-conf: 'AIRBORNES4' (conf=0.617 < 0.85)
+2026-03-30 21:35:42 [bot.ocr] INFO  name: raw='ASABIITOSBAA' matched='ASABIITOSBAA'
+2026-03-30 21:35:42 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1893285' → 1893285
+2026-03-30 21:35:43 [bot.ocr] DEBUG  slot_atk: Tesseract raw='444305' → 444305
+2026-03-30 21:35:43 [bot.scan] INFO    B4 — ASABIITOSBAA (2/3)
+2026-03-30 21:35:43 [bot.nav] INFO  slot 6 captured (name='ASABIITOSBAA'), advancing…
+2026-03-30 21:35:43 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:44 [bot.ocr] DEBUG  name: ML model low-conf: 'AIRBORNES4' (conf=0.617 < 0.85)
+2026-03-30 21:35:44 [bot.ocr] INFO  name: raw='ASABIITOSBAA' matched='ASABIITOSBAA'
+2026-03-30 21:35:44 [bot.ocr] DEBUG  slot_hp: Tesseract raw='911686' → 911686
+2026-03-30 21:35:44 [bot.ocr] DEBUG  slot_atk: Tesseract raw='308425' → 308425
+2026-03-30 21:35:44 [bot.scan] INFO    B4 — ASABIITOSBAA (3/3)
+2026-03-30 21:35:44 [bot.nav] INFO  slot 7 captured (name='ASABIITOSBAA'), advancing…
+2026-03-30 21:35:45 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:45 [bot.ocr] INFO  name: ML model → 'ONKELRENE666' (conf=0.998)
+2026-03-30 21:35:46 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2382849' → 2382849
+2026-03-30 21:35:46 [bot.ocr] DEBUG  slot_atk: Tesseract raw='567998' → 567998
+2026-03-30 21:35:46 [bot.scan] INFO    B4 — ONKELRENE666 (3/3)
+2026-03-30 21:35:46 [bot.nav] INFO  slot 8 captured (name='ONKELRENE666'), advancing…
+2026-03-30 21:35:46 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:47 [bot.ocr] INFO  name: ML model → 'TACN' (conf=0.875)
+2026-03-30 21:35:47 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2739107' → 2739107
+2026-03-30 21:35:47 [bot.ocr] DEBUG  slot_atk: Tesseract raw='665341' → 665341
+2026-03-30 21:35:47 [bot.scan] INFO    B4 — TACN (3/3)
+2026-03-30 21:35:47 [bot.nav] INFO  slot 9 captured (name='TACN'), advancing…
+2026-03-30 21:35:47 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:48 [bot.ocr] INFO  name: ML model → 'DARDAR' (conf=0.998)
+2026-03-30 21:35:48 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2217491' → 2217491
+2026-03-30 21:35:49 [bot.ocr] DEBUG  slot_atk: Tesseract raw='943788' → 943788
+2026-03-30 21:35:49 [bot.scan] INFO    B4 — DARDAR (1/3)
+2026-03-30 21:35:49 [bot.nav] INFO  slot 10 captured (name='DARDAR'), advancing…
+2026-03-30 21:35:49 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:54 [bot.nav] WARNING  Frame did not change after clicking
+2026-03-30 21:35:54 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:55 [bot.ocr] INFO  name: ML model → 'DARDAR' (conf=0.998)
+2026-03-30 21:35:55 [bot.ocr] DEBUG  slot_hp: Tesseract raw='3264385' → 3264385
+2026-03-30 21:35:56 [bot.ocr] DEBUG  slot_atk: Tesseract raw='665341' → 665341
+2026-03-30 21:35:56 [bot.scan] INFO    B4 — DARDAR (2/3)
+2026-03-30 21:35:56 [bot.nav] INFO  slot 11 captured (name='DARDAR'), advancing…
+2026-03-30 21:35:56 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:35:57 [bot.ocr] DEBUG  name: ML model low-conf: 'JAYSEN' (conf=0.544 < 0.85)
+2026-03-30 21:35:57 [bot.ocr] INFO  name: raw='JJAYSEN' matched='JAYSEN'
+2026-03-30 21:35:57 [bot.ocr] DEBUG  slot_hp: Tesseract raw='3402259' → 3402259
+2026-03-30 21:35:57 [bot.ocr] DEBUG  slot_atk: Tesseract raw='665986' → 665986
+2026-03-30 21:35:57 [bot.scan] WARNING  B4: JAYSEN has 4 cars in this building (max 3) — wrap detection may have failed
+2026-03-30 21:35:57 [bot.scan] INFO    B4 — JAYSEN (4/3)
+2026-03-30 21:35:57 [bot.nav] INFO  slot 12 matches slot 1 name ('JAYSEN'), fingerprint diff=0.2
+2026-03-30 21:35:57 [bot.nav] INFO  wrap at slot 12: 'JAYSEN' fp_diff=0.2
+2026-03-30 21:35:57 [bot.scan] DEBUG  undid wrap slot: removed d:\OneDrive\WhatsUpBotV4\builds\JAYSEN\JAYSEN_4.PNG count for JAYSEN
+2026-03-30 21:35:58 [bot.nav] INFO  Building complete: 11 slots visited (wrap at slot 12: 'JAYSEN' fp_diff=0.2)
+2026-03-30 21:35:58 [bot.scan] INFO  B4: visited=11 captured=11
+2026-03-30 21:35:58 [bot.scan] INFO  Building 5/6…
+2026-03-30 21:36:00 [bot.ocr] INFO  name: ML model → 'SLOMO' (conf=0.933)
+2026-03-30 21:36:00 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2684560' → 2684560
+2026-03-30 21:36:00 [bot.ocr] DEBUG  slot_atk: Tesseract raw='688377' → 688377
+2026-03-30 21:36:00 [bot.scan] INFO    B5 — SLOMO (1/3)
+2026-03-30 21:36:00 [bot.nav] INFO  slot 1 ref: name='SLOMO'
+2026-03-30 21:36:00 [bot.nav] INFO  slot 1 captured (name='SLOMO'), advancing…
+2026-03-30 21:36:00 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:01 [bot.ocr] INFO  name: ML model → 'JOEBOOMBANG' (conf=0.945)
+2026-03-30 21:36:01 [bot.ocr] DEBUG  slot_hp: Tesseract raw='3198355' → 3198355
+2026-03-30 21:36:02 [bot.ocr] DEBUG  slot_atk: Tesseract raw='780055' → 780055
+2026-03-30 21:36:02 [bot.scan] INFO    B5 — JOEBOOMBANG (2/3)
+2026-03-30 21:36:02 [bot.nav] INFO  slot 2 captured (name='JOEBOOMBANG'), advancing…
+2026-03-30 21:36:02 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:03 [bot.ocr] INFO  name: ML model → 'STEFAN' (conf=0.999)
+2026-03-30 21:36:03 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1246341' → 1246341
+2026-03-30 21:36:03 [bot.ocr] DEBUG  slot_atk: Tesseract raw='333675' → 333675
+2026-03-30 21:36:03 [bot.scan] INFO    B5 — STEFAN (2/3)
+2026-03-30 21:36:03 [bot.nav] INFO  slot 3 captured (name='STEFAN'), advancing…
+2026-03-30 21:36:03 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:04 [bot.ocr] INFO  name: ML model → 'YOPHBI KAWAK' (conf=0.917)
+2026-03-30 21:36:04 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1225726' → 1225726
+2026-03-30 21:36:05 [bot.ocr] DEBUG  slot_atk: Tesseract raw='382450' → 382450
+2026-03-30 21:36:05 [bot.scan] INFO    B5 — YOPHBI KAWAK (2/3)
+2026-03-30 21:36:05 [bot.nav] INFO  slot 4 captured (name='YOPHBI KAWAK'), advancing…
+2026-03-30 21:36:05 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:06 [bot.ocr] INFO  name: ML model → 'STEFAN' (conf=0.999)
+2026-03-30 21:36:06 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1078934' → 1078934
+2026-03-30 21:36:06 [bot.ocr] DEBUG  slot_atk: Tesseract raw='409352' → 409352
+2026-03-30 21:36:06 [bot.scan] INFO    B5 — STEFAN (3/3)
+2026-03-30 21:36:06 [bot.nav] INFO  slot 5 captured (name='STEFAN'), advancing…
+2026-03-30 21:36:06 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:07 [bot.ocr] INFO  name: ML model → 'NOT HEY' (conf=1.000)
+2026-03-30 21:36:07 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2656314' → 2656314
+2026-03-30 21:36:08 [bot.ocr] DEBUG  slot_atk: Tesseract raw='639342' → 639342
+2026-03-30 21:36:08 [bot.scan] INFO    B5 — NOT HEY (2/3)
+2026-03-30 21:36:08 [bot.nav] INFO  slot 6 captured (name='NOT HEY'), advancing…
+2026-03-30 21:36:08 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:09 [bot.ocr] DEBUG  name: ML model low-conf: 'PIYO' (conf=0.563 < 0.85)
+2026-03-30 21:36:09 [bot.ocr] INFO  name: raw='PIYO' matched='PIYO'
+2026-03-30 21:36:09 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2217390' → 2217390
+2026-03-30 21:36:09 [bot.ocr] DEBUG  slot_atk: Tesseract raw='448298' → 448298
+2026-03-30 21:36:09 [bot.scan] INFO    B5 — PIYO (4/3)
+2026-03-30 21:36:09 [bot.nav] INFO  slot 7 captured (name='PIYO'), advancing…
+2026-03-30 21:36:10 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:15 [bot.nav] WARNING  Frame did not change after clicking
+2026-03-30 21:36:15 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:16 [bot.ocr] DEBUG  name: ML model low-conf: 'SAKETOBA' (conf=0.678 < 0.85)
+2026-03-30 21:36:16 [bot.ocr] INFO  name: raw='PIYO' matched='PIYO'
+2026-03-30 21:36:16 [bot.ocr] DEBUG  slot_hp: Tesseract raw='941666' → 941666
+2026-03-30 21:36:16 [bot.ocr] DEBUG  slot_atk: Tesseract raw='316412' → 316412
+2026-03-30 21:36:16 [bot.scan] INFO    B5 — PIYO (5/3)
+2026-03-30 21:36:17 [bot.nav] INFO  slot 8 captured (name='PIYO'), advancing…
+2026-03-30 21:36:17 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:17 [bot.ocr] INFO  name: ML model → 'LIPTON' (conf=1.000)
+2026-03-30 21:36:18 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2740940' → 2740940
+2026-03-30 21:36:18 [bot.ocr] DEBUG  slot_atk: Tesseract raw='591665' → 591665
+2026-03-30 21:36:18 [bot.scan] INFO    B5 — LIPTON (2/3)
+2026-03-30 21:36:18 [bot.nav] INFO  slot 9 captured (name='LIPTON'), advancing…
+2026-03-30 21:36:18 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:23 [bot.nav] WARNING  Frame did not change after clicking
+2026-03-30 21:36:24 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:24 [bot.ocr] INFO  name: ML model → 'SLOMO' (conf=0.933)
+2026-03-30 21:36:25 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2029534' → 2029534
+2026-03-30 21:36:25 [bot.ocr] DEBUG  slot_atk: Tesseract raw='665341' → 665341
+2026-03-30 21:36:25 [bot.scan] INFO    B5 — SLOMO (2/3)
+2026-03-30 21:36:25 [bot.nav] INFO  slot 10 matches slot 1 name ('SLOMO'), fingerprint diff=10.5
+2026-03-30 21:36:25 [bot.nav] INFO  same name but different car (fp_diff=10.5) — continuing
+2026-03-30 21:36:25 [bot.nav] INFO  slot 10 captured (name='SLOMO'), advancing…
+2026-03-30 21:36:25 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:26 [bot.ocr] DEBUG  name: ML model low-conf: 'MUSCHI' (conf=0.706 < 0.85)
+2026-03-30 21:36:26 [bot.ocr] INFO  name: raw='MUSCHI' matched='MUSCHI'
+2026-03-30 21:36:26 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2340792' → 2340792
+2026-03-30 21:36:26 [bot.ocr] DEBUG  slot_atk: Tesseract raw='640903' → 640903
+2026-03-30 21:36:26 [bot.scan] INFO    B5 — MUSCHI (3/3)
+2026-03-30 21:36:27 [bot.nav] INFO  slot 11 captured (name='MUSCHI'), advancing…
+2026-03-30 21:36:27 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:28 [bot.ocr] INFO  name: ML model → 'MUSHROOM' (conf=0.981)
+2026-03-30 21:36:28 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2377988' → 2377988
+2026-03-30 21:36:28 [bot.ocr] DEBUG  slot_atk: Tesseract raw='657131' → 657131
+2026-03-30 21:36:28 [bot.scan] INFO    B5 — MUSHROOM (3/3)
+2026-03-30 21:36:28 [bot.nav] INFO  slot 12 captured (name='MUSHROOM'), advancing…
+2026-03-30 21:36:28 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:29 [bot.ocr] INFO  name: ML model → 'SLOMO' (conf=0.933)
+2026-03-30 21:36:29 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2684560' → 2684560
+2026-03-30 21:36:30 [bot.ocr] DEBUG  slot_atk: Tesseract raw='688377' → 688377
+2026-03-30 21:36:30 [bot.scan] INFO    B5 — SLOMO (3/3)
+2026-03-30 21:36:30 [bot.nav] INFO  slot 13 matches slot 1 name ('SLOMO'), fingerprint diff=0.1
+2026-03-30 21:36:30 [bot.nav] INFO  wrap at slot 13: 'SLOMO' fp_diff=0.1
+2026-03-30 21:36:30 [bot.scan] DEBUG  undid wrap slot: removed d:\OneDrive\WhatsUpBotV4\builds\SLOMO\SLOMO_3.PNG count for SLOMO
+2026-03-30 21:36:30 [bot.nav] INFO  Building complete: 12 slots visited (wrap at slot 13: 'SLOMO' fp_diff=0.1)
+2026-03-30 21:36:30 [bot.scan] INFO  B5: visited=12 captured=12
+2026-03-30 21:36:30 [bot.scan] INFO  Building 6/6…
+2026-03-30 21:36:32 [bot.ocr] INFO  name: ML model → 'YOPHBI KAWAK' (conf=0.917)
+2026-03-30 21:36:32 [bot.ocr] DEBUG  slot_hp: Tesseract raw='938819' → 938819
+2026-03-30 21:36:32 [bot.ocr] DEBUG  slot_atk: Tesseract raw='183152' → 183152
+2026-03-30 21:36:32 [bot.scan] INFO    B6 — YOPHBI KAWAK (3/3)
+2026-03-30 21:36:32 [bot.nav] INFO  slot 1 ref: name='YOPHBI KAWAK'
+2026-03-30 21:36:32 [bot.nav] INFO  slot 1 captured (name='YOPHBI KAWAK'), advancing…
+2026-03-30 21:36:32 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:33 [bot.ocr] INFO  name: ML model → 'JOEBOOMBANG' (conf=0.945)
+2026-03-30 21:36:33 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2985921' → 2985921
+2026-03-30 21:36:34 [bot.ocr] DEBUG  slot_atk: Tesseract raw='490793' → 490793
+2026-03-30 21:36:34 [bot.scan] INFO    B6 — JOEBOOMBANG (3/3)
+2026-03-30 21:36:34 [bot.nav] INFO  slot 2 captured (name='JOEBOOMBANG'), advancing…
+2026-03-30 21:36:34 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:35 [bot.ocr] INFO  name: ML model → 'JC85' (conf=0.994)
+2026-03-30 21:36:35 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1666577' → 1666577
+2026-03-30 21:36:35 [bot.ocr] DEBUG  slot_atk: Tesseract raw='328300' → 328300
+2026-03-30 21:36:35 [bot.scan] INFO    B6 — JC85 (2/3)
+2026-03-30 21:36:35 [bot.nav] INFO  slot 3 captured (name='JC85'), advancing…
+2026-03-30 21:36:35 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:36 [bot.ocr] INFO  name: ML model → 'NOT HEY' (conf=1.000)
+2026-03-30 21:36:36 [bot.ocr] DEBUG  slot_hp: Tesseract raw='1662532' → 1662532
+2026-03-30 21:36:36 [bot.ocr] DEBUG  slot_atk: Tesseract raw='308826' → 308826
+2026-03-30 21:36:36 [bot.scan] INFO    B6 — NOT HEY (3/3)
+2026-03-30 21:36:36 [bot.nav] INFO  slot 4 captured (name='NOT HEY'), advancing…
+2026-03-30 21:36:37 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:37 [bot.ocr] INFO  name: ML model → 'LIPTON' (conf=1.000)
+2026-03-30 21:36:38 [bot.ocr] DEBUG  slot_hp: Tesseract raw='2474410' → 2474410
+2026-03-30 21:36:38 [bot.ocr] DEBUG  slot_atk: Tesseract raw='418288' → 418288
+2026-03-30 21:36:38 [bot.scan] INFO    B6 — LIPTON (3/3)
+2026-03-30 21:36:38 [bot.nav] INFO  slot 5 captured (name='LIPTON'), advancing…
+2026-03-30 21:36:38 [bot.nav] DEBUG  Next button found at (1585, 579) (attempt 1)
+2026-03-30 21:36:39 [bot.ocr] INFO  name: ML model → 'YOPHBI KAWAK' (conf=0.917)
+2026-03-30 21:36:39 [bot.ocr] DEBUG  slot_hp: Tesseract raw='938819' → 938819
+2026-03-30 21:36:39 [bot.ocr] DEBUG  slot_atk: Tesseract raw='183152' → 183152
+2026-03-30 21:36:39 [bot.scan] INFO    B6 — YOPHBI KAWAK (4/3)
+2026-03-30 21:36:39 [bot.nav] INFO  slot 6 matches slot 1 name ('YOPHBI KAWAK'), fingerprint diff=0.1
+2026-03-30 21:36:39 [bot.nav] INFO  wrap at slot 6: 'YOPHBI KAWAK' fp_diff=0.1
+2026-03-30 21:36:39 [bot.scan] DEBUG  undid wrap slot: removed d:\OneDrive\WhatsUpBotV4\builds\YOPHBI KAWAK\YOPHBI KAWAK_4.PNG count for YOPHBI KAWAK
+2026-03-30 21:36:40 [bot.nav] INFO  Building complete: 5 slots visited (wrap at slot 6: 'YOPHBI KAWAK' fp_diff=0.1)
+2026-03-30 21:36:40 [bot.scan] INFO  B6: visited=5 captured=5
+2026-03-30 21:36:40 [bot.scan] WARNING  Post-scan dedup: removing 2 duplicate slot(s) (wrap detection failure): [('PIYO', 5), ('PIYO', 5)]
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: skipping duplicate image DREADZ_3.PNG
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: DREADZ — 2/3 unique cars after dedup
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: skipping duplicate image KOIVU_2.PNG
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: KOIVU — 2/3 unique cars after dedup
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: skipping duplicate image LIPTON_2.PNG
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: LIPTON — 2/3 unique cars after dedup
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: skipping duplicate image NOT HEY_3.PNG
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: NOT HEY — 2/3 unique cars after dedup
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: skipping duplicate image PIYO_3.PNG
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: PIYO — 2/3 unique cars after dedup
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: skipping duplicate image TACN_3.PNG
+2026-03-30 21:36:40 [bot.scan] INFO  build_history: TACN — 2/3 unique cars after dedup
+2026-03-30 21:36:40 [bot.scan] INFO  build_history updated from builds/
+2026-03-30 21:36:40 [bot.scan] INFO  Capturing scores…
+2026-03-30 21:36:41 [bot.ocr_model] INFO  Loaded model: 30 classes
+2026-03-30 21:36:41 [bot.scan] INFO  timer CNN → '9m15m' (conf=0.80)
+2026-03-30 21:36:41 [bot.scan] INFO  timer raw='9m15m' → h=9 m=15
+2026-03-30 21:36:41 [bot.ocr] INFO  opp_points: CNN → '1302' (conf=0.99) = 1302
+2026-03-30 21:36:41 [bot.ocr] INFO  team_points: CNN → '122679' (conf=0.89) = 122679
+2026-03-30 21:36:41 [bot.ocr] DEBUG  max_points: Tesseract raw='145000' → 145000
+2026-03-30 21:36:41 [bot.ocr] DEBUG  team_bonus: Tesseract raw='' → 0
+2026-03-30 21:36:41 [bot.ocr] DEBUG  opp_bonus: Tesseract raw='' → 0
+2026-03-30 21:36:41 [bot.ocr] DEBUG  team_bonus: retry PSM 8: raw='' → 0
+2026-03-30 21:36:41 [bot.ocr] DEBUG  opp_bonus: retry PSM 8: raw='' → 0
+2026-03-30 21:36:57 [bot.easyocr_engine] INFO  Loading ASCII reader (en)… this may take a moment
+2026-03-30 21:36:59 [bot.easyocr_engine] INFO  ASCII reader ready
+2026-03-30 21:36:59 [bot.ocr] DEBUG  opp_bonus: all engines returned 0 or out-of-range
+2026-03-30 21:36:59 [bot.ocr] INFO  team_bonus: EasyOCR fallback: 144 (conf=1.00)
+2026-03-30 21:36:59 [bot.scan] INFO  raw scores: team_bonus=144 opp_bonus=0 team_points=122679 opp_points=1302 max_points=145000
+2026-03-30 21:36:59 [bot.scan] INFO  Done in 2m52s
+2026-03-30 21:36:59 [bot.report] DEBUG  Pruned 1 stale stats cache entries from d:\OneDrive\WhatsUpBotV4\build_history
+2026-03-30 21:36:59 [bot.ocr] DEBUG  build stat EasyOCR: 679275 (conf=1.00)
+2026-03-30 21:37:00 [bot.ocr] DEBUG  build stat EasyOCR: 202818 (conf=0.82)
+2026-03-30 21:37:00 [bot.ocr] DEBUG  build stat EasyOCR: 1593285 (conf=1.00)
+2026-03-30 21:37:00 [bot.ocr] DEBUG  build stat EasyOCR: 444305 (conf=0.56)
+2026-03-30 21:37:00 [bot.ocr] DEBUG  build stat EasyOCR: 911686 (conf=0.93)
+2026-03-30 21:37:00 [bot.ocr] DEBUG  build stat EasyOCR: 308425 (conf=0.98)
+2026-03-30 21:37:01 [bot.ocr] DEBUG  build stat EasyOCR: 2083538 (conf=1.00)
+2026-03-30 21:37:01 [bot.ocr] DEBUG  build stat EasyOCR: 567063 (conf=1.00)
+2026-03-30 21:37:01 [bot.ocr] DEBUG  build stat EasyOCR: 1353765 (conf=0.98)
+2026-03-30 21:37:01 [bot.ocr] DEBUG  build stat EasyOCR: 499549 (conf=0.96)
+2026-03-30 21:37:01 [bot.ocr] DEBUG  build stat EasyOCR: 1742779 (conf=0.64)
+2026-03-30 21:37:02 [bot.ocr] DEBUG  build stat EasyOCR: 386196 (conf=0.92)
+2026-03-30 21:37:02 [bot.ocr] DEBUG  build stat EasyOCR: 2217491 (conf=1.00)
+2026-03-30 21:37:02 [bot.ocr] DEBUG  build stat EasyOCR: 543788 (conf=0.78)
+2026-03-30 21:37:02 [bot.ocr] DEBUG  build stat EasyOCR: 3264385 (conf=0.92)
+2026-03-30 21:37:02 [bot.ocr] DEBUG  build stat EasyOCR: 665341 (conf=0.97)
+2026-03-30 21:37:03 [bot.ocr] DEBUG  build stat EasyOCR: 2307845 (conf=0.91)
+2026-03-30 21:37:03 [bot.ocr] DEBUG  build stat EasyOCR: 671978 (conf=1.00)
+2026-03-30 21:37:03 [bot.ocr] DEBUG  build stat EasyOCR: 3665513 (conf=0.74)
+2026-03-30 21:37:03 [bot.ocr] DEBUG  build stat EasyOCR: 515450 (conf=0.86)
+2026-03-30 21:37:03 [bot.ocr] DEBUG  build stat EasyOCR: 2999315 (conf=1.00)
+2026-03-30 21:37:04 [bot.ocr] DEBUG  build stat EasyOCR: 713786 (conf=0.92)
+2026-03-30 21:37:04 [bot.ocr] DEBUG  build stat EasyOCR: 3435338 (conf=0.94)
+2026-03-30 21:37:04 [bot.ocr] DEBUG  build stat EasyOCR: 670185 (conf=1.00)
+2026-03-30 21:37:04 [bot.ocr] DEBUG  build stat EasyOCR: 28479444 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:04 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='2847944' → 2847944
+2026-03-30 21:37:05 [bot.ocr] DEBUG  build stat EasyOCR: 484448 (conf=0.74)
+2026-03-30 21:37:05 [bot.ocr] DEBUG  build stat EasyOCR: 3402259 (conf=1.00)
+2026-03-30 21:37:05 [bot.ocr] DEBUG  build stat EasyOCR: 665936 (conf=0.92)
+2026-03-30 21:37:05 [bot.ocr] DEBUG  build stat EasyOCR: 2752310 (conf=0.73)
+2026-03-30 21:37:05 [bot.ocr] DEBUG  build stat EasyOCR: 484448 (conf=0.74)
+2026-03-30 21:37:06 [bot.ocr] DEBUG  build stat EasyOCR: 2897629 (conf=1.00)
+2026-03-30 21:37:06 [bot.ocr] DEBUG  build stat EasyOCR: 713786 (conf=0.92)
+2026-03-30 21:37:06 [bot.ocr] DEBUG  build stat EasyOCR: 1369054 (conf=0.88)
+2026-03-30 21:37:06 [bot.ocr] DEBUG  build stat EasyOCR: 658890 (conf=1.00)
+2026-03-30 21:37:06 [bot.ocr] DEBUG  build stat EasyOCR: 1666577 (conf=0.66)
+2026-03-30 21:37:07 [bot.ocr] DEBUG  build stat EasyOCR: 328300 (conf=1.00)
+2026-03-30 21:37:07 [bot.ocr] DEBUG  build stat EasyOCR: 2308637 (conf=1.00)
+2026-03-30 21:37:07 [bot.ocr] DEBUG  build stat EasyOCR: 576057 (conf=0.99)
+2026-03-30 21:37:07 [bot.ocr] DEBUG  build stat EasyOCR: 3198355 (conf=0.95)
+2026-03-30 21:37:07 [bot.ocr] DEBUG  build stat EasyOCR: 780055 (conf=1.00)
+2026-03-30 21:37:08 [bot.ocr] DEBUG  build stat EasyOCR: 2985921 (conf=1.00)
+2026-03-30 21:37:08 [bot.ocr] DEBUG  build stat EasyOCR: 490793 (conf=0.99)
+2026-03-30 21:37:08 [bot.ocr] DEBUG  build stat EasyOCR: 1770644 (conf=0.82)
+2026-03-30 21:37:08 [bot.ocr] DEBUG  build stat EasyOCR: 481659 (conf=1.00)
+2026-03-30 21:37:08 [bot.ocr] DEBUG  build stat EasyOCR: 18565857 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:09 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='1856585' → 1856585
+2026-03-30 21:37:09 [bot.ocr] DEBUG  build stat EasyOCR: 537340 (conf=0.98)
+2026-03-30 21:37:09 [bot.ocr] DEBUG  build stat EasyOCR: 2434651 (conf=1.00)
+2026-03-30 21:37:09 [bot.ocr] DEBUG  build stat EasyOCR: 727993 (conf=0.98)
+2026-03-30 21:37:09 [bot.ocr] DEBUG  build stat EasyOCR: 2474410 (conf=0.85)
+2026-03-30 21:37:10 [bot.ocr] DEBUG  build stat EasyOCR: 418288 (conf=1.00)
+2026-03-30 21:37:10 [bot.ocr] DEBUG  build stat EasyOCR: 1943142 (conf=0.99)
+2026-03-30 21:37:10 [bot.ocr] DEBUG  build stat EasyOCR: 519905 (conf=1.00)
+2026-03-30 21:37:10 [bot.ocr] DEBUG  build stat EasyOCR: 1948789 (conf=0.63)
+2026-03-30 21:37:10 [bot.ocr] DEBUG  build stat EasyOCR: 477316 (conf=0.80)
+2026-03-30 21:37:11 [bot.ocr] DEBUG  build stat EasyOCR: 2340792 (conf=0.98)
+2026-03-30 21:37:11 [bot.ocr] DEBUG  build stat EasyOCR: 640903 (conf=1.00)
+2026-03-30 21:37:11 [bot.ocr] DEBUG  build stat EasyOCR: 2301620 (conf=0.52)
+2026-03-30 21:37:11 [bot.ocr] DEBUG  build stat EasyOCR: 465357 (conf=0.99)
+2026-03-30 21:37:11 [bot.ocr] DEBUG  build stat EasyOCR: 1169289 (conf=1.00)
+2026-03-30 21:37:12 [bot.ocr] DEBUG  build stat EasyOCR: 405193 (conf=1.00)
+2026-03-30 21:37:12 [bot.ocr] DEBUG  build stat EasyOCR: 2377988 (conf=0.44)
+2026-03-30 21:37:12 [bot.ocr] DEBUG  build stat EasyOCR: 657131 (conf=1.00)
+2026-03-30 21:37:12 [bot.ocr] DEBUG  build stat EasyOCR: 2249412 (conf=0.68)
+2026-03-30 21:37:12 [bot.ocr] DEBUG  build stat EasyOCR: 686044 (conf=0.95)
+2026-03-30 21:37:13 [bot.ocr] DEBUG  build stat EasyOCR: 2656314 (conf=0.98)
+2026-03-30 21:37:13 [bot.ocr] DEBUG  build stat EasyOCR: 639342 (conf=0.62)
+2026-03-30 21:37:13 [bot.ocr] DEBUG  build stat EasyOCR: 3136394 (conf=0.97)
+2026-03-30 21:37:13 [bot.ocr] DEBUG  build stat EasyOCR: 788437 (conf=1.00)
+2026-03-30 21:37:13 [bot.ocr] DEBUG  build stat EasyOCR: 2036455 (conf=1.00)
+2026-03-30 21:37:14 [bot.ocr] DEBUG  build stat EasyOCR: 529467 (conf=0.97)
+2026-03-30 21:37:14 [bot.ocr] DEBUG  build stat EasyOCR: 2382849 (conf=0.89)
+2026-03-30 21:37:14 [bot.ocr] DEBUG  build stat EasyOCR: 567998 (conf=1.00)
+2026-03-30 21:37:14 [bot.ocr] DEBUG  build stat EasyOCR: 2529439 (conf=0.99)
+2026-03-30 21:37:14 [bot.ocr] DEBUG  build stat EasyOCR: 665341 (conf=0.97)
+2026-03-30 21:37:15 [bot.ocr] DEBUG  build stat EasyOCR: 2371294 (conf=0.48)
+2026-03-30 21:37:15 [bot.ocr] DEBUG  build stat EasyOCR: 688377 (conf=0.96)
+2026-03-30 21:37:15 [bot.ocr] DEBUG  build stat EasyOCR: 220044455 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:15 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='2204455' → 2204455
+2026-03-30 21:37:15 [bot.ocr] DEBUG  build stat EasyOCR: 446319 (conf=0.77)
+2026-03-30 21:37:16 [bot.ocr] DEBUG  build stat EasyOCR: 2699277 (conf=0.98)
+2026-03-30 21:37:16 [bot.ocr] DEBUG  build stat EasyOCR: 713786 (conf=0.92)
+2026-03-30 21:37:16 [bot.ocr] DEBUG  build stat EasyOCR: 31382417 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:16 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='3138241' → 3138241
+2026-03-30 21:37:16 [bot.ocr] DEBUG  build stat EasyOCR: 665341 (conf=0.97)
+2026-03-30 21:37:17 [bot.ocr] DEBUG  build stat EasyOCR: 2283092 (conf=0.99)
+2026-03-30 21:37:17 [bot.ocr] DEBUG  build stat EasyOCR: 727993 (conf=0.98)
+2026-03-30 21:37:17 [bot.ocr] DEBUG  build stat EasyOCR: 1849993 (conf=1.00)
+2026-03-30 21:37:17 [bot.ocr] DEBUG  build stat EasyOCR: 277944 (conf=0.92)
+2026-03-30 21:37:17 [bot.ocr] DEBUG  build stat EasyOCR: 1698392 (conf=1.00)
+2026-03-30 21:37:17 [bot.ocr] DEBUG  build stat EasyOCR: 482975 (conf=0.68)
+2026-03-30 21:37:18 [bot.ocr] DEBUG  build stat EasyOCR: 2684560 (conf=0.55)
+2026-03-30 21:37:18 [bot.ocr] DEBUG  build stat EasyOCR: 688377 (conf=0.96)
+2026-03-30 21:37:18 [bot.ocr] DEBUG  build stat EasyOCR: 2529534 (conf=1.00)
+2026-03-30 21:37:18 [bot.ocr] DEBUG  build stat EasyOCR: 665341 (conf=0.97)
+2026-03-30 21:37:19 [bot.ocr] DEBUG  build stat EasyOCR: 2074235 (conf=0.60)
+2026-03-30 21:37:19 [bot.ocr] DEBUG  build stat EasyOCR: 503041 (conf=0.61)
+2026-03-30 21:37:19 [bot.ocr] DEBUG  build stat EasyOCR: 1246341 (conf=0.96)
+2026-03-30 21:37:19 [bot.ocr] DEBUG  build stat EasyOCR: 333675 (conf=0.94)
+2026-03-30 21:37:19 [bot.ocr] DEBUG  build stat EasyOCR: 10789347 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:20 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='1078934' → 1078934
+2026-03-30 21:37:20 [bot.ocr] DEBUG  build stat EasyOCR: 409352 (conf=1.00)
+2026-03-30 21:37:20 [bot.ocr] DEBUG  build stat EasyOCR: 2453618 (conf=0.99)
+2026-03-30 21:37:20 [bot.ocr] DEBUG  build stat EasyOCR: 713786 (conf=0.92)
+2026-03-30 21:37:20 [bot.ocr] DEBUG  build stat EasyOCR: 2411017 (conf=0.67)
+2026-03-30 21:37:21 [bot.ocr] DEBUG  build stat EasyOCR: 537996 (conf=0.75)
+2026-03-30 21:37:21 [bot.ocr] DEBUG  build stat EasyOCR: 14898927 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:21 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='1489892' → 1489892
+2026-03-30 21:37:21 [bot.ocr] DEBUG  build stat EasyOCR: 397446 (conf=0.84)
+2026-03-30 21:37:21 [bot.ocr] DEBUG  build stat EasyOCR: 12257262 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:22 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='1225726' → 1225726
+2026-03-30 21:37:22 [bot.ocr] DEBUG  build stat EasyOCR: 382450 (conf=1.00)
+2026-03-30 21:37:22 [bot.ocr] DEBUG  build stat EasyOCR: 938819 (conf=0.64)
+2026-03-30 21:37:22 [bot.ocr] DEBUG  build stat EasyOCR: 183152 (conf=1.00)
+2026-03-30 21:37:22 [bot.scan] INFO  Report generated:
+```ex
+⚔️  Opponent: CITY MAFIA
+🟢 Team:     122,679 (+144)  🔴 Opponent: 1,302 (+0)
+⏳ Time Left: 09H 15m  |  📊 Projected: 145,143 / 145,000
+```
+🕐 Current Time: <t:1774931819:t>
+✅ WIN — team instants: <t:1774941179:t>
+```ex
+⏱️  Instant in: 02H 36m (156m) (bonus: +144)
+  TIME       PLAYER       BLDGS ST
+----------------------------------
+🟢 12:36 (1) DARDAR       4,4   DEF
+🟢 13:36 (3) SAKETOBA     —     DEF
+💤 21:36 (3) AIRBORNES4   —     DEF
+💤 05:36 (3) CAP          —     DEF
+💤 23:36 (1) JC85         3,6   DEF
+💤 06:36 (1) SLOMO        5,5   DEF
+💤 06:36 (3) TIGY         —     DEF
+🤖 Total: 60/75 bots placed```
+📈 **Momentum:** Team +0/min [steady] | Opp +1/min [steady]
+
+```
+BUILDING STRENGTH (averages)
+BLDG   AVG STR   AVG HP  AVG ATK SLOTS  ALERT
+--------------------------------------------------
+B1        2.6M     2.1M     546K    11  
+B2        2.6M     2.0M     603K    11  
+B3        2.9M     2.3M     618K    12  
+B4        3.2M     2.6M     601K    11  
+B5        2.7M     2.2M     578K    10  
+B6        2.3M     1.9M     345K     5  ⚠ WEAK
+```
+
+```
+ALL PLAYERS
+#   PLAYER         TOT STR   TOT HP  TOT ATK CARS    CHG
+-----------------------------------------------------
+1   EVILJAYSEN       11.2M     9.3M     1.9M 3           
+2   JAYSEN           10.9M     9.1M     1.9M 3       -50 
+3   JOEBOOMBANG      10.3M     8.5M     1.8M 3           
+4   ONKELRENE666      9.4M     7.6M     1.9M 3           
+5   PATRICK           8.9M     7.1M     1.8M 3     -400K 
+6   MUSCHI            7.9M     6.2M     1.6M 3           
+7   MUSHROOM          7.4M     5.8M     1.5M 3           
+8   ROBINHOOD         7.3M     5.8M     1.5M 3           
+9   PIYO              7.2M     5.8M     1.4M 2     -2.5M 
+10  DREADZ            7.2M     6.0M     1.2M 2     -2.9M 
+11  DARDAR            6.7M     5.5M     1.2M 2    -14.6M 
+12  BEEVEN            6.6M     5.2M     1.5M 3           
+13  SLOMO             6.6M     5.2M     1.4M 2     -2.0M 
+14  TIGY              6.4M     5.0M     1.4M 3           
+15  NOT HEY           6.2M     4.9M     1.3M 2     -2.0M 
+16  TACN              6.1M     4.9M     1.3M 2     -3.8M 
+17  LIPTON            6.1M     4.9M     1.1M 2     -3.1M 
+18  AIRBORNES4        5.9M     4.5M     1.4M 3     -2.3M 
+19  STEFAN            5.6M     4.4M     1.2M 3     -400K 
+20  KOIVU             4.6M     3.6M     1.0M 2     -2.6M 
+21  YOPHBI KAWAK      4.6M     3.7M     963K 3      +29K 
+22  ASABIITOSBAA      4.1M     3.2M     955K 3     -300K 
+23  JC85              4.0M     3.0M     987K 2     -2.0M 
+```
+
+2026-03-30 21:37:22 [bot.history] INFO  DB ready: d:\OneDrive\WhatsUpBotV4\history.db
+2026-03-30 21:37:22 [bot.history] INFO  Saved scan #50: 60 slots
+2026-03-30 21:37:24 [bot.scan] INFO  Saved stats for 18 players to DB
+2026-03-30 21:37:24 [bot.scan] INFO  Player stats saved: 18 players (3 cars each)
+2026-03-30 21:37:24 [bot.scan] DEBUG  Name model: same player set, extra samples — skipping retrain
+2026-03-30 21:37:24 [bot.scan] INFO  Training OCR character model…
+2026-03-30 21:37:25 [bot.ocr] DEBUG  build stat EasyOCR: 679275 (conf=1.00)
+2026-03-30 21:37:25 [bot.ocr] DEBUG  build stat EasyOCR: 202818 (conf=0.82)
+2026-03-30 21:37:25 [bot.ocr] DEBUG  build stat EasyOCR: 1593285 (conf=1.00)
+2026-03-30 21:37:25 [bot.ocr] DEBUG  build stat EasyOCR: 444305 (conf=0.56)
+2026-03-30 21:37:25 [bot.ocr] DEBUG  build stat EasyOCR: 911686 (conf=0.93)
+2026-03-30 21:37:26 [bot.ocr] DEBUG  build stat EasyOCR: 308425 (conf=0.98)
+2026-03-30 21:37:26 [bot.ocr] DEBUG  build stat EasyOCR: 2083538 (conf=1.00)
+2026-03-30 21:37:26 [bot.ocr] DEBUG  build stat EasyOCR: 567063 (conf=1.00)
+2026-03-30 21:37:26 [bot.ocr] DEBUG  build stat EasyOCR: 1353765 (conf=0.98)
+2026-03-30 21:37:27 [bot.ocr] DEBUG  build stat EasyOCR: 499549 (conf=0.96)
+2026-03-30 21:37:27 [bot.ocr] DEBUG  build stat EasyOCR: 1742779 (conf=0.64)
+2026-03-30 21:37:27 [bot.ocr] DEBUG  build stat EasyOCR: 386196 (conf=0.92)
+2026-03-30 21:37:27 [bot.ocr] DEBUG  build stat EasyOCR: 2217491 (conf=1.00)
+2026-03-30 21:37:27 [bot.ocr] DEBUG  build stat EasyOCR: 543788 (conf=0.78)
+2026-03-30 21:37:28 [bot.ocr] DEBUG  build stat EasyOCR: 3264385 (conf=0.92)
+2026-03-30 21:37:28 [bot.ocr] DEBUG  build stat EasyOCR: 665341 (conf=0.97)
+2026-03-30 21:37:28 [bot.ocr] DEBUG  build stat EasyOCR: 2307845 (conf=0.91)
+2026-03-30 21:37:28 [bot.ocr] DEBUG  build stat EasyOCR: 671978 (conf=1.00)
+2026-03-30 21:37:28 [bot.ocr] DEBUG  build stat EasyOCR: 3665513 (conf=0.74)
+2026-03-30 21:37:29 [bot.ocr] DEBUG  build stat EasyOCR: 515450 (conf=0.86)
+2026-03-30 21:37:29 [bot.ocr] DEBUG  build stat EasyOCR: 2267423 (conf=0.83)
+2026-03-30 21:37:29 [bot.ocr] DEBUG  build stat EasyOCR: 590719 (conf=0.87)
+2026-03-30 21:37:29 [bot.ocr] DEBUG  build stat EasyOCR: 2999315 (conf=1.00)
+2026-03-30 21:37:29 [bot.ocr] DEBUG  build stat EasyOCR: 713786 (conf=0.92)
+2026-03-30 21:37:30 [bot.ocr] DEBUG  build stat EasyOCR: 3435338 (conf=0.94)
+2026-03-30 21:37:30 [bot.ocr] DEBUG  build stat EasyOCR: 670185 (conf=1.00)
+2026-03-30 21:37:30 [bot.ocr] DEBUG  build stat EasyOCR: 28479444 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:30 [bot.ocr_model] INFO  Training: 30 classes, 7252 samples, 45 epochs
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '0': 400 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '1': 744 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '2': 484 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '3': 664 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '4': 516 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '5': 656 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '6': 628 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '7': 456 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '8': 612 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    '9': 416 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'A': 128 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'B': 36 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'C': 32 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'D': 80 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'E': 156 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'F': 48 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'I': 60 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'J': 32 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'K': 60 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'L': 48 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'M': 48 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'N': 84 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'O': 156 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'R': 80 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'S': 96 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'T': 48 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'U': 60 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'V': 96 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'h': 164 samples
+2026-03-30 21:37:30 [bot.ocr_model] DEBUG    'm': 164 samples
+2026-03-30 21:37:30 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='2847944' → 2847944
+2026-03-30 21:37:31 [bot.ocr] DEBUG  build stat EasyOCR: 484448 (conf=0.74)
+2026-03-30 21:37:31 [bot.ocr] DEBUG  build stat EasyOCR: 3402259 (conf=1.00)
+2026-03-30 21:37:31 [bot.ocr] DEBUG  build stat EasyOCR: 665936 (conf=0.92)
+2026-03-30 21:37:31 [bot.ocr] DEBUG  build stat EasyOCR: 2752310 (conf=0.73)
+2026-03-30 21:37:32 [bot.ocr] DEBUG  build stat EasyOCR: 484448 (conf=0.74)
+2026-03-30 21:37:32 [bot.ocr] DEBUG  build stat EasyOCR: 2897629 (conf=1.00)
+2026-03-30 21:37:32 [bot.ocr] DEBUG  build stat EasyOCR: 713786 (conf=0.92)
+2026-03-30 21:37:32 [bot.ocr] DEBUG  build stat EasyOCR: 1369054 (conf=0.88)
+2026-03-30 21:37:33 [bot.ocr] DEBUG  build stat EasyOCR: 658890 (conf=1.00)
+2026-03-30 21:37:33 [bot.ocr] DEBUG  build stat EasyOCR: 1666577 (conf=0.66)
+2026-03-30 21:37:33 [bot.ocr] DEBUG  build stat EasyOCR: 328300 (conf=1.00)
+2026-03-30 21:37:33 [bot.ocr] DEBUG  build stat EasyOCR: 2308637 (conf=1.00)
+2026-03-30 21:37:34 [bot.ocr] DEBUG  build stat EasyOCR: 576057 (conf=0.99)
+2026-03-30 21:37:34 [bot.ocr] DEBUG  build stat EasyOCR: 3198355 (conf=0.95)
+2026-03-30 21:37:34 [bot.ocr] DEBUG  build stat EasyOCR: 780055 (conf=1.00)
+2026-03-30 21:37:34 [bot.ocr_model] DEBUG    Epoch 1/45: loss=2.4604 val_acc=0.576
+2026-03-30 21:37:35 [bot.ocr] DEBUG  build stat EasyOCR: 2985921 (conf=1.00)
+2026-03-30 21:37:35 [bot.ocr] DEBUG  build stat EasyOCR: 490793 (conf=0.99)
+2026-03-30 21:37:35 [bot.ocr] DEBUG  build stat EasyOCR: 1770644 (conf=0.82)
+2026-03-30 21:37:35 [bot.ocr] DEBUG  build stat EasyOCR: 481659 (conf=1.00)
+2026-03-30 21:37:36 [bot.ocr] DEBUG  build stat EasyOCR: 1697516 (conf=1.00)
+2026-03-30 21:37:36 [bot.ocr] DEBUG  build stat EasyOCR: 459748 (conf=0.99)
+2026-03-30 21:37:36 [bot.ocr] DEBUG  build stat EasyOCR: 18565857 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:36 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='1856585' → 1856585
+2026-03-30 21:37:37 [bot.ocr] DEBUG  build stat EasyOCR: 537340 (conf=0.98)
+2026-03-30 21:37:37 [bot.ocr] DEBUG  build stat EasyOCR: 2434651 (conf=1.00)
+2026-03-30 21:37:37 [bot.ocr] DEBUG  build stat EasyOCR: 727993 (conf=0.98)
+2026-03-30 21:37:38 [bot.ocr] DEBUG  build stat EasyOCR: 2740940 (conf=1.00)
+2026-03-30 21:37:38 [bot.ocr] DEBUG  build stat EasyOCR: 591665 (conf=1.00)
+2026-03-30 21:37:38 [bot.ocr] DEBUG  build stat EasyOCR: 2474410 (conf=0.85)
+2026-03-30 21:37:38 [bot.ocr] DEBUG  build stat EasyOCR: 418288 (conf=1.00)
+2026-03-30 21:37:39 [bot.ocr] DEBUG  build stat EasyOCR: 1943142 (conf=0.99)
+2026-03-30 21:37:39 [bot.ocr] DEBUG  build stat EasyOCR: 519905 (conf=1.00)
+2026-03-30 21:37:39 [bot.ocr] DEBUG  build stat EasyOCR: 1948789 (conf=0.63)
+2026-03-30 21:37:39 [bot.ocr] DEBUG  build stat EasyOCR: 477316 (conf=0.80)
+2026-03-30 21:37:40 [bot.ocr] DEBUG  build stat EasyOCR: 2340792 (conf=0.98)
+2026-03-30 21:37:40 [bot.ocr] DEBUG  build stat EasyOCR: 640903 (conf=1.00)
+2026-03-30 21:37:40 [bot.ocr] DEBUG  build stat EasyOCR: 2301620 (conf=0.52)
+2026-03-30 21:37:40 [bot.ocr] DEBUG  build stat EasyOCR: 465357 (conf=0.99)
+2026-03-30 21:37:41 [bot.ocr] DEBUG  build stat EasyOCR: 1169289 (conf=1.00)
+2026-03-30 21:37:41 [bot.ocr] DEBUG  build stat EasyOCR: 405193 (conf=1.00)
+2026-03-30 21:37:41 [bot.ocr] DEBUG  build stat EasyOCR: 2377988 (conf=0.44)
+2026-03-30 21:37:41 [bot.ocr] DEBUG  build stat EasyOCR: 657131 (conf=1.00)
+2026-03-30 21:37:42 [bot.ocr] DEBUG  build stat EasyOCR: 2249412 (conf=0.68)
+2026-03-30 21:37:42 [bot.ocr] DEBUG  build stat EasyOCR: 686044 (conf=0.95)
+2026-03-30 21:37:42 [bot.ocr] DEBUG  build stat EasyOCR: 2656314 (conf=0.98)
+2026-03-30 21:37:42 [bot.ocr] DEBUG  build stat EasyOCR: 639342 (conf=0.62)
+2026-03-30 21:37:43 [bot.ocr] DEBUG  build stat EasyOCR: 16625327 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:43 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='1662532' → 1662532
+2026-03-30 21:37:43 [bot.ocr] DEBUG  build stat EasyOCR: 308826 (conf=1.00)
+2026-03-30 21:37:44 [bot.ocr] DEBUG  build stat EasyOCR: 3136394 (conf=0.97)
+2026-03-30 21:37:44 [bot.ocr] DEBUG  build stat EasyOCR: 788437 (conf=1.00)
+2026-03-30 21:37:44 [bot.ocr] DEBUG  build stat EasyOCR: 2036455 (conf=1.00)
+2026-03-30 21:37:44 [bot.ocr] DEBUG  build stat EasyOCR: 529467 (conf=0.97)
+2026-03-30 21:37:45 [bot.ocr] DEBUG  build stat EasyOCR: 2382849 (conf=0.89)
+2026-03-30 21:37:45 [bot.ocr] DEBUG  build stat EasyOCR: 567998 (conf=1.00)
+2026-03-30 21:37:45 [bot.ocr] DEBUG  build stat EasyOCR: 2529439 (conf=0.99)
+2026-03-30 21:37:45 [bot.ocr] DEBUG  build stat EasyOCR: 665341 (conf=0.97)
+2026-03-30 21:37:46 [bot.ocr] DEBUG  build stat EasyOCR: 2371294 (conf=0.48)
+2026-03-30 21:37:46 [bot.ocr] DEBUG  build stat EasyOCR: 688377 (conf=0.96)
+2026-03-30 21:37:46 [bot.ocr] DEBUG  build stat EasyOCR: 220044455 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:46 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='2204455' → 2204455
+2026-03-30 21:37:47 [bot.ocr] DEBUG  build stat EasyOCR: 446319 (conf=0.77)
+2026-03-30 21:37:47 [bot.ocr] DEBUG  build stat EasyOCR: 2699277 (conf=0.98)
+2026-03-30 21:37:47 [bot.ocr] DEBUG  build stat EasyOCR: 713786 (conf=0.92)
+2026-03-30 21:37:48 [bot.ocr] DEBUG  build stat EasyOCR: 31382417 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:48 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='3138241' → 3138241
+2026-03-30 21:37:48 [bot.ocr] DEBUG  build stat EasyOCR: 665341 (conf=0.97)
+2026-03-30 21:37:48 [bot.ocr] DEBUG  build stat EasyOCR: 1891647 (conf=1.00)
+2026-03-30 21:37:49 [bot.ocr] DEBUG  build stat EasyOCR: 578826 (conf=1.00)
+2026-03-30 21:37:49 [bot.ocr] DEBUG  build stat EasyOCR: 2283092 (conf=0.99)
+2026-03-30 21:37:49 [bot.ocr] DEBUG  build stat EasyOCR: 727993 (conf=0.98)
+2026-03-30 21:37:49 [bot.ocr] DEBUG  build stat EasyOCR: 1849993 (conf=1.00)
+2026-03-30 21:37:50 [bot.ocr] DEBUG  build stat EasyOCR: 277944 (conf=0.92)
+2026-03-30 21:37:50 [bot.ocr] DEBUG  build stat EasyOCR: 1698392 (conf=1.00)
+2026-03-30 21:37:50 [bot.ocr] DEBUG  build stat EasyOCR: 482975 (conf=0.68)
+2026-03-30 21:37:50 [bot.ocr] DEBUG  build stat EasyOCR: 2684560 (conf=0.55)
+2026-03-30 21:37:51 [bot.ocr] DEBUG  build stat EasyOCR: 688377 (conf=0.96)
+2026-03-30 21:37:51 [bot.ocr] DEBUG  build stat EasyOCR: 2529534 (conf=1.00)
+2026-03-30 21:37:51 [bot.ocr] DEBUG  build stat EasyOCR: 665341 (conf=0.97)
+2026-03-30 21:37:52 [bot.ocr] DEBUG  build stat EasyOCR: 2074235 (conf=0.60)
+2026-03-30 21:37:52 [bot.ocr] DEBUG  build stat EasyOCR: 503041 (conf=0.61)
+2026-03-30 21:37:52 [bot.ocr] DEBUG  build stat EasyOCR: 1246341 (conf=0.96)
+2026-03-30 21:37:52 [bot.ocr] DEBUG  build stat EasyOCR: 333675 (conf=0.94)
+2026-03-30 21:37:53 [bot.ocr] DEBUG  build stat EasyOCR: 10789347 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:53 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='1078934' → 1078934
+2026-03-30 21:37:53 [bot.ocr] DEBUG  build stat EasyOCR: 409352 (conf=1.00)
+2026-03-30 21:37:53 [bot.ocr] DEBUG  build stat EasyOCR: 2453618 (conf=0.99)
+2026-03-30 21:37:54 [bot.ocr] DEBUG  build stat EasyOCR: 713786 (conf=0.92)
+2026-03-30 21:37:54 [bot.ocr] DEBUG  build stat EasyOCR: 2411017 (conf=0.67)
+2026-03-30 21:37:54 [bot.ocr] DEBUG  build stat EasyOCR: 537996 (conf=0.75)
+2026-03-30 21:37:54 [bot.ocr] DEBUG  build stat EasyOCR: 2739107 (conf=0.90)
+2026-03-30 21:37:55 [bot.ocr] DEBUG  build stat EasyOCR: 665341 (conf=0.97)
+2026-03-30 21:37:55 [bot.ocr] DEBUG  build stat EasyOCR: 14898927 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:55 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='1489892' → 1489892
+2026-03-30 21:37:56 [bot.ocr] DEBUG  build stat EasyOCR: 397446 (conf=0.84)
+2026-03-30 21:37:56 [bot.ocr] DEBUG  build stat EasyOCR: 12257262 exceeds MAX_HP_PER_CAR — rejecting (likely comma/separator misread); falling back to Tesseract
+2026-03-30 21:37:56 [bot.ocr] DEBUG  build stat Tesseract fallback: raw='1225726' → 1225726
+2026-03-30 21:37:57 [bot.ocr] DEBUG  build stat EasyOCR: 382450 (conf=1.00)
+2026-03-30 21:37:57 [bot.ocr] DEBUG  build stat EasyOCR: 938819 (conf=0.64)
+2026-03-30 21:37:57 [bot.ocr] DEBUG  build stat EasyOCR: 183152 (conf=1.00)
+2026-03-30 21:37:57 [bot.history] INFO  DB ready: d:\OneDrive\WhatsUpBotV4\history.db
+2026-03-30 21:38:04 [bot.ocr_model] DEBUG    Epoch 10/45: loss=0.5950 val_acc=0.929
+2026-03-30 21:38:26 [bot.ocr_model] DEBUG    Epoch 20/45: loss=0.3541 val_acc=0.954
+2026-03-30 21:38:47 [bot.ocr_model] DEBUG    Epoch 30/45: loss=0.2693 val_acc=0.975
+2026-03-30 21:39:09 [bot.ocr_model] DEBUG    Epoch 40/45: loss=0.2199 val_acc=0.975
+2026-03-30 21:39:20 [bot.ocr_model] INFO  Training complete: acc=0.969 val_acc=0.978
+2026-03-30 21:39:20 [bot.scan] INFO  OCR model: 97% acc, 30 classes

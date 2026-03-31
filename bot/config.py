@@ -111,9 +111,9 @@ _NAME_UPPER_MAP:  dict = {}
 _ENEMY_BLDGS_CFG: dict = {}
 
 # OCR sanity bounds — set by _derive(), importable by other modules
-MAX_HP_PER_CAR:   int = 8_000_000
-MAX_ATK_PER_CAR:  int = 8_000_000
-MAX_PLAYER_TOTAL: int = 16_000_000
+MAX_HP_PER_CAR:   int = 5_000_000
+MAX_ATK_PER_CAR:  int = 3_000_000
+MAX_PLAYER_TOTAL: int = 24_000_000
 MIN_STAT_VALUE:   int = 1000
 
 
@@ -145,9 +145,9 @@ def _derive(cfg: dict):
     # Per-car: no single car should exceed these values.
     # Per-player: total across all cars (max 3) should not exceed these.
     global MAX_HP_PER_CAR, MAX_ATK_PER_CAR, MAX_PLAYER_TOTAL, MIN_STAT_VALUE
-    MAX_HP_PER_CAR     = cfg.get("max_hp_per_car",      8_000_000)
-    MAX_ATK_PER_CAR    = cfg.get("max_atk_per_car",     8_000_000)
-    MAX_PLAYER_TOTAL   = cfg.get("max_player_total",   16_000_000)
+    MAX_HP_PER_CAR     = cfg.get("max_hp_per_car",      5_000_000)
+    MAX_ATK_PER_CAR    = cfg.get("max_atk_per_car",     3_000_000)
+    MAX_PLAYER_TOTAL   = cfg.get("max_player_total",   24_000_000)
     MIN_STAT_VALUE     = cfg.get("min_stat_value",           1000)
 
     # Mutable containers — mutate in-place so imported refs stay valid

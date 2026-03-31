@@ -71,7 +71,7 @@ def erase_stat_icons(image) -> Img.Image:
     arr = np.asarray(image.convert("RGB"), dtype=np.uint8).copy()
     R, G, B = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]
 
-    heart_mask = (R >= 180) & (G < 100) & (B < 100)
+    heart_mask = (R >= 160) & (G < 130) & (B < 130)   # wider: catches orange-red icon edges
     sword_mask = (B >= 140) & (R < 130) & (G >= 80)
     icon_mask  = heart_mask | sword_mask
 

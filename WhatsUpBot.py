@@ -1,4 +1,4 @@
-"""WhatsUpBot v5.0 — WOLF PACK DEFENSIVE INTELLIGENCE.
+"""WhatsUpBot v5.1 — WOLF PACK DEFENSIVE INTELLIGENCE.
 
 Scans a BlueStacks game window via screenshot and OCR to generate formatted
 defense reports. Identifies players by name across
@@ -11,7 +11,7 @@ UI runs on the main thread. Scans run on daemon background threads.
 All tkinter mutations from threads use root.after(0, lambda m=msg: fn(m)).
 """
 
-VERSION = "5.0.0"
+VERSION = "5.1.0"
 
 import os
 import re
@@ -86,6 +86,9 @@ class App:
         self._active_scan_ctx = None
         self._correction_cb = lambda raw: self.root.after(
             0, lambda r=raw: self._show_correction_dialog(r))
+        self._stat_correction_cb = lambda field, player, raw_path, conv_path, raw_val: \
+            self.root.after(0, lambda f=field, p=player, rp=raw_path, cp=conv_path,
+                            rv=raw_val: self._show_stat_correction_dialog(f, p, rp, cp, rv))
 
     # ── UI construction ────────────────────────────────────────────────────────
     def _build_ui(self):
@@ -217,6 +220,7 @@ class App:
             infos, meta = run_team_scan(
                 status_cb=self._status_cb,
                 correction_cb=self._correction_cb,
+                stat_correction_cb=self._stat_correction_cb,
                 avail_only=self.avail_only_var.get(),
             )
             self._last_meta = meta
@@ -405,6 +409,93 @@ class App:
         if ctx is not None:
             ctx.correction_result[0] = _result_holder[0]
             ctx.correction_event.set()
+
+    def _show_stat_correction_dialog(self, field: str, player: str,
+                                      raw_path: str, conv_path, raw_val: int):
+        """Main-thread dialog: let user verify or correct an OCR stat read.
+
+        Shows the raw and processed images of the HP or ATK region so the user
+        can confirm the OCR result or enter the correct value.  On confirm the
+        corrected int is saved as an OCR training sample automatically.
+        """
+        import os
+        from PIL import Image as _PilImg, ImageTk as _ITk
+
+        label = "HP" if "hp" in field else "ATK"
+
+        dialog = tk.Toplevel(self.root)
+        dialog.title(f"Verify OCR — {label} for {player}")
+        dialog.configure(bg="white")
+        dialog.grab_set()
+        dialog.lift()
+
+        tk.Label(dialog, text=f"{player}  —  {label}",
+                 font=("Helvetica", 11, "bold"), bg="white").pack(pady=(12, 4), padx=16)
+
+        # Show stat region images (raw + processed) side-by-side
+        img_frame = tk.Frame(dialog, bg="white")
+        img_frame.pack(padx=16, pady=4)
+        _img_refs = []   # keep references to prevent GC
+        for path, title in [(raw_path, "Raw capture"), (conv_path, "Processed")]:
+            if not path or not os.path.isfile(path):
+                continue
+            try:
+                pil = _PilImg.open(path).convert("RGB")
+                pil.thumbnail((320, 90), _PilImg.LANCZOS)
+                tk_img = _ITk.PhotoImage(pil)
+                _img_refs.append(tk_img)
+                col = tk.Frame(img_frame, bg="white")
+                col.pack(side="left", padx=8)
+                tk.Label(col, text=title, bg="white",
+                         font=("Helvetica", 8)).pack()
+                tk.Label(col, image=tk_img, bg="white",
+                         relief="groove").pack()
+            except Exception:
+                pass
+
+        ocr_text = f"OCR read: {'failed (0)' if raw_val == 0 else f'{raw_val:,}'}"
+        tk.Label(dialog, text=ocr_text, bg="white",
+                 font=("Helvetica", 9, "italic")).pack(pady=(6, 2))
+        tk.Label(dialog, text="Enter correct value (blank = skip):",
+                 bg="white").pack()
+        entry_var = tk.StringVar(value=str(raw_val) if raw_val > 0 else "")
+        entry = tk.Entry(dialog, textvariable=entry_var, width=16,
+                         font=("Consolas", 11), justify="center")
+        entry.pack(padx=16, pady=6)
+        entry.focus_set()
+        entry.select_range(0, "end")
+
+        _result_holder = [None]
+
+        def _confirm():
+            try:
+                val = int(entry_var.get().strip().replace(",", "").replace(".", ""))
+                if val > 0:
+                    _result_holder[0] = val
+            except ValueError:
+                pass
+            dialog.destroy()
+
+        def _skip():
+            dialog.destroy()
+
+        btn_row = tk.Frame(dialog, bg="white")
+        btn_row.pack(pady=10)
+        tk.Button(btn_row, text="Confirm", command=_confirm,
+                  bg="#4CAF50", fg="white", width=10).pack(side="left", padx=6)
+        tk.Button(btn_row, text="Skip", command=_skip,
+                  width=8).pack(side="left", padx=6)
+        dialog.protocol("WM_DELETE_WINDOW", _skip)
+        dialog.bind("<Return>", lambda _: _confirm())
+
+        dialog.wait_window()
+
+        # Signal the waiting scan thread with the corrected value (or None).
+        cb  = self._stat_correction_cb
+        ctx = getattr(cb, '_ctx', None)
+        if ctx is not None:
+            ctx.stat_correction_result[0] = _result_holder[0]
+            ctx.stat_correction_event.set()
 
     def _show_player_stats(self):
         """Open a dialog showing player strength stats from build images."""

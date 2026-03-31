@@ -20,14 +20,14 @@ _HUD_DEFAULTS = {
     "max_points":      (818,  210, 310,  92),
     "opp_points":      (1150, 215, 160,  65),
     "opp_bonus":       (1320, 185, 175, 110),
-    "team_points":     (580,  213, 180,  77),
-    "team_bonus":      (420,  170, 175, 110),
+    "team_points":     (560,  213, 200,  77),
+    "team_bonus":      (420,  200, 145,  80),
     "build":           (129,  326, 416, 407),  # car/build card screenshot area
     "enemy_name":      (180,  345, 260,  65),  # enemy car player-name text
     # Per-slot stat regions — verify with debug_slot_hp_raw.PNG / debug_slot_atk_raw.PNG
     # x shifted +32 to skip heart/sword icons; width trimmed to exclude right-edge artifacts
-    "slot_hp":         (210,  685, 165,  50),  # ♥ HP value (digits only, no icon)
-    "slot_atk":        (408,  685, 216,  50),  # ⚔ Attack value (digits only, no icon)
+    "slot_hp":         (210,  685, 148,  50),  # ♥ HP value (digits only, no icon)
+    "slot_atk":        (408,  685, 173,  50),  # ⚔ Attack value (digits only, no icon)
     "slot_status_px":  (228,  306,   1,   1),  # 1-px sample: green=DEF, red=ATK
 }
 

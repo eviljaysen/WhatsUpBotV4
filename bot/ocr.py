@@ -104,57 +104,68 @@ def locate_number(region, converter=None, ocr_config=_NUMBERS_OCR,
         processed.save(os.path.join(IMAGES_DIR, f"debug_{debug_name}_conv.PNG"))
 
     result = 0
+    label = debug_name or field or "ocr"
 
-    # CNN model — try first (faster + more accurate on game font)
+    def _in_range(v: int) -> bool:
+        if not valid_range:
+            return True
+        return valid_range[0] <= v <= valid_range[1]
+
+    # ── CNN — try first ───────────────────────────────────────────────────────
     try:
         from bot.ocr_model import is_model_ready, predict_text
         if use_cnn and is_model_ready():
             ml_text, ml_conf = predict_text(processed, field=field or debug_name or "")
             if ml_text and ml_conf >= 0.8:
                 ml_val = _digits(ml_text)
-                if ml_val > 0:
+                if ml_val > 0 and _in_range(ml_val):
                     _log.info("%s: CNN → '%s' (conf=%.2f) = %d",
-                             debug_name or "ocr", ml_text, ml_conf, ml_val)
+                              label, ml_text, ml_conf, ml_val)
                     result = ml_val
+                elif ml_val > 0:
+                    _log.debug("%s: CNN → '%s' (conf=%.2f) = %d outside valid range "
+                               "— falling through to Tesseract",
+                               label, ml_text, ml_conf, ml_val)
     except Exception as e:
         _log.error("CNN error: %s", e)
 
-    # Tesseract fallback
+    # ── Tesseract fallback ────────────────────────────────────────────────────
     if result == 0:
         raw_text = _ocr(processed, config=ocr_config).strip()
-        result = _digits(raw_text)
+        tess_val = _digits(raw_text)
         if debug_name:
-            _log.debug("%s: Tesseract raw='%s' → %d", debug_name, raw_text, result)
+            _log.debug("%s: Tesseract raw='%s' → %d", label, raw_text, tess_val)
+        if tess_val > 0 and _in_range(tess_val):
+            result = tess_val
+        elif tess_val > 0:
+            _log.debug("%s: Tesseract value %d outside valid range — skipping",
+                       label, tess_val)
         # Retry bonus with PSM 8 (single word) if PSM 7 failed
         if result == 0 and debug_name and "bonus" in debug_name:
             alt_config = ocr_config.replace("--psm 7", "--psm 8")
             alt_text = _ocr(processed, config=alt_config).strip()
-            alt_result = _digits(alt_text)
-            _log.debug("%s: retry PSM 8: raw='%s' → %d", debug_name, alt_text, alt_result)
-            if alt_result > 0:
-                result = alt_result
+            alt_val = _digits(alt_text)
+            _log.debug("%s: retry PSM 8: raw='%s' → %d", label, alt_text, alt_val)
+            if alt_val > 0 and _in_range(alt_val):
+                result = alt_val
 
-    # EasyOCR fallback — only when nothing else worked
+    # ── EasyOCR fallback — only when nothing else worked ─────────────────────
     if result == 0 and debug_name:
         try:
             from bot.easyocr_engine import read_number
             easy_val, easy_conf = read_number(processed)
-            if easy_val > 0 and easy_conf > 0.3:
-                _log.info("%s: EasyOCR fallback: %d (conf=%.2f)", debug_name, easy_val, easy_conf)
+            if easy_val > 0 and easy_conf > 0.3 and _in_range(easy_val):
+                _log.info("%s: EasyOCR fallback: %d (conf=%.2f)", label, easy_val, easy_conf)
                 result = easy_val
             elif easy_val > 0:
-                _log.debug("%s: EasyOCR low-conf: %d (conf=%.2f) — skipped",
-                           debug_name, easy_val, easy_conf)
+                _log.debug("%s: EasyOCR: %d (conf=%.2f) — skipped (out of range or low conf)",
+                           label, easy_val, easy_conf)
         except Exception as e:
-            _log.debug("%s: EasyOCR unavailable: %s", debug_name, e)
+            _log.debug("%s: EasyOCR unavailable: %s", label, e)
 
-    # Reject results outside valid_range (prevents training on garbage labels)
-    if result > 0 and valid_range:
-        lo, hi = valid_range
-        if not (lo <= result <= hi):
-            _log.warning("%s: value %d outside valid range %d–%d — rejected",
-                         debug_name or field or "ocr", result, lo, hi)
-            result = 0
+    # ── Final warning if all engines failed valid_range ───────────────────────
+    if result == 0 and valid_range:
+        _log.debug("%s: all engines returned 0 or out-of-range", label)
 
     # Auto-save training sample when we got a valid result
     if result > 0 and debug_name:
@@ -191,6 +202,87 @@ def _save_ocr_training_sample(field: str, raw_img, conv_img, value):
         label = str(value)
         raw_img.save(os.path.join(train_dir, f"{ts}_{label}_raw.png"))
         conv_img.save(os.path.join(train_dir, f"{ts}_{label}_conv.png"))
+
+
+def save_stat_correction_sample(field: str, raw_img, conv_img, value: int):
+    """Persist a user-corrected stat value as an OCR training sample."""
+    _save_ocr_training_sample(field, raw_img, conv_img, value)
+
+
+def get_build_stat_images(image_path: str) -> tuple:
+    """Extract HP and ATK region images from a build card for correction/training.
+
+    Replicates the gap-based splitting used by ocr_build_stats to isolate the
+    HP and ATK digit regions as PIL Images (raw crop + binarized conv).
+
+    Returns:
+        (hp_raw, hp_conv, atk_raw, atk_conv) — any element may be None on failure.
+    """
+    from PIL import Image as Img
+    try:
+        img = Img.open(image_path).convert("RGB")
+    except Exception:
+        return None, None, None, None
+
+    w, h = img.size
+    stat_top = int(h * 0.86)
+    stat_raw = img.crop((0, stat_top, w, h))
+
+    from bot.vision import erase_stat_icons
+    stat_clean = erase_stat_icons(stat_raw)
+    arr = np.asarray(stat_clean, dtype=np.uint8)
+
+    gray = np.mean(arr, axis=2)
+    bw = np.full(gray.shape, 255, dtype=np.uint8)
+    bw[gray < 170] = 0
+    col_dark = np.sum(bw == 0, axis=0)
+
+    gaps = []
+    gap_start = None
+    for x in range(len(col_dark)):
+        if col_dark[x] == 0:
+            if gap_start is None:
+                gap_start = x
+        else:
+            if gap_start is not None:
+                gap_len = x - gap_start
+                if gap_len >= 3 and gap_start > 10:
+                    gaps.append((gap_start, x, gap_len))
+                gap_start = None
+    if gaps and gaps[-1][1] >= len(col_dark) - 2:
+        gaps = gaps[:-1]
+    if not gaps:
+        return stat_raw, None, stat_raw, None
+
+    widest_idx = max(range(len(gaps)), key=lambda i: gaps[i][2])
+    hp_end     = gaps[widest_idx][0]
+    widest_end = gaps[widest_idx][1]
+    atk_start = widest_end
+    search_end = min(widest_end + 55, len(col_dark))
+    post_gap_start = None
+    for _x in range(widest_end, search_end):
+        if col_dark[_x] == 0:
+            if post_gap_start is None:
+                post_gap_start = _x
+        else:
+            if post_gap_start is not None:
+                atk_start = _x
+                break
+    hp_start  = gaps[0][1] if gaps[0][2] >= 4 and gaps[0][0] < 55 else 25
+    hp_start  = max(hp_start, 25)
+    if widest_idx == 0:
+        hp_start = 25
+        hp_end   = gaps[0][0]
+
+    try:
+        hp_raw   = stat_raw.crop((hp_start,  0, hp_end,         stat_raw.height))
+        atk_raw  = stat_raw.crop((atk_start, 0, stat_raw.width, stat_raw.height))
+        hp_conv  = Img.fromarray(bw[:, hp_start:hp_end])
+        atk_conv = Img.fromarray(bw[:, atk_start:])
+    except Exception:
+        return stat_raw, None, stat_raw, None
+
+    return hp_raw, hp_conv, atk_raw, atk_conv
 
 
 # ── Name OCR helpers ───────────────────────────────────────────────────────────
@@ -585,21 +677,30 @@ def ocr_build_stats(image_path: str) -> tuple:
     widest_idx = max(range(len(gaps)), key=lambda i: gaps[i][2])
     hp_end = gaps[widest_idx][0]
 
-    # After the widest gap: skip past the sword icon to the ATK digits.
-    # The sword icon is ~25-30px wide and may be thin/light in the binarized
-    # image (few dark pixels), making pixel-scanning unreliable. Instead use a
-    # fixed 30px skip from the end of the widest gap to clear the icon, then
-    # find the first dark column which is the start of the ATK digits.
+    # After the widest gap: find the ATK digits by scanning for a gap→dark transition
+    # within the next 55px (sword width + inter-icon gap).  If the sword icon pixels
+    # are partially unerased they appear as a dark cluster immediately after widest_end,
+    # followed by a small gap, then the ATK digits.  If the sword is fully erased there
+    # is no intermediate cluster and widest_end lands directly on the ATK digits.
     widest_end = gaps[widest_idx][1]
-    x = min(widest_end + 30, len(col_dark) - 1)
-    while x < len(col_dark) and col_dark[x] == 0:
-        x += 1  # skip any remaining gap after fixed skip
-    atk_start = x if x < len(col_dark) else widest_end
+    atk_start = widest_end   # fallback: no post-sword gap found
+    search_end = min(widest_end + 55, len(col_dark))
+    post_gap_start = None
+    for _x in range(widest_end, search_end):
+        if col_dark[_x] == 0:
+            if post_gap_start is None:
+                post_gap_start = _x
+        else:
+            if post_gap_start is not None:
+                atk_start = _x   # first dark column after sword + gap = ATK start
+                break
 
-    # HP start: skip heart icon — first significant gap separates icon from digits
-    hp_start = gaps[0][1] if gaps[0][2] >= 4 and gaps[0][0] < 55 else 15
+    # HP start: skip heart icon — first significant gap separates icon from digits.
+    # Minimum 25px to ensure heart icon edge pixels (which can look like '7') are cleared.
+    hp_start = gaps[0][1] if gaps[0][2] >= 4 and gaps[0][0] < 55 else 25
+    hp_start = max(hp_start, 25)
     if widest_idx == 0:
-        hp_start = 15
+        hp_start = 25
         hp_end = gaps[0][0]
 
     hp_region = bw[:, hp_start:hp_end]
@@ -611,7 +712,13 @@ def ocr_build_stats(image_path: str) -> tuple:
 
 
 def _ocr_stat_region(region: np.ndarray) -> int:
-    """OCR a B&W stat region (trimmed, upscaled, padded)."""
+    """OCR a B&W stat region (trimmed, upscaled, padded).
+
+    Uses EasyOCR as the primary engine — it handles this game's pixel-art
+    stat font accurately where Tesseract makes systematic errors (5→9, digit
+    drop, hallucinated digits).  Tesseract is the fallback for when EasyOCR
+    is unavailable or returns zero.
+    """
     from PIL import Image as Img
 
     # Trim to content
@@ -629,17 +736,36 @@ def _ocr_stat_region(region: np.ndarray) -> int:
     padded = np.pad(np.asarray(pil), 15, constant_values=255)
     final = Img.fromarray(padded)
 
-    raw_text = _ocr(final, config=_NUMBERS_OCR).strip()
-    result = _digits(raw_text)
+    # Primary: EasyOCR — accurate on this game font
+    result = 0
+    try:
+        from bot.easyocr_engine import read_number
+        from bot.config import MAX_HP_PER_CAR
+        easy_val, easy_conf = read_number(final)
+        if easy_val > 0 and easy_conf > 0.3 and easy_val <= MAX_HP_PER_CAR:
+            _log.debug("build stat EasyOCR: %d (conf=%.2f)", easy_val, easy_conf)
+            result = easy_val
+        elif easy_val > MAX_HP_PER_CAR:
+            _log.debug("build stat EasyOCR: %d exceeds MAX_HP_PER_CAR — rejecting "
+                       "(likely comma/separator misread); falling back to Tesseract", easy_val)
+    except Exception as e:
+        _log.debug("EasyOCR stat read failed: %s", e)
 
+    # Fallback: Tesseract when EasyOCR unavailable or returned zero
     if result == 0:
-        try:
-            from bot.easyocr_engine import read_number
-            easy_val, easy_conf = read_number(final)
-            if easy_val > 0 and easy_conf > 0.3:
-                result = easy_val
-        except Exception as e:
-            _log.debug("EasyOCR stat fallback failed: %s", e)
+        raw_text = _ocr(final, config=_NUMBERS_OCR).strip()
+        result = _digits(raw_text)
+        _log.debug("build stat Tesseract fallback: raw=%r → %d", raw_text, result)
+
+        # Sanity: reject if digit count exceeds region capacity (~11px/digit).
+        # Tesseract sometimes hallucinate extra digits on this font.
+        digits_returned = len([c for c in raw_text if c.isdigit()])
+        max_digits = max(1, region.shape[1] // 11)
+        if result > 0 and digits_returned > max_digits:
+            _log.warning("build stat Tesseract: digit count %d > region capacity %d "
+                         "(%dpx) — rejecting; raw=%r",
+                         digits_returned, max_digits, region.shape[1], raw_text)
+            result = 0
 
     return result
 
